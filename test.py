@@ -1,8 +1,27 @@
-import scipy.stats as sc
+import os
+import numpy as np
+import nibabel as nib
+import matplotlib.pyplot as plt
+from scipy.signal import butter, filtfilt
 
-a = [-5,7,-56,2,8,0,1,8,-2,77,-67,-34,1,7,9,1,1,3,3,4,5,-2]
-#b = [1,3,0,-5,-1,-56,2,8,0,1,1,-2,7,-7,-34,1,7,9,1]
-b = [-5,-1,-56,2,8,0,1,1,-2,7,-7,-34,1,7,9,1,1,3,1,7,1,-10]
-a = [-534234,-34234,-6,2,8,0,134234,1,-2,7,-7,-34,1,7,9,1,1,3,3,7,1,-10]
 
-print(sc.pearsonr(a,b))
+def butter_bandpass(self, lowcut, highcut, fs, order=2):
+    nyq = 1 / (2 * fs)
+    low = lowcut / nyq
+    high = highcut / nyq
+    b, a = butter(order, [low, high], btype='band')
+    return b, a
+
+
+def butter_bandpass_filter(self, data, lowcut, highcut, fs, order=2):
+    b, a = self.butter_bandpass(lowcut, highcut, fs, order=order)
+    y = filtfilt(b, a, data)
+    return y
+
+
+img = nib.load('/home/jrudascas/Downloads/drive-download-20170722T213449Z-001/20170721_083501DRCASTELLANOS11s011a1001.nii.gz')
+data = img.get_data()
+affine = img.get_affine()
+
+print(img.get_header().get_zooms()[:3])
+print(data.shape)

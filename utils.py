@@ -1,4 +1,40 @@
 import numpy as np
+from scipy import stats
+
+def buildFeaturesVector(data):
+    dimension = int((data.shape[1] * data.shape[1] - data.shape[1]) / 2)
+    features = np.zeros((data.shape[0], dimension))
+    cont = 0
+    for i in range(data.shape[1]):
+        for j in range(data.shape[2]):
+            if j > i:
+                features[:, cont] = data[:, i, j]
+                cont += 1
+    return features
+
+def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05):
+
+    print('\nDoing a multiple comparation by using ' + measure + ' test\n')
+
+    if x.shape[-1] != y.shape[-1]:
+        raise AttributeError('Shape incorrect')
+
+    therhold = threshold/x.shape[-1]
+
+    for comparator in range(x.shape[-1]):
+        if measure == 'manwhitneyu':
+            if outlier is None:
+                t, p = stats.mannwhitneyu(x[:,comparator], y[:, comparator])
+            else:
+                t, p = stats.mannwhitneyu(x[x[:, comparator] != outlier, comparator], y[y[:, comparator] != outlier, comparator])
+        if measure == 'ttest':
+            if outlier is None:
+                t, p = stats.ttest_ind(x[:,comparator], y[:, comparator], equal_var=False)
+            else:
+                t, p = stats.ttest_ind(x[x[:, comparator] != outlier, comparator], y[y[:, comparator] != outlier, comparator], equal_var=False)
+        print(p)
+        if p < therhold:
+            print('Comparators ' + str(comparator + 1) + ' are statistically significant differences (' + str(p) + ')')
 
 def toRelate_communities_to_nodes(partition, edge_correlation_matrix, minimunOcurrence=2):
     hyperGraph = dict()

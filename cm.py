@@ -13,16 +13,25 @@ def buildG_from_file(file_, delimiter_):
         G.add_edge(int(line[0]),int(line[1]), weight=float(line[2]))
     return G
 
-def buildG_from_adjacency_matrix(data, labels=None):
+def buildG_from_adjacency_matrix(data, labels=None, allNode = False):
     G = nx.Graph()
-    for index1 in range(data.shape[-1]):
-        for index2 in range(data.shape[-1]):
+    size = range(data.shape[-1])
+    for index1 in size:
+        for index2 in size:
             if index2 > index1:
                 if abs(data[index1, index2]) != 0.0:
                     if labels is None:
                         G.add_edge(index1, index2, weight=abs(data[index1, index2]))
                     else:
                         G.add_edge(labels[index1], labels[index2], weight=abs(data[index1, index2]))
+                elif allNode:
+                    if labels is None:
+                        G.add_node(index1)
+                        G.add_node(index2)
+                    else:
+                        G.add_node(labels[index1])
+                        G.add_node(labels[index2])
+
     return G
 
 def circular_layout2(G, scale=1., center=None):
@@ -41,7 +50,6 @@ def circular_layout2(G, scale=1., center=None):
         pos += np.asarray(center)
 
     return dict(zip(G, pos))
-
 
 def draw_graph(G, node_size, alpha, scale = 10, namesNodes=None, returnPlot = False):
     colors = iter(cm.rainbow(np.linspace(0, 1, len(G))))
@@ -67,8 +75,6 @@ def draw_graph(G, node_size, alpha, scale = 10, namesNodes=None, returnPlot = Fa
         for node, l in G.node.items():
             dict[node] = next(namesNodes)
 
-
-
     nx.draw_networkx_labels(G, pos, dict, font_size=8)
 
     if returnPlot is False:
@@ -86,7 +92,7 @@ def find_best_partition(path=None, delimiter = None, adjacencyMatrix=None, label
 
         G = buildG_from_adjacency_matrix(adjacencyMatrix, labels)
 
-    partition = community.best_partition(G, resolution=1.)
+    partition = community.best_partition(G, resolution=0.8)
 
     size = int(len(set(partition.values())))
 
@@ -102,7 +108,7 @@ def find_best_partition(path=None, delimiter = None, adjacencyMatrix=None, label
     nx.draw_networkx_edges(G, position, alpha=0.5)
     plt.show()
     """
-
+    """
     pos = fa.forceatlas2_layout(G, linlog=False, nohubs=False, iterations=500) # compute graph layout
     plt.figure(figsize=(7, 7))  # image is 8 x 8 inches
     plt.axis('off')
@@ -136,6 +142,6 @@ def find_best_partition(path=None, delimiter = None, adjacencyMatrix=None, label
         dict[node] = str(node)
 
     nx.draw_networkx_labels(G, pos, dict, font_size=10)
-
+    """
     #plt.show()
     return partition
