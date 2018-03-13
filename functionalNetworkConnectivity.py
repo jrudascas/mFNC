@@ -214,7 +214,7 @@ class functionalNetworkConnectivity:
         else:
             return plt
 
-    def run(self, path, TR, f_lb, f_ub, wSize, lag, f_order=5, measure='PC', reduce_neuronal = True, reductionMeasure = 'max', RSN=True):
+    def run(self, path, TR, f_lb, f_ub, wSize, lag, f_order=5, measure='PC', reduce_neuronal = True, reductionMeasure = 'max', onlyRSN=True):
         print("\nFNC run started\n")
         cont = 0
         correlation_matrix3D = []
@@ -227,7 +227,7 @@ class functionalNetworkConnectivity:
             functional_file = nib.load(os.path.join(os.path.join(os.path.join(path, dir), 'components'), 'icaAna_sub01_timecourses_ica_s1_.img'))
             functional_img = functional_file.get_data()
 
-            if RSN is True:
+            if onlyRSN is True:
                 RSNindex = []
                 neuronal = []
                 gof = []
