@@ -43,7 +43,8 @@ def circular_layout2(G, scale=1., center=None):
 
     twopi = 2.0*np.pi
     theta = np.arange(0, twopi, twopi/len(G))
-    theta = -1*theta + np.pi/2
+    #theta = theta + np.pi/2
+    theta = -1*theta + np.pi/2 #Girar
 
     pos = np.column_stack([np.cos(theta), np.sin(theta)]) * scale
     if center is not None:
@@ -51,15 +52,16 @@ def circular_layout2(G, scale=1., center=None):
 
     return dict(zip(G, pos))
 
-def draw_graph(G, node_size, alpha, scale = 10, namesNodes=None, returnPlot = False):
+def draw_graph(G, node_size, alpha, scale = 10, namesNodes=None, returnPlot = False, save=None):
     colors = iter(cm.rainbow(np.linspace(0, 1, len(G))))
 
     pos = circular_layout2(G)
 
     #pos = fa.forceatlas2_layout(G, linlog=True, nohubs=False, iterations=500)  # compute graph layout
-    # plt.figure(figsize=(8, 8))  # image is 8 x 8 inches
+    dpi = 300
+    plt.figure(figsize=(4000 / dpi, 3500 / dpi))  # image is 8 x 8 inches
     plt.axis('off')
-    nx.draw_networkx_nodes(G, pos, node_size=node_size, cmap=plt.cm.RdYlBu, node_color=list(colors))
+    #nx.draw_networkx_nodes(G, pos, node_size=node_size, cmap=plt.cm.RdYlBu, node_color=list(colors))
 
     edgewidth = [d['weight']*scale for (u, v, d) in G.edges(data=True)]
 
@@ -75,7 +77,10 @@ def draw_graph(G, node_size, alpha, scale = 10, namesNodes=None, returnPlot = Fa
         for node, l in G.node.items():
             dict[node] = next(namesNodes)
 
-    nx.draw_networkx_labels(G, pos, dict, font_size=8)
+    nx.draw_networkx_labels(G, pos, dict, font_size=14)
+
+    if save is not None:
+        plt.savefig(save, dpi=300)
 
     if returnPlot is False:
         plt.show()

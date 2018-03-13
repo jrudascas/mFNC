@@ -1,6 +1,11 @@
 import numpy as np
 from scipy import stats
 
+def absmax(a, axis=None):
+    amax = a.max(axis)
+    amin = a.min(axis)
+    return np.where(-amin > amax, amin, amax)
+
 def buildFeaturesVector(data):
     dimension = int((data.shape[1] * data.shape[1] - data.shape[1]) / 2)
     features = np.zeros((data.shape[0], dimension))
@@ -15,9 +20,117 @@ def buildFeaturesVector(data):
 def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05):
 
     print('\nDoing a multiple comparation by using ' + measure + ' test\n')
+    pLista = []
+    if x.shape[-1] != y.shape[-1]:
+        raise AttributeError('Shape incorrect')
+
+    therhold = threshold/x.shape[-1]
+
+
+    if outlier is not None:
+
+        print('X')
+        print('')
+
+        for comparator in range(x.shape[-1]):
+            if np.isnan(outlier):
+                print(np.mean(x[~np.isnan(x[:, comparator]), comparator]))
+                #print(x[~np.isnan(x[:, comparator]), comparator])
+            else:
+                print(np.mean(x[x[:, comparator] != outlier, comparator]))
+
+        print('Y')
+        print('')
+
+        for comparator in range(y.shape[-1]):
+            if np.isnan(outlier):
+                print(np.mean(y[~np.isnan(y[:, comparator]), comparator]))
+                #print(y[~np.isnan(y[:, comparator]), comparator])
+            else:
+                print(np.mean(y[y[:, comparator] != outlier, comparator]))
+
+
+    for comparator in range(x.shape[-1]):
+        if measure == 'manwhitneyu':
+            if outlier is None:
+                t, p = stats.mannwhitneyu(x[:,comparator], y[:, comparator])
+            elif np.isnan(outlier):
+                auxTemp1 = x[~np.isnan(x[:, comparator]), comparator]
+                auxTemp2 = y[~np.isnan(y[:, comparator]), comparator]
+                if np.all(auxTemp1 == auxTemp2[0]) or np.all(auxTemp2 == auxTemp1[0]):
+                    p = 1.
+                else:
+                    t, p = stats.mannwhitneyu(x[~np.isnan(x[:, comparator]), comparator], y[~np.isnan(y[:, comparator]), comparator])
+            else:
+                t, p = stats.mannwhitneyu(x[x[:, comparator] != outlier, comparator], y[y[:, comparator] != outlier, comparator])
+        elif measure == 'ttest':
+            if outlier is None:
+                t, p = stats.ttest_ind(x[:,comparator], y[:, comparator], equal_var=False)
+            else:
+                t, p = stats.ttest_ind(x[x[:, comparator] != outlier, comparator], y[y[:, comparator] != outlier, comparator], equal_var=False)
+
+        #print("p: " + str(p))
+        #print(x[~np.isnan(x[:, comparator]), comparator])
+        #print(y[~np.isnan(y[:, comparator]), comparator])
+        #print("p = " + str(p) + " Means: " + str(np.mean(x[x[:, comparator] != outlier, comparator])) + " - " + str(np.mean(y[y[:, comparator] != outlier, comparator])))
+        pLista.append(p)
+        if p < therhold:
+            print('Comparators ' + str(comparator + 1) + ' are statistically significant differences (' + str(p) + ')')
+    return pLista
+
+def toFindStatisticDifference2(x1, x2, outlier = None, measure='manwhitneyu', threshold = 0.05):
+
+    print('\nDoing a multiple comparation by using ' + measure + ' test\n')
+
+    x = np.zeros((x1.shape[0], 1))
+    y = np.zeros((x2.shape[0], 1))
+
+    for i in range(x1.shape[0]):
+        x[i] = np.sum(x1[i, (x1[i, :] != outlier)])/len((x1[i, (x1[i, :] != outlier)]))
+
+    for i in range(x2.shape[0]):
+        y[i] = np.sum(x2[i, (x2[i, :] != outlier)])/len((x2[i, (x2[i, :] != outlier)]))
 
     if x.shape[-1] != y.shape[-1]:
         raise AttributeError('Shape incorrect')
+
+    therhold = threshold/x.shape[-1]
+
+    x = x[~np.isnan(x)]
+    y = y[~np.isnan(y)]
+
+    #print(np.mean(x))
+    #print(np.mean(y))
+
+    if measure == 'manwhitneyu':
+        t, p = stats.mannwhitneyu(x, y)
+    if measure == 'ttest':
+        t, p = stats.ttest_ind(x, y, equal_var=False)
+
+    print("p = " + str(p))
+
+    if p < therhold:
+       print('Are statistically significant differences (' + str(p) + ')')
+
+def toFindStatisticDifference3(x1, x2, measure='manwhitneyu', threshold = 0.05):
+
+    print('Finding by ' + measure)
+    if measure == 'manwhitneyu':
+        t, p = stats.mannwhitneyu(x1, x2)
+    if measure == 'ttest':
+        t, p = stats.ttest_ind(x1, x2, equal_var=False)
+
+    print(p)
+    if p < threshold:
+       print('Are statistically significant differences (' + str(p) + ')')
+
+def toFindStatisticDifference4(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05):
+
+    print('\nDoing a multiple comparation by using ' + measure + ' test\n')
+    pLista = []
+
+    #if x.shape[-1] != y.shape[-1]:
+    #    raise AttributeError('Shape incorrect')
 
     therhold = threshold/x.shape[-1]
 
@@ -33,8 +146,10 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
             else:
                 t, p = stats.ttest_ind(x[x[:, comparator] != outlier, comparator], y[y[:, comparator] != outlier, comparator], equal_var=False)
         print(p)
+        pLista.append(p)
         if p < therhold:
             print('Comparators ' + str(comparator + 1) + ' are statistically significant differences (' + str(p) + ')')
+    return pLista
 
 def toRelate_communities_to_nodes(partition, edge_correlation_matrix, minimunOcurrence=2):
     hyperGraph = dict()
@@ -83,7 +198,7 @@ def toBuild_edgeNameList(namesNodes_node_to_node):
     for i in range(len(namesNodes_node_to_node)):
         for j in range(len(namesNodes_node_to_node)):
             if j > i:
-                namesNodes_edge_to_edge.append(namesNodes_node_to_node[i] + " - " + namesNodes_node_to_node[j] + " (" + str(cont) + ")")
+                namesNodes_edge_to_edge.append(namesNodes_node_to_node[i] + " - " + namesNodes_node_to_node[j])
                 cont+=1
 
     return namesNodes_edge_to_edge

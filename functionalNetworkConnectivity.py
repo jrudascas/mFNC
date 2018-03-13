@@ -3,11 +3,12 @@ import nibabel as nib
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as sc
-import distcorr as dc
+import utils as util
 from scipy.signal import butter, filtfilt
 from scipy import stats
 import time
-from numba import jit
+import distcorr as dc
+
 
 #Is necessary to install Tkinter -->sudo apt-get install python3-tk
 
@@ -60,6 +61,8 @@ class functionalNetworkConnectivity:
 
         dynamic_lagged_connectivity_matrix = np.zeros((shapeAxis, shapeAxis, shapeAxis2 - temp1, 2 * temp2 + 1))
 
+        listLaggeds = []
+
         for index1 in rango1:
             for index2 in rango1:
                 for slide in rango2:
@@ -67,10 +70,27 @@ class functionalNetworkConnectivity:
                     for lag in kCircular:
                         index = np.array(rango3) + slide
                         t2 = np.roll(data[index, index2], lag)
-                        dynamic_lagged_connectivity_matrix[index1, index2, slide, cont] = sc.pearsonr(data[index,index1], t2)[0]
-                        cont+=1
 
-        return dynamic_lagged_connectivity_matrix
+                        if measure == 'PC':
+                            dynamic_lagged_connectivity_matrix[index1, index2, slide, cont] = sc.pearsonr(data[index, index1], t2)[0]
+                        elif measure == 'DC':
+                            dynamic_lagged_connectivity_matrix[index1, index2, slide, cont] = dc.distcorr(data[index, index1], t2)
+
+                        cont+=1
+                if (index2 > index1):
+                    max = np.max(dynamic_lagged_connectivity_matrix[index1, index2, slide, :])
+
+                    min = np.min(dynamic_lagged_connectivity_matrix[index1, index2, slide, :])
+
+                    if np.abs(max) > np.abs(min):
+                        aux = max
+                    else:
+                        aux = min
+
+                    listLaggeds.append(np.where(dynamic_lagged_connectivity_matrix[index1, index2, slide, :] == aux)[0][0] - lagged)
+
+
+        return dynamic_lagged_connectivity_matrix, listLaggeds
 
     def build_dynamic_connectivity_matrix(self, data, windowsSize=200, measure='PC'):
         shapeAxis2, shapeAxis = data.shape
@@ -85,7 +105,7 @@ class functionalNetworkConnectivity:
 
         return dynamic_connectivity_matrix, np.max(dynamic_connectivity_matrix, axis=2)
 
-    def reduce_node_to_node_connectivity(self, data, outlier = None):
+    def reduce_node_to_node_connectivity(self, data, outlier = None, mandatory = True):
         recude_data = np.zeros((data.shape[1], data.shape[2]))
 
         for index1 in range(data.shape[1]):
@@ -96,8 +116,10 @@ class functionalNetworkConnectivity:
                 else:
                     indexList = data[:, index1, index2] != -np.pi
 
-                if stats.ttest_1samp(data[indexList, index1, index2], 0.0)[1] < 0.05:
+                if stats.ttest_1samp(data[indexList, index1, index2], 0.0)[1] < 0.05 or not mandatory:
                     recude_data[index1, index2] = np.mean(data[indexList, index1, index2])
+                else:
+                    recude_data[index1, index2] = 0
 
         return recude_data
 
@@ -192,11 +214,11 @@ class functionalNetworkConnectivity:
         else:
             return plt
 
-    def run(self, path, TR, f_lb, f_ub, wSize, lag, f_order=5, measure='PC', RSN=True):
+    def run(self, path, TR, f_lb, f_ub, wSize, lag, f_order=5, measure='PC', reduce_neuronal = True, reductionMeasure = 'max', RSN=True):
         print("\nFNC run started\n")
         cont = 0
         correlation_matrix3D = []
-        minTimeCourseSize = 999999
+        laggeds = []
         for dir in sorted(os.listdir(path)):
             cont = cont + 1
             print(dir)
@@ -240,13 +262,30 @@ class functionalNetworkConnectivity:
 
             yyyj = self.butter_bandpass_filter(example, f_lb, f_ub, TR, order=f_order)
 
-            correlation_matrix = self.build_dynamic_lagged_connectivity_matrix(TimeCourse, windowsSize=wSize, lagged=lag, measure=measure)
+            correlation_matrix, listLaggeds = self.build_dynamic_lagged_connectivity_matrix(TimeCourse, windowsSize=wSize, lagged=lag, measure=measure)
 
-            #correlation_matrix3D.append(self.reduce_neuronal_gof(np.max(np.max(correlation_matrix, axis=-1), axis=-1), neuronal, gof))
 
-            correlation_matrix3D.append(np.max(np.max(correlation_matrix, axis=-1), axis=-1))
 
-        return np.array(correlation_matrix3D)
+            if (reduce_neuronal):
+                if reductionMeasure == 'max':
+                    #correlation_matrix3D.append(self.reduce_neuronal_gof(np.max(np.max(correlation_matrix, axis=-1), axis=-1), neuronal, gof))
+                    correlation_matrix3D.append(self.reduce_neuronal_gof(util.absmax(util.absmax(correlation_matrix, axis=-1), axis=-1), neuronal, gof))
+                elif reductionMeasure == 'mean':
+                    correlation_matrix3D.append(self.reduce_neuronal_gof(np.mean(np.mean(correlation_matrix, axis=-1), axis=-1), neuronal, gof))
+                elif reductionMeasure == 'median':
+                    correlation_matrix3D.append(self.reduce_neuronal_gof(np.median(np.median(correlation_matrix, axis=-1), axis=-1), neuronal, gof))
+            else:
+                if reductionMeasure == 'max':
+                    #correlation_matrix3D.append(np.max(np.max(correlation_matrix, axis=-1), axis=-1))
+                    correlation_matrix3D.append(util.absmax(util.absmax(correlation_matrix, axis=-1), axis=-1))
+                elif reductionMeasure == 'mean':
+                    correlation_matrix3D.append(np.mean(np.mean(correlation_matrix, axis=-1), axis=-1))
+                elif reductionMeasure == 'median':
+                    correlation_matrix3D.append(np.median(np.median(correlation_matrix, axis=-1), axis=-1))
+
+            laggeds.append(listLaggeds)
+
+        return np.array(correlation_matrix3D), np.array(laggeds)
 
     def dynamic(self, path, TR, f_lb, f_ub, windowsSize, f_order=2, measure='PC', RSN=True):
         print("dynamic FNC started\n")

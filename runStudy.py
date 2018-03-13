@@ -5,51 +5,520 @@ import utils
 import matplotlib.pyplot as plt
 import time
 import os,sys
+import plotGallery as pg
 
 TR = 2
-#f_lb = 0.02
-#f_ub = 0.15
 f_order = 2
-measure = 'PC'
+outlier = -1.1
 f_lb = 0.008
 f_ub = 0.05
-windowsSize = None
-lagged = 3
+umbral = 0.6
 
 #np.set_printoptions(precision=3)
 #np.set_printoptions(threshold=np.inf)
 
-namesNodes_node_to_node = ['Auditory', 'Cerebellum', 'DMN', 'ECN_L', 'ECN_R', 'Salience', 'Sensorimotor', 'Visual_L', 'Visual_M', 'Visual_O']
+namesNodes_node_to_node = ['Auditory', 'Cerebellum', 'DMN', 'ECL', 'ECR', 'Salience', 'SensoriMotor', 'Vis_Lateral', 'Vis_Medial', 'Vis_Occipital']
+#namesNodes_node_to_node = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '1O']
 namesNodes_edge_to_edge = utils.toBuild_edgeNameList(namesNodes_node_to_node)
 
-atlas = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/HarvardOxford-sub-maxprob-thr25-2mm.nii.gz'
-#atlas = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz'
-#atlas = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/fconn_atlas_150_2mm.nii'
-#atlas = '/home/jrudascas/Desktop/JoinROI2222.nii'
-path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Control/'
-#path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
-#path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
-#path = '/home/jrudascas/Desktop/Projects/Dataset/Preproccesed/VS_UWS/'
-#path = '/home/jrudascas/Desktop/Projects/Dataset/Preproccesed/MCS/'
-#path = '/home/jrudascas/Desktop/Projects/Dataset/Controls/'
-#path = '/home/jrudascas/Desktop/Projects/Dataset/Preproccesed/Temp'
+coords = [[-60, 0, 20],
+          [0, -60, -50],
+          [0, 50, 10],
+          [-60, -50, 50],
+          [60, -50, 50],
+          [0, 20, 60],
+          [0, -20, 70],
+          [50, -80, -10],
+          [0, -80, 0],
+          [0, -100, 10]
+          ]
+
+#########################################################################################################################
+"""
+
+#Max vs Mean lagged  -> Suplementary Material
+
+print("Experiment 1\n")
 
 FNC = f.functionalNetworkConnectivity()
+lagged = 3
+windowsSize = None
+measure = 'PC'
+f_lb = 0.008
+f_ub = 0.05
 
-#dynamic_correlation_matrix_atlas = FNC.dynamic_atlas(path=path, atlas=atlas, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, measure=measure, windowsSize=windowsSize)
-#dynamic_edge_correlation_matrix = FNC.dynamic_build_edge_connectivity_matrix(dynamic_correlation_matrix_atlas)
-
-#Static FNC
 path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Control/'
-group1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, RSN=True)
+group1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+group2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'mean', RSN=True)
 
-windowsSize = 120
-
-group2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, RSN=True)
 #cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group1, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), measure='manwhitneyu', outlier=outlier)
+pg.barchart(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), title= "Max Static Lagged correlation vs Mean Static Lagged correlation", labelGroup1="Max Static Lagged", labelGroup2="Mean Static Lagged", xLabel="# Connections", yLabel="Connectivity Mean", outlier=outlier)
+"""
+#########################################################################################################################
 
-utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), measure='manwhitneyu', outlier=-1.1)
-utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), measure='ttest', outlier=-1.1)
+#########################################################################################################################
+
+#Static Lagged vs Static NonLagged
+# Window size = 240
+
+print("Experiment 2\n")
+
+p1 = []
+p2 = []
+p3 = []
+p4 = []
+
+for slide in range(300, 330, 30):
+    print()
+    slide = None
+
+    FNC = f.functionalNetworkConnectivity()
+    lagged = 0
+    measure = 'DC'
+    windowsSize = slide
+
+    path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+    group1, laggeds1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+    path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Control/'
+    group2, laggeds2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+#    path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+#    group2, laggeds2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+    #print(laggeds1)
+
+    new = np.zeros((group1.shape[0], group1.shape[1]))
+    new2 = np.zeros((group2.shape[0], group2.shape[1]))
+
+    new3 = np.zeros((group1.shape[0], group1.shape[1]))
+    new4 = np.zeros((group2.shape[0], group2.shape[1]))
+
+    for i in range(new.shape[0]):
+        for j in range(new.shape[1]):
+            if np.alltrue(group1[i, j, :] == outlier):
+                new[i, j] = np.nan
+                new3[i, j] = np.nan
+            else:
+                aux = group1[i, j, group1[i, j, :] != outlier]
+                if np.alltrue(aux == 1.):
+                    new[i, j] = np.nan
+                    new3[i, j] = np.nan
+                else:
+                    new[i, j] = np.mean(aux[aux != 1.])
+                    auxTemp1 = aux[aux != 1.]
+                    new3[i,j] = len(np.where(abs(auxTemp1) > umbral)[0])
+                #new[i, j] = np.mean(aux)
+
+
+    for i in range(new2.shape[0]):
+        for j in range(new2.shape[1]):
+            if np.alltrue(group2[i, j, :] == outlier):
+                new2[i, j] = np.nan
+                new4[i, j] = np.nan
+            else:
+                aux2 = group2[i, j, group2[i, j, :] != outlier]
+                if np.alltrue(aux2 == 1.):
+                    new2[i, j] = np.nan
+                    new4[i, j] = np.nan
+                else:
+                    new2[i, j] = np.mean(aux2[aux2 != 1.])
+                    auxTemp2 = aux2[aux2 != 1.]
+                    new4[i,j] = len(np.where(abs(auxTemp2) > umbral)[0])
+                #new2[i, j] = np.mean(aux2)
+
+    print("Test Conectividad Promedio")
+    pList1 = utils.toFindStatisticDifference(new, new2, measure='manwhitneyu', outlier=np.nan)
+    print(np.mean(new))
+    print("Test Hiperconectividades")
+    pList2 = utils.toFindStatisticDifference(new3, new4, measure='manwhitneyu', outlier=np.nan)
+
+    #cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group1, outlier=-1.1), allNode=True), node_size=2000, alpha=0.5, scale=20, namesNodes=namesNodes_node_to_node, save="MCS1")
+    #cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group2, outlier=-1.1), allNode=True), node_size=2000, alpha=0.5, scale=20, namesNodes=namesNodes_node_to_node, save="VS1")
+    pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), measure='manwhitneyu', outlier=outlier)
+    #pg.barchart(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), title= "Non-Lagged Linear Correlation", labelGroup1="MCS", labelGroup2="VS/UWS", xLabel="", yLabel="Average Connectivity Level", outlier=outlier, save="fig11.png", labelFeautures=namesNodes_edge_to_edge)
+
+    print("Lista de P")
+
+    print(pList1)
+    import numpy as np
+    from nilearn import plotting as plott
+
+    # Make a large figure
+    # Mask the main diagonal for visualization:
+
+    correlation_matrix1 = FNC.reduce_node_to_node_connectivity(group1, outlier=outlier, mandatory = True)
+    correlation_matrix2 = FNC.reduce_node_to_node_connectivity(group2, outlier=outlier, mandatory = True)
+
+    np.fill_diagonal(correlation_matrix1, 0)
+    np.fill_diagonal(correlation_matrix2, 0)
+    # The labels we have start with the background (0), hence we skip the
+    # first label
+    import matplotlib.pyplot as plt
+
+    pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, labelFeautures=namesNodes_edge_to_edge, save='ThreadsLagPC.png')
+
+    import matplotlib as mat
+    plott.plot_connectome(correlation_matrix1,
+                          coords,
+                          node_color = ['b', 'r', 'g', 'gold', 'y', 'aqua', 'orchid', 'lime', 'black', 'brown'],
+                          node_size=200,
+                          #edge_cmap=mat.pyplot.cm.get_cmap('Reds'),
+                          #edge_threshold='90%',
+                          edge_vmax=.6,
+                          title='MCS',
+                          edge_vmin=-0.6,
+                          colorbar = True
+                          )
+
+    plott.plot_connectome(correlation_matrix2,
+                          coords,
+                          node_color = ['b', 'r', 'g', 'gold', 'y', 'aqua', 'orchid', 'lime', 'black', 'brown'],
+                          node_size=200,
+                          #edge_cmap=mat.pyplot.cm.get_cmap('Reds'),
+                          #edge_threshold='90%',
+                          edge_vmax=.6,
+                          title='UWS',
+                          edge_vmin=-0.6,
+                          colorbar = True
+                          )
+
+    #plotting.plot_connectome(correlation_matrix1,
+    #                         coords, edge_threshold='90%',
+    #                         title=title,
+    #                         edge_vmax=.9, edge_vmin=-.9)
+
+    plott.plot_matrix(correlation_matrix1, labels=namesNodes_node_to_node, vmax=0.6, vmin=-0.6)
+    plott.plot_matrix(correlation_matrix2, labels=namesNodes_node_to_node, vmax=0.6, vmin=-0.6)
+    plott.show()
+
+    sys.exit(0)
+
+
+    """
+    PC
+    p: 0.174787403062
+    p: 0.0898562474395
+    p: 0.0204241618536
+    p: 0.00278046448508
+    Comparators 4 are statistically significant differences (0.00278046448508)
+    p: 0.00244907176354
+    Comparators 5 are statistically significant differences (0.00244907176354)
+    p: 0.230975227294
+    p: 0.206971903568
+    p: 0.108652996777
+    p: 1.0
+    p: 1.0
+
+    DC
+    p: 0.174787403062
+    p: 0.0898562474395
+    p: 0.0231956770828
+    p: 0.00326345372176
+    Comparators 4 are statistically significant differences (0.00326345372176)
+    p: 0.00364740519656
+    Comparators 5 are statistically significant differences (0.00364740519656)
+    p: 0.376276875099
+    p: 0.5
+    p: 0.165837064187
+    p: 0.132379106229
+    p: 1.0
+    """
+
+    print()
+    print("Non-Linear")
+    print()
+    FNC = f.functionalNetworkConnectivity()
+    lagged = 3
+    measure = 'DC'
+    windowsSize = slide
+    f_lb = 0.008
+    f_ub = 0.05
+
+    path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+    group3, laggeds3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+    path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+    group4, laggeds4 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+
+    new = np.zeros((group3.shape[0], group3.shape[1]))
+    new2 = np.zeros((group4.shape[0], group4.shape[1]))
+    new3 = np.zeros((group3.shape[0], group3.shape[1]))
+    new4 = np.zeros((group4.shape[0], group4.shape[1]))
+
+    for i in range(new.shape[0]):
+        for j in range(new.shape[1]):
+            if np.alltrue(group3[i, j, :] == outlier):
+                new[i, j] = np.nan
+                new3[i, j] = np.nan
+            else:
+                aux = group3[i, j, group3[i, j, :] != outlier]
+                if np.alltrue(aux == 1.):
+                    new[i, j] = np.nan
+                    new3[i, j] = np.nan
+                else:
+                    new[i, j] = np.mean(aux[aux != 1.])
+                    auxTemp = aux[aux != 1.]
+                    new3[i,j] = len(np.where(abs(auxTemp) > umbral)[0])
+                #new[i, j] = np.mean(aux)
+
+    for i in range(new2.shape[0]):
+        for j in range(new2.shape[1]):
+            if np.alltrue(group4[i, j, :] == outlier):
+                new2[i, j] = np.nan
+                new4[i, j] = np.nan
+            else:
+                aux2 = group4[i, j, group4[i, j, :] != outlier]
+                if np.alltrue(aux2 == 1.):
+                    new2[i, j] = np.nan
+                    new4[i, j] = np.nan
+                else:
+                    new2[i, j] = np.mean(aux2[aux2 != 1.])
+                    auxTemp2 = aux2[aux2 != 1.]
+                    new4[i,j] = len(np.where(abs(auxTemp2) > umbral)[0])
+                #new2[i, j] = np.mean(aux2)
+
+    print("Test Conectividad Promedio")
+    pList3 = utils.toFindStatisticDifference(new, new2, measure='manwhitneyu', outlier=np.nan)
+
+    print("Test Hiperconectividades")
+    pList4 = utils.toFindStatisticDifference(new3, new4, measure='manwhitneyu', outlier=np.nan)
+
+#    p1.append(np.mean(pList1))
+#    p2.append(np.mean(pList2))
+#    p3.append(np.mean(pList3))
+#    p4.append(np.mean(pList4))
+
+print("Listas de p")
+
+print(p1)
+print(p2)
+print(p3)
+print(p4)
+#pList2 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group3), utils.buildFeaturesVector(group4), measure='manwhitneyu', outlier=outlier)
+
+#utils.toFindStatisticDifference3(pList1, pList2, measure='manwhitneyu', threshold = 0.05)
+
+#pg.fivethirtyeightPlot(laggeds3, laggeds4, lag=lagged, save='ThreadsLagDC.png')
+
+#cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group1, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+#cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group2, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+#cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group3, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+#cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group4, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+
+#pg.barchart(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), title= "Non-Lagged Linear Correlation", labelGroup1="MCS", labelGroup2="VS/UWS", xLabel="", yLabel="Average Connectivity Level", outlier=outlier, save="fig3.png", labelFeautures=namesNodes_edge_to_edge)
+#pg.barchart(utils.buildFeaturesVector(group3), utils.buildFeaturesVector(group4), title= "Lagged Non-Linear Correlation", labelGroup1="MCS", labelGroup2="VS/UWS", xLabel="", yLabel="Average Connectivity Level", outlier=outlier, save="fig4.png", labelFeautures=namesNodes_edge_to_edge)
+
+print("TTT")
+pg.barchart4(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "Non-Lagged Linear Correlation vs Lagged Linear Correlation", labelGroup1="Non-Lagged Linear - MCS", labelGroup2="Non-Lagged Linear - VS/UWS", labelGroup3="Lagged Linear - MCS", labelGroup4="Lagged Linear - VS/UWS", xLabel="", yLabel="Average Connectivity Values", outlier=outlier, save="fig2.png")
+#########################################################################################################################
+
+#########################################################################################################################
+"""
+#Static vs Dynamic
+
+print("Experiment 3\n")
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 0
+measure = 'DC'
+windowsSize = None
+f_lb = 0.008
+f_ub = 0.05
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), measure='manwhitneyu', outlier=outlier)
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 0
+measure = 'DC'
+windowsSize = 120
+f_lb = 0.008
+f_ub = 0.05
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group4 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+#cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group1, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group3), utils.buildFeaturesVector(group4), measure='manwhitneyu', outlier=outlier)
+
+pg.barchart2(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonLagged Static correlation vs NonLagged Dynamic correlation", labelGroup1="NLSC MCS", labelGroup2="NLSC VS/UWS", labelGroup3="NLDC MCS", labelGroup4="NLDC VS/UWS", xLabel="# Connections", yLabel="Mean Connectivity", outlier=outlier)
+pg.barchart3(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonLagged Static correlation vs NonLagged Dynamic correlation", labelGroup1="NLSC Mean MCS", labelGroup2="NLSC Mean VS/UWS", labelGroup3="NLDC Mean MCS", labelGroup4="NLDC Mean VS/UWS", labelGroup5="NLSC Std MCS", labelGroup6="NLSC Std VS/UWS", labelGroup7="NLDC Std MCS", labelGroup8="NLDC Std VS/UWS", xLabel="", yLabel="Mean Values", outlier=outlier)
+"""
+#########################################################################################################################
+
+
+#########################################################################################################################
+"""
+#Dynamic NonLagged vs Dynamic Lagged
+print("Experiment 4\n")
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 0
+measure = 'DC'
+windowsSize = 120
+f_lb = 0.008
+f_ub = 0.05
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), measure='manwhitneyu', outlier=outlier)
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 3
+measure = 'DC'
+windowsSize = 120
+f_lb = 0.008
+f_ub = 0.05
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group4 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+#cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group1, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group3), utils.buildFeaturesVector(group4), measure='manwhitneyu', outlier=outlier)
+pg.barchart2(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonLagged Static correlation vs Max Lagged Dynamic correlation", labelGroup1="NLSC MCS", labelGroup2="NLSC VS/UWS", labelGroup3="LDC MCS", labelGroup4="LDC VS/UWS", xLabel="# Connections", yLabel="Connectivity Mean", outlier=outlier)
+pg.barchart3(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonLagged Static correlation vs Max Lagged Dynamic correlation", labelGroup1="NLSC Mean MCS", labelGroup2="NLSC Mean VS/UWS", labelGroup3="LDC Mean MCS", labelGroup4="LDC Mean VS/UWS", labelGroup5="NLSC Std MCS", labelGroup6="NLSC Std VS/UWS", labelGroup7="LDC Std MCS", labelGroup8="LDC Std VS/UWS", xLabel="", yLabel="Mean Values", outlier=outlier)
+"""
+#########################################################################################################################
+
+#########################################################################################################################
+"""
+print("Experiment 5\n")
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 0
+measure = 'PC'
+windowsSize = None
+f_lb = 0.008
+f_ub = 0.05
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), measure='manwhitneyu', outlier=outlier)
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 3
+measure = 'PC'
+windowsSize = 120
+f_lb = 0.008
+f_ub = 0.05
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group4 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+#cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group1, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group3), utils.buildFeaturesVector(group4), measure='manwhitneyu', outlier=outlier)
+pg.barchart2(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonLagged Static correlation vs Max Lagged Dynamic correlation", labelGroup1="NLSC MCS", labelGroup2="NLSC VS/UWS", labelGroup3="LDC MCS", labelGroup4="LDC VS/UWS", xLabel="# Connections", yLabel="Connectivity Mean", outlier=outlier)
+pg.barchart3(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonLagged Static correlation vs Max Lagged Dynamic correlation", labelGroup1="NLSC Mean MCS", labelGroup2="NLSC Mean VS/UWS", labelGroup3="LDC Mean MCS", labelGroup4="LDC Mean VS/UWS", labelGroup5="NLSC Std MCS", labelGroup6="NLSC Std VS/UWS", labelGroup7="LDC Std MCS", labelGroup8="LDC Std VS/UWS", xLabel="", yLabel="Mean Values", outlier=outlier)
+"""
+#########################################################################################################################
+
+#########################################################################################################################
+"""
+# Probar con frecuencia 0.1
+# Brain dynamics low frequency
+
+print("Experiment 6\n")
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 3
+measure = 'PC'
+windowsSize = 240
+f_lb = 0.008
+f_ub = 0.1
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), measure='manwhitneyu', outlier=outlier)
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 3
+measure = 'PC'
+windowsSize = 240
+f_lb = 0.008
+f_ub = 0.05
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group4 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+#cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group1, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group3), utils.buildFeaturesVector(group4), measure='manwhitneyu', outlier=outlier)
+pg.barchart2(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonFiltered vs Filtered", labelGroup1="NF MCS", labelGroup2="NF VS/UWS", labelGroup3="F MCS", labelGroup4="F VS/UWS", xLabel="# Connections", yLabel="Connectivity Mean", outlier=outlier)
+pg.barchart3(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonFiltered vs Filtered ", labelGroup1="NF Mean MCS", labelGroup2="NF Mean VS/UWS", labelGroup3="F Mean MCS", labelGroup4="F Mean VS/UWS", labelGroup5="NF Std MCS", labelGroup6="NF Std VS/UWS", labelGroup7="F Std MCS", labelGroup8="F Std VS/UWS", xLabel="", yLabel="Mean Values", outlier=outlier)
+"""
+#########################################################################################################################
+
+
+#########################################################################################################################
+"""
+print("Experiment 7\n")
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 3
+windowsSize = 240
+measure = 'DC'
+f_lb = 0.008
+f_ub = 0.05
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), measure='manwhitneyu', outlier=outlier)
+
+FNC = f.functionalNetworkConnectivity()
+lagged = 3
+windowsSize = 240
+measure = 'PC'
+f_lb = 0.008
+f_ub = 0.05
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+group3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+group4 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = True, reductionMeasure = 'max', RSN=True)
+
+#cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group1, outlier=-1.1), allNode=True), node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
+utils.toFindStatisticDifference(utils.buildFeaturesVector(group3), utils.buildFeaturesVector(group4), measure='manwhitneyu', outlier=outlier)
+pg.barchart2(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonLinear FLD correlation vs Linear FLD correlation", labelGroup1="NLFLD MCS", labelGroup2="NLFLD VS/UWS", labelGroup3="LFLD MCS", labelGroup4="LFLD VS/UWS", xLabel="# Connections", yLabel="Connectivity Mean", outlier=outlier)
+pg.barchart3(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),  utils.buildFeaturesVector(group3),  utils.buildFeaturesVector(group4), title= "NonLinear FLD correlation vs Linear FLD correlation", labelGroup1="NLFLD Mean MCS", labelGroup2="NLFLD Mean VS/UWS", labelGroup3="LFLD Mean MCS", labelGroup4="LFLD Mean VS/UWS", labelGroup5="NLFLD Std MCS", labelGroup6="NLFLD Std VS/UWS", labelGroup7="LFLD Std MCS", labelGroup8="LFLD Std VS/UWS", xLabel="", yLabel="Mean Values", outlier=outlier)
+
+"""
+#########################################################################################################################
 
 #G = cm.buildG_from_adjacency_matrix(np.mean(FNC.reduce_node_to_node_connectivity(static_correlation_matrix), axis=0))
 #cm.draw_graph(G, node_size = 1000, alpha=0.5, scale = 10, namesNodes=namesNodes_node_to_node)
@@ -119,6 +588,10 @@ print(hyperedgeNumber, file=f1)
 # Revisar las comparaciones multiples
 # Lagged
 # Dynamic FNC
+
+# Teoria de la conciencia
+# FeedBack
+# Laggeds
 
 # Experimento 1 -> FNC - NBS
 # Experimento 2 -> Poder de Clasificación Diagnostica
