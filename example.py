@@ -29,7 +29,7 @@ onlyRSN = True              # if onlyRSN is True will be only used the independe
 
 FNC = f.functionalNetworkConnectivity()
 
-path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/DataTest/'
 
 correlationMatrix, lagsProbabilityDistribution = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order,
                                                          wSize=windowsSize, lag=lagged, measure=measure,

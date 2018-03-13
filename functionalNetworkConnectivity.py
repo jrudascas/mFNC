@@ -219,6 +219,7 @@ class functionalNetworkConnectivity:
         cont = 0
         correlation_matrix3D = []
         laggeds = []
+        minTimeCourseSize = 999999
         for dir in sorted(os.listdir(path)):
             cont = cont + 1
             print(dir)
