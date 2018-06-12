@@ -1,5 +1,29 @@
 import numpy as np
 from scipy import stats
+from scipy import interpolate
+
+def covariance(x, y):
+    return np.dot(x,y)/x.shape[-1]
+
+def mse(matrixA, matrixB):
+    # the 'Mean Squared Error' between the two images is the
+    # sum of the squared difference between the two images;
+    # NOTE: the two images must have the same dimension
+    err = np.sum((matrixA.astype("float") - matrixB.astype("float")) ** 2)
+    err /= float(matrixA.shape[0] * matrixA.shape[1] * np.mean(np.mean(matrixA)) * np.mean(np.mean(matrixB)))
+
+    # return the MSE, the lower the error, the more "similar"
+    # the two images are
+    return err
+
+
+def toInterpolateTimeSerie(timeSerie, oldTR, newTR):
+    x = np.round(np.linspace(0, len(timeSerie)*oldTR, len(timeSerie)))
+    xToInterpolate = np.round(np.linspace(0, len(timeSerie)*oldTR, (len(timeSerie)+1)*oldTR/newTR))
+
+    #interpolator = interpolate.BarycentricInterpolator(x, timeSerie)
+    interpolator = interpolate.interp1d(x, timeSerie, kind='quadratic')
+    return interpolator(xToInterpolate)
 
 def absmax(a, axis=None):
     amax = a.max(axis)
@@ -24,7 +48,8 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
     if x.shape[-1] != y.shape[-1]:
         raise AttributeError('Shape incorrect')
 
-    therhold = threshold/x.shape[-1]
+    #threshold = threshold/x.shape[-1]
+
 
 
     if outlier is not None:
@@ -49,6 +74,7 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
             else:
                 print(np.mean(y[y[:, comparator] != outlier, comparator]))
 
+    print('Number of comparator ' + str(x.shape[-1]))
 
     for comparator in range(x.shape[-1]):
         if measure == 'manwhitneyu':
@@ -74,7 +100,7 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
         #print(y[~np.isnan(y[:, comparator]), comparator])
         #print("p = " + str(p) + " Means: " + str(np.mean(x[x[:, comparator] != outlier, comparator])) + " - " + str(np.mean(y[y[:, comparator] != outlier, comparator])))
         pLista.append(p)
-        if p < therhold:
+        if p < threshold:
             print('Comparators ' + str(comparator + 1) + ' are statistically significant differences (' + str(p) + ')')
     return pLista
 
