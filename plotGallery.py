@@ -4,6 +4,9 @@ from matplotlib.path import Path
 from matplotlib.spines import Spine
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.projections import register_projection
+from nilearn import plotting
+import nibabel as nib
+from scipy import stats
 
 def plot1():
     from nilearn import datasets
@@ -513,16 +516,19 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=N
     plt.xticks(range(new2.shape[1]), labelFeautures, rotation='vertical', fontsize=7)
 
     print("MCS vs UWS")
-    utils.toFindStatisticDifference(np.transpose(new), np.transpose(new2), measure='manwhitneyu')
+    print(utils.toFindStatisticDifference(np.transpose(new), np.transpose(new2), measure='manwhitneyu'))
 
     print("HC vs MCS")
-    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new), measure='manwhitneyu')
+    print(utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new), measure='manwhitneyu'))
 
     print("HC vs UWS")
-    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), measure='manwhitneyu')
+    print(utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), measure='manwhitneyu'))
+
 
     #if save is not None:
         #fig.savefig(save, dpi=dpi)
+
+
 
     plt.show()
 
@@ -621,6 +627,31 @@ def unit_poly_verts(theta):
     verts = [(r*np.cos(t) + x0, r*np.sin(t) + y0) for t in theta]
     return verts
 
+def plotRSN():
+    mainPath = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
+    lastPath = 'Allain/components/4DicaAna_sub01_component_ica_s1_001.nii.gz'
+
+    fMRI = nib.load(mainPath + lastPath)
+    fMRIData = fMRI.get_data()
+
+    print()
+    for index in range(fMRI.shape[-1]):
+        print(index)
+        if -fMRIData[:, :, :, index].min() > fMRIData[:, :, :, index].max():
+            fMRIData[:, :, :, index] = - fMRIData[:, :, :, index]
+
+        ic_threshold = stats.scoreatpercentile(np.abs(fMRIData[:, :, :, index]), 90)
+
+        #plotting.plot_glass_brain(nib.Nifti1Image(fMRIData[:, :, :, index], affine=fMRI.get_affine()),
+    #                              threshold=ic_threshold + 0.5, colorbar=True)
+        plotting.plot_stat_map(nib.Nifti1Image(fMRIData[:, :, :, index], affine=fMRI.get_affine()),
+                               threshold=ic_threshold, dim=-.5)
+                               #threshold=ic_threshold, dim=-.5, output_file=mainPath + 'imgComponent_' + str(index+1) + ".png")
+                               #threshold=ic_threshold, dim=-.5, output_file=str(index) + ".png")
+        # plotting.plot_stat_map(fMRI, threshold=0.5, title="t-map, dim=-.5", dim=-.5, annotate=True)
+        plotting.show()
+
+
 
 def example_data():
     # The following data is from the Denver Aerosol Sources and Health study.
@@ -644,24 +675,54 @@ def example_data():
     #  4)Inclusion of both gas-phase species is present...
     data = [
         [],
-        ('Mean connectivity level', [
+        ('Mean connectivity level - Lagged', [
             [0.069420770386, 0.00573539525575, 0.0162095387885, 0.111718033662, 0.107313443794, 0.149935833742, 0.217244247237, 0.0579392764386, 0.249118911229, 0.103086482682],
             [0.161831272388,0.0806519174197,0.0324767297485,0.0413598139312,0.0149021466021,0.0586738147275,0.0285511288457,0.0571931958619,0.025518564839,0.00139978224678],
             [0.150103057145,0.368477597194,0.202262656941,0.331083935473,0.269287087156,0.016714522278,0.150772784627,0.167648572874,0.285004669823,0.113104747768]]),
 
-        ('Mean connectivity level', [
-            [0.573178525131, 0.545581207461, 0.565221274215, 0.517937384962, 0.552531622192, 0.574093682414, 0.60319794868, 0.568145108108, 0.560933870164, 0.428316239266],
-            [0.588,0.551,0.597,0.620,0.618,0.604,0.612,0.641,0.605,0.493],
-            [0.641,0.676,0.666,0.685,0.695,0.655,0.667,0.601,0.645,0.454]]),
+        ('Mean connectivity level - Non-Lagged', [
+            [0.0971660835114,0.0894232049314,0.0301995900642,0.0986390414741,0.109788595315,0.145767062967,0.233062017493,0.0394373752283,0.236630719268,0.12059094796],
+            [0.144946127911,0.0374530413889,0.036083470618,0.0739375560835,0.021326841347,0.0843846117338,0.0537457413819,0.0853897297377,0.00347483925532,0.0125749676474],
+            [0.0851575650883,0.110585142991,0.121977419371,0.246648176979,0.27257664366,0.000652032558407,0.0580258460568,0.16958400677,0.22297361671,0.120792212983]]),
 
-        ('Hyperconnectivity Counting', [
+        ('Hyperconnectivity Counting - Lagged', [
             [2.25,1.71428571429,2.32,1.33333333333,2.34782608696,2.85714285714,3.0,2.8,2.17391304348,0.866666666667],
             [2.5,2.4,2.33333333333,2.75,2.83333333333,2.16666666667,2.83333333333,3.33333333333,2.54545454545,1.375],
             [3.42857142857,4.2,5.16666666667,4.625,4.625,3.83333333333,4.11111111111,3.625,4.14285714286,1.14285714286]]),
-        ('Hyperconnectivity Counting', [
-            [2.25, 1.71428571429, 2.24, 1.16666666667, 2.21739130435, 2.21428571429, 2.88888888889, 2.2, 1.82608695652, 0.666666666667],
-            [2.500,2.800,1.778,2.667,2.917,2.333,2.667,3.556,2.818,1.500],
-            [3.571,4.400,4.833,4.375,4.625,4.333,4.111,3.250,4.286,1.000]])
+        ('Hyperconnectivity Counting - Non-Lagged', [
+            [1.41666666667,0.571428571429,1.2,1.0,1.34782608696,1.28571428571,2.33333333333,1.8,1.34782608696,0.733333333333],
+            [1.375,1.6,1.11111111111,1.33333333333,1.66666666667,1.33333333333,1.83333333333,2.0,1.36363636364,0.5],
+            [2.14285714286,3.2,3.66666666667,3.125,3.625,2.0,2.77777777778,1.875,2.71428571429,0.857142857143]])
+    ]
+    return data
+
+def example_data2():
+    # The following data is from the Denver Aerosol Sources and Health study.
+    # See  doi:10.1016/j.atmosenv.2008.12.017
+    #
+    # The data are pollution source profile estimates for five modeled
+    # pollution sources (e.g., cars, wood-burning, etc) that emit 7-9 chemical
+    # species. The radar charts are experimented with here to see if we can
+    # nicely visualize how the modeled source profiles change across four
+    # scenarios:
+    #  1) No gas-phase species present, just seven particulate counts on
+    #     Sulfate
+    #     Nitrate
+    #     Elemental Carbon (EC)
+    #     Organic Carbon fraction 1 (OC)
+    #     Organic Carbon fraction 2 (OC2)
+    #     Organic Carbon fraction 3 (OC3)
+    #     Pyrolized Organic Carbon (OP)
+    #  2)Inclusion of gas-phase specie carbon monoxide (CO)
+    #  3)Inclusion of gas-phase specie ozone (O3).
+    #  4)Inclusion of both gas-phase species is present...
+    data = [
+        ['Auditory', 'Cerebellum', 'DMN', 'ECL', 'ECR', 'Salience', 'SensoriMotor', 'Vis_Lateral', 'Vis_Medial', 'Vis_Occipital'],
+        ('', [
+            [70,	80,	70,	30,	40,	40,	60,	50,	50,	60],
+            [100,	30,	20,	10,	0,	40,	40,	10,	10,	60],
+            [30,	20,	10,	20,	50,	70,	30,	10,	30,	30],
+            [70,	30,	30,	10,	30,	60,	40,	20,	20,	50]])
     ]
     return data
 
@@ -669,17 +730,17 @@ if __name__ == '__main__':
     N = 10
     theta = radar_factory(N, frame='polygon')
 
-    data = example_data()
+    data = example_data2()
     spoke_labels = data.pop(0)
     dpi = 300
-    fig, axes = plt.subplots(figsize=(4000 / dpi, 3500 / dpi), nrows=2, ncols=2, subplot_kw=dict(projection='radar'))
-    fig.subplots_adjust(wspace=0.25, hspace=0.20, top=0.85, bottom=0.05)
+    fig, axes = plt.subplots(figsize=(4500 / dpi, 4500 / dpi), nrows=1, ncols=2, subplot_kw=dict(projection='radar'))
+    #fig.subplots_adjust(wspace=0.25, hspace=0.20, top=0.85, bottom=0.05)
 
     colors = ['b', 'r', 'g', 'm', 'y']
     # Plot the four cases from the example data on separate axes
 
     for ax, (title, case_data) in zip(axes.flatten(), data):
-        ax.set_rgrids([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+        ax.set_rgrids([20,40,60,80,100])
         ax.set_title(title, weight='bold', size='medium', position=(0.5, 1.1), horizontalalignment='center', verticalalignment='center')
         for d, color in zip(case_data, colors):
             ax.plot(theta, d, color=color)
@@ -687,11 +748,11 @@ if __name__ == '__main__':
         ax.set_varlabels(spoke_labels)
 
     # add legend relative to top-left plot
-    ax = axes[0, 0]
-    labels = ('HC','MCS', 'VS/UWS')
+    #ax = axes[0, 0]
+    labels = ('Evaluator # 1','Evaluator # 2', 'Evaluator # 3', 'Consensus')
     legend = ax.legend(labels, loc=(1.1, .95), labelspacing=0.1, fontsize='small')
 
-    fig.text(0.5, 0.965, '5-Factor Solution Profiles Across Four Scenarios', horizontalalignment='center', color='black', weight='bold', size='large')
+    #fig.text(0.5, 0.965, '5-Factor Solution Profiles Across Four Scenarios', horizontalalignment='center', color='black', weight='bold', size='large')
 
     fig.savefig('radar3.png', dpi=300)
 
