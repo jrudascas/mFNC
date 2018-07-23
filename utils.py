@@ -104,12 +104,12 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
 
 def toBuildMatrixDesign(pathIn, pathOut, maskEVs, maskThreadhold = None):
     import nibabel as nib
-    maskEVs = maskEVs.astype(int)
     fMRIdata = nib.load(pathIn).get_data()
     listEV = []
     for EV in maskEVs:
         if maskThreadhold is not None:
             mask = nib.load(EV).get_data() >= maskThreadhold
+            mask = mask.astype(int)
 
             if fMRIdata.shape[0:3] != mask.shape:
                 newMask = np.insert(np.insert(np.insert(mask, 0, mask.shape[0] - 1, axis=0), 0, mask.shape[1] - 1, axis=1), 0, mask.shape[2] - 1, axis=2)
