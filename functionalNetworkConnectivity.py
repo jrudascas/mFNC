@@ -139,7 +139,7 @@ class functionalNetworkConnectivity:
 
         total = len(indexROI)
         for roi1 in indexROI:
-            print(roi1 + '/' +total)
+            print(str(roi1) + '/' + str(total))
 
             for roi2 in indexROI:
                     timeSerie1 = data[:, roi1]
