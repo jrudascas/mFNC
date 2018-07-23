@@ -137,8 +137,9 @@ class functionalNetworkConnectivity:
         timeDelayMatrix = np.zeros((numberROI, numberROI))
         amplitudeWeightedTimeDelayMatrix = np.zeros((numberROI, numberROI))
 
+        total = len(indexROI)
         for roi1 in indexROI:
-            print("{0:.2f}".format(float(roi1/numberROI)*100) + "%")
+            print(roi1 + '/' +total)
 
             for roi2 in indexROI:
                     timeSerie1 = data[:, roi1]
