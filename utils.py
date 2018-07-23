@@ -111,10 +111,11 @@ def toBuildMatrixDesign(pathIn, pathOut, maskEVs, maskThreadhold = None):
         if maskThreadhold is not None:
             mask = nib.load(EV).get_data() >= maskThreadhold
 
-            #if fMRIdata.shape[0:3] != mask.shape:
-            print(mask.shape)
-            newMask = np.delete(np.delete(np.delete(mask,10,axis=0), 10, axis=1), 10, axis=2)
-            print(newMask.shape)
+            if fMRIdata.shape[0:3] != mask.shape:
+                newMask = np.insert(np.insert(np.insert(mask, False, mask.shape[0] - 1, axis=0), False, mask.shape[1] - 1, axis=1), False, mask.shape[2] - 1, axis=2)
+            else:
+                newMask = mask
+
             listEV.append(np.mean(fMRIdata[newMask, :], axis=0))
 
     np.savetxt(pathOut + 'designMatrix.out', np.transpose(np.array(listEV)), fmt='%s')
