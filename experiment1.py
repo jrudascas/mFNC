@@ -10,14 +10,15 @@ from nitime.viz import drawmatrix_channels
 
 import os
 
-TR = 3.01
+TR = 2.46
 measure = 'COV'
 lagged = 4
 
-t1MNI = '/home/jrudascas/Desktop/DWITest/Additionals/Standards/MNI152_T1_2mm_brain.nii.gz'
+t1MNI = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
 
-path = '/media/jrudascas/ADATA HD720/DataSet/Belgium/Preprocessed/Test/UWS'
-dwiPath = 'data/functional/fmri.nii.gz'
+path = '/home/runlab/data/COMA/HC'
+
+dwiPath = 'data/functional/fmriGLM.nii.gz'
 t1Path = 'data/structural/fwmmprage.nii.gz'
 maskPath = 'data/structural/fwc1mprage.nii.gz'
 timeDelayMapList = []
@@ -25,6 +26,7 @@ amplitudeWeightedTimeDelayMapList = []
 
 for dir in sorted(os.listdir(path)):
     print('Subject: ' + dir)
+
     fMRI = os.path.join(os.path.join(path, dir), dwiPath)
     t1 = os.path.join(os.path.join(path, dir), t1Path)
     greyMatter = os.path.join(os.path.join(path, dir), maskPath)
@@ -333,11 +335,11 @@ for indexSubject in range(timeDelayMatrixs.shape[0]):
 #plott.plot_matrix(correlationMatrix, labels=labels)
 fig = drawmatrix_channels(TDcorrelationMatrix, labels, color_anchor=(0.,1.))
 fig.savefig(os.path.join(path, 'TDCorrelation.png'))
-plt.show()
+#plt.show()
 
 fig01 = drawmatrix_channels(AWTDcorrelationMatrix, labels, color_anchor=(0.,1.))
 fig01.savefig(os.path.join(path, 'AWTDCorrelation.png'))
-plt.show()
+#plt.show()
 
 """
 path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Control/'
