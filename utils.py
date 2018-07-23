@@ -50,8 +50,6 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
 
     #threshold = threshold/x.shape[-1]
 
-
-
     if outlier is not None:
 
         print('X')
@@ -101,8 +99,25 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
         #print("p = " + str(p) + " Means: " + str(np.mean(x[x[:, comparator] != outlier, comparator])) + " - " + str(np.mean(y[y[:, comparator] != outlier, comparator])))
         pLista.append(p)
         if p < threshold:
-            print('Comparators ' + str(comparator + 1) + ' are statistically significant differences (' + str(p) + ')')
+            print('Comparator ' + str(comparator + 1) + ' (' + str(p) + ')')
     return pLista
+
+def toBuildMatrixDesign(pathIn, pathOut, maskEVs, maskThreadhold = None):
+    import nibabel as nib
+
+    fMRIdata = nib.load(pathIn).get_data()
+    listEV = []
+    for EV in maskEVs:
+        if maskThreadhold is not None:
+            mask = nib.load(EV).get_data() >= maskThreadhold
+
+            #if fMRIdata.shape[0:3] != mask.shape:
+
+            listEV.append(np.mean(fMRIdata[mask, :], axis=0))
+
+    np.savetxt(pathOut + 'designMatrix.out', np.transpose(np.array(listEV)), fmt='%s')
+    return pathOut + 'designMatrix.out'
+
 
 def toFindStatisticDifference2(x1, x2, outlier = None, measure='manwhitneyu', threshold = 0.05):
 
