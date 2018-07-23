@@ -64,7 +64,7 @@ for dir in sorted(os.listdir(generalPath)):
 
     print("FAST")
     if not os.path.exists(pathDesignMatrix + '_bet_pve_0.nii.gz'):
-        FAST(pathDesignMatrix + '_bet_pve_0.nii.gz', parameters='-n 3 -t 1')
+        FAST(pathBET, parameters='-n 3 -t 1')
 
     print('Building Matrix Design')
     if not os.path.exists(pathDesignMatrix + 'designMatrix.out'):
