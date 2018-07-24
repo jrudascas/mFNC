@@ -8,8 +8,6 @@ from scipy.signal import butter, filtfilt
 from scipy import stats
 import time
 import distcorr as dc
-import nitime as nt
-
 
 # Is necessary to install Tkinter -->sudo apt-get install python3-tk
 
