@@ -1,6 +1,12 @@
-import functionalNetworkConnectivity as f
+import matplotlib
+matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
+plt.ioff()
+
 import numpy as np
 import nibabel as nib
+import functionalNetworkConnectivity as f
 from nilearn import plotting
 import scipy.stats as sc
 import scipy.ndimage.morphology as mp
