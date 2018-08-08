@@ -19,7 +19,6 @@ import numpy as np
 from dipy.align.reslice import reslice
 import  utils as t
 import os.path
-from pathlib import Path
 
 generalPath = '/home/runlab/data/COMA/'
 
