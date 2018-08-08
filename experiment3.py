@@ -41,11 +41,11 @@ for group in sorted(os.listdir(generalPath)):
             if os.path.isdir(os.path.join(pathInto, dir)):
                 print(dir)
                 pathfMRI = os.path.join(os.path.join(pathInto, dir), dwiPath)
-                t1 = os.path.join(os.path.join(generalPath, dir), t1Path)
-                greyMatter = os.path.join(os.path.join(generalPath, dir), maskPath)
-                pathT1Resliced = os.path.join(os.path.join(generalPath, dir), preResliced)
-                pathBET = os.path.join(os.path.join(generalPath, dir), preBET)
-                pathDesignMatrix = os.path.join(os.path.join(generalPath, dir), preDesignMatrix)
+                t1 = os.path.join(os.path.join(pathInto, dir), t1Path)
+                greyMatter = os.path.join(os.path.join(pathInto, dir), maskPath)
+                pathT1Resliced = os.path.join(os.path.join(pathInto, dir), preResliced)
+                pathBET = os.path.join(os.path.join(pathInto, dir), preBET)
+                pathDesignMatrix = os.path.join(os.path.join(pathInto, dir), preDesignMatrix)
 
                 T1img = nib.load(t1)
                 T1Data = T1img.get_data()
