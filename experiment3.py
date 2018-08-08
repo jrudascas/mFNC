@@ -36,9 +36,10 @@ amplitudeWeightedTimeDelayMapList = []
 for group in sorted(os.listdir(generalPath)):
     pathInto = os.path.join(generalPath, group)
     if os.path.isdir(pathInto):
+        print(group)
         for dir in sorted(os.listdir(pathInto)):
-
             if os.path.isdir(os.path.join(pathInto, dir)):
+                print(dir)
                 pathfMRI = os.path.join(os.path.join(pathInto, dir), dwiPath)
                 t1 = os.path.join(os.path.join(generalPath, dir), t1Path)
                 greyMatter = os.path.join(os.path.join(generalPath, dir), maskPath)
