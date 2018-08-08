@@ -28,6 +28,7 @@ t1Path = 'data/structural/fwmmprage.nii.gz'
 maskPath = 'data/structural/fwc1mprage.nii.gz'
 preResliced = 'data/_T1resliced.nii.gz'
 preBET = 'data/_bet.nii.gz'
+preBET_mask = 'data/_bet_mask.nii.gz'
 preDesignMatrix = 'data/'
 
 timeDelayMapList = []
@@ -36,26 +37,24 @@ amplitudeWeightedTimeDelayMapList = []
 for group in sorted(os.listdir(generalPath)):
     pathInto = os.path.join(generalPath, group)
     if os.path.isdir(pathInto):
-        print(group)
         for dir in sorted(os.listdir(pathInto)):
             if os.path.isdir(os.path.join(pathInto, dir)):
-                print(dir)
+
                 pathfMRI = os.path.join(os.path.join(pathInto, dir), dwiPath)
                 t1 = os.path.join(os.path.join(pathInto, dir), t1Path)
                 greyMatter = os.path.join(os.path.join(pathInto, dir), maskPath)
                 pathT1Resliced = os.path.join(os.path.join(pathInto, dir), preResliced)
                 pathBET = os.path.join(os.path.join(pathInto, dir), preBET)
+                pathBET_maks = os.path.join(os.path.join(pathInto, dir), preBET_mask)
                 pathDesignMatrix = os.path.join(os.path.join(pathInto, dir), preDesignMatrix)
 
                 T1img = nib.load(t1)
                 T1Data = T1img.get_data()
                 T1Affine = T1img.affine
 
-                print()
                 print('-----------------------------------------')
                 print(dir)
                 print('-----------------------------------------')
-                print()
 
                 print("Reslicing")
                 if os.path.exists(pathT1Resliced):
@@ -75,9 +74,9 @@ for group in sorted(os.listdir(generalPath)):
                 if os.path.exists(pathDesignMatrix + 'designMatrix.out'):
                     maskEV = [pathDesignMatrix + '_bet_pve_0.nii.gz',
                               pathDesignMatrix + '_bet_pve_2.nii.gz',
-                              pathBET]
+                              pathBET_maks]
 
-                    dm = t.toBuildMatrixDesign(pathfMRI, pathOut=pathDesignMatrix, maskEVs=maskEV, maskThreadhold=0.4)
+                    dm = t.toBuildMatrixDesign(pathfMRI, pathOut=pathDesignMatrix, maskEVs=maskEV, maskThreadhold=0.8)
 
                 print('GLM')
                 if os.path.exists(pathDesignMatrix + 'functional/' + 'fmriGLM.nii.gz'):
