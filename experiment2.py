@@ -1,52 +1,98 @@
-import functionalNetworkConnectivity as f
 import numpy as np
+
+from sklearn import datasets, linear_model
 import matplotlib.pyplot as plt
+plt.ioff()
+
 import nibabel as nib
 from nilearn import plotting
-import dcor as dc
-import scipy.stats as sc
-import scipy.ndimage.morphology as mp
-from nitime.viz import drawmatrix_channels
-from scipy import stats
+from sklearn.metrics import mean_squared_error, r2_score
 import utils as ut
 import os
+import warnings
+warnings.filterwarnings("ignore")
 
 t1MNI = '/home/jrudascas/Desktop/DWITest/Additionals/Standards/MNI152_T1_2mm_brain.nii.gz'
 atlas = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz'
-indexROI = 30
 
-path = '/media/jrudascas/ADATA HD720/DataSet/Belgium/Preprocessed/Test/'
+path = '/home/jrudascas/Desktop/Test/'
 TDMapName = 'TD_Map.nii'
 maskPath = 'data/structural/fwc1mprage.nii.gz'
 
 atlasImg = nib.load(atlas)
 atlasData = atlasImg.get_data()
-
+atlasAffine = atlasImg.get_affine()
 groupTDMap = []
+
+indexROI = np.unique(atlasData)
+
 for group in sorted(os.listdir(path)):
-    print(group)
-    pathInto = os.path.join(path, group)
-    TDMap = []
-    for dir in sorted(os.listdir(pathInto)):
-        TDMapPath = os.path.join(os.path.join(pathInto, dir), TDMapName)
+    if os.path.isdir(os.path.join(path, group)):
+        pathInto = os.path.join(path, group)
+        TDMap = []
+        meanTDMAPData = np.zeros(atlasData.shape)
 
-        TDMapImg = nib.load(TDMapPath)
-        TDMapData = TDMapImg.get_data()
-        TDMapffine = TDMapImg.get_affine()
-        roiLags = []
-        for roi in range(np.max(atlasData)):
-            roiLags.append(np.mean(TDMapData[atlasData == roi]))
-        TDMap.append(roiLags)
-    groupTDMap.append(TDMap)
+        cont = 0
+        for dir in sorted(os.listdir(pathInto)):
+            if os.path.isdir(os.path.join(os.path.join(path, group), dir)):
+                print(os.path.join(os.path.join(path, group), dir))
+                cont = cont + 1
+                TDMapPath = os.path.join(os.path.join(pathInto, dir), TDMapName)
 
-meanTDMAP = np.array(groupTDMap)
+                TDMapImg = nib.load(TDMapPath)
+                TDMapData = TDMapImg.get_data()
+                TDMapffine = TDMapImg.get_affine()
+                roiLags = []
+                for roi in indexROI:
+                    roiLags.append(np.mean(TDMapData[atlasData == roi]))
+                TDMap.append(roiLags)
 
-ut.toFindStatisticDifference(meanTDMAP[0,:,:], meanTDMAP[1,:,:], threshold=0.01)
-ut.toFindStatisticDifference(meanTDMAP[0,:,:], meanTDMAP[2,:,:], threshold=0.01)
-ut.toFindStatisticDifference(meanTDMAP[1,:,:], meanTDMAP[2,:,:], threshold=0.01)
+                meanTDMAPData = TDMapData + meanTDMAPData
+        meanTDMAPData = meanTDMAPData/cont
+        nib.save(nib.Nifti1Image(meanTDMAPData, affine=TDMapffine), os.path.join(pathInto, 'meanTDMap_' + group + '.nii'))
+        plotting.plot_stat_map(nib.Nifti1Image(meanTDMAPData, affine=TDMapffine), cut_coords=[0, -28, 3], bg_img=t1MNI,
+                               vmax=0.5 * 4, output_file=os.path.join(pathInto, 'meanTDMap_' + group + '.png'))
+        #plt.show()
 
-print(meanTDMAP.shape)
-x = np.arange(0.0, 20.0, 2.0)
+        groupTDMap.append(TDMap)
+
+#meanTDMAP = np.asarray(groupTDMap)
+
+ut.toFindStatisticDifference(np.asarray(groupTDMap[0]), np.asarray(groupTDMap[1]), threshold=0.05)
+ut.toFindStatisticDifference(np.asarray(groupTDMap[0]), np.asarray(groupTDMap[2]), threshold=0.05)
+ut.toFindStatisticDifference(np.asarray(groupTDMap[1]), np.asarray(groupTDMap[2]), threshold=0.05)
+
+regr = linear_model.LinearRegression()
+
+listRoiTo = [8, 20,36]
 
 
+for roiTo in listRoiTo:
+    # Train the model using the training sets
+    x_train = np.linspace(1, len(groupTDMap[0]) + len(groupTDMap[1]) + len(groupTDMap[2]), len(groupTDMap[0]) + len(groupTDMap[1]) + len(groupTDMap[2]))
 
+    y_train = np.concatenate((np.asarray(groupTDMap[0])[:,roiTo], np.asarray(groupTDMap[1])[:,roiTo]), axis=0)
+    y_train = np.concatenate((y_train, np.asarray(groupTDMap[2])[:,roiTo]), axis=0)
+
+    x_test = x_train
+
+    regr.fit(np.transpose(np.matrix(x_train)), np.transpose(np.matrix(y_train)))
+
+    y_pred = regr.predict(np.transpose(np.matrix(x_test)))
+
+    plt.plot(x_test, y_pred, color='blue', linewidth=3)
+
+    print("Mean squared error: %.2f" % mean_squared_error(y_train, y_pred))
+    print('R2: %.2f' % r2_score(y_train, y_pred))
+
+    plt.scatter(range(0,len(groupTDMap[0])), np.asarray(groupTDMap[0])[:,roiTo], alpha=0.5)
+    plt.scatter(range(len(groupTDMap[0]), len(groupTDMap[0]) + len(groupTDMap[1])), np.asarray(groupTDMap[1])[:,roiTo], alpha=0.5)
+    plt.scatter(range(len(groupTDMap[0]) + len(groupTDMap[1]), len(groupTDMap[0]) + len(groupTDMap[1]) + len(groupTDMap[2])), np.asarray(groupTDMap[2])[:,roiTo], alpha=0.5)
+    plt.title('ROI: ' + str(roiTo) + ' - ' + 'R2: ' + str(r2_score(y_train, y_pred)))
+    plt.show()
+
+display = plotting.plot_anat(t1MNI, cut_coords=[0,-60,45])
+
+display.add_contours(nib.Nifti1Image((atlasData == 31).astype(int), affine=atlasAffine), filled=False, alpha=0.7, levels=[0.5], colors='b')
+
+plotting.show()

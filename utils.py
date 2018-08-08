@@ -94,11 +94,12 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
                 t, p = stats.ttest_ind(x[x[:, comparator] != outlier, comparator], y[y[:, comparator] != outlier, comparator], equal_var=False)
 
         #print("p: " + str(p))
-        #print(x[~np.isnan(x[:, comparator]), comparator])
-        #print(y[~np.isnan(y[:, comparator]), comparator])
+
         #print("p = " + str(p) + " Means: " + str(np.mean(x[x[:, comparator] != outlier, comparator])) + " - " + str(np.mean(y[y[:, comparator] != outlier, comparator])))
         pLista.append(p)
         if p < threshold:
+            #print(x[~np.isnan(x[:, comparator]), comparator])
+            #print(y[~np.isnan(y[:, comparator]), comparator])
             print('Comparator ' + str(comparator + 1) + ' (' + str(p) + ')')
     return pLista
 
