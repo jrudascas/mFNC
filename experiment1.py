@@ -310,11 +310,11 @@ for group in sorted(os.listdir(path)):
 
                                     roiIndex = roiIndex + 1
 
-                nib.save(nib.Nifti1Image(timeDelayMap, affine=greyMatterAffine), os.path.join(os.path.join(path, dir), 'TD_Map.nii'))
-                nib.save(nib.Nifti1Image(amplitudeWeightedTimeDelayMap, affine=greyMatterAffine), os.path.join(os.path.join(path, dir), 'AWTD_Map.nii'))
+                nib.save(nib.Nifti1Image(timeDelayMap, affine=greyMatterAffine), os.path.join(os.path.join(pathInto, dir), 'TD_Map.nii'))
+                nib.save(nib.Nifti1Image(amplitudeWeightedTimeDelayMap, affine=greyMatterAffine), os.path.join(os.path.join(pathInto, dir), 'AWTD_Map.nii'))
 
-                plotting.plot_stat_map(nib.Nifti1Image(timeDelayMap, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, vmax=0.5*lagged, output_file=os.path.join(os.path.join(path, dir), 'TD_Map.png'))
-                plotting.plot_stat_map(nib.Nifti1Image(amplitudeWeightedTimeDelayMap, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, output_file=os.path.join(os.path.join(path, dir), 'AWTD_Map.png'))
+                plotting.plot_stat_map(nib.Nifti1Image(timeDelayMap, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, vmax=0.5*lagged, output_file=os.path.join(os.path.join(pathInto, dir), 'TD_Map.png'))
+                plotting.plot_stat_map(nib.Nifti1Image(amplitudeWeightedTimeDelayMap, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, output_file=os.path.join(os.path.join(pathInto, dir), 'AWTD_Map.png'))
 
                 timeDelayMapList.append(timeDelayMap)
                 amplitudeWeightedTimeDelayMapList.append(amplitudeWeightedTimeDelayMap)
@@ -343,11 +343,11 @@ for group in sorted(os.listdir(path)):
 
             #plott.plot_matrix(correlationMatrix, labels=labels)
             fig = drawmatrix_channels(TDcorrelationMatrix, labels, color_anchor=(0.,1.))
-            fig.savefig(os.path.join(path, 'TDCorrelation.png'))
+            fig.savefig(os.path.join(pathInto, 'TDCorrelation.png'))
             #plt.show()
 
             fig01 = drawmatrix_channels(AWTDcorrelationMatrix, labels, color_anchor=(0.,1.))
-            fig01.savefig(os.path.join(path, 'AWTDCorrelation.png'))
+            fig01.savefig(os.path.join(pathInto, 'AWTDCorrelation.png'))
             #plt.show()
 
             """
