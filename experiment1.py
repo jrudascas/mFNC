@@ -34,12 +34,11 @@ for group in sorted(os.listdir(path)):
 
         for dir in sorted(os.listdir(pathInto)):
             fMRI = os.path.join(os.path.join(pathInto, dir), dwiPath)
-            if os.path.isdir(fMRI):
+            if os.path.isdir(os.path.join(pathInto, dir)):
                 print('Subject: ' + dir)
 
-
-                t1 = os.path.join(os.path.join(path, dir), t1Path)
-                greyMatter = os.path.join(os.path.join(path, dir), maskPath)
+                t1 = os.path.join(os.path.join(pathInto, dir), t1Path)
+                greyMatter = os.path.join(os.path.join(pathInto, dir), maskPath)
 
                 greyMatterImg = nib.load(greyMatter)
                 greyMatterData = greyMatterImg.get_data()
