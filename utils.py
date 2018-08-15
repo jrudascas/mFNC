@@ -101,6 +101,8 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
             #print(x[~np.isnan(x[:, comparator]), comparator])
             #print(y[~np.isnan(y[:, comparator]), comparator])
             print('Comparator ' + str(comparator + 1) + ' (' + str(p) + ')')
+            print(' - x:mean: ' + str(np.mean(x[~np.isnan(x[:, comparator]), comparator])) + ' x:std: ' + str(np.std(x[~np.isnan(x[:, comparator]), comparator])))
+            print(' - y:mean: ' + str(np.mean(y[~np.isnan(y[:, comparator]), comparator])) + ' y:std: ' + str(np.std(y[~np.isnan(y[:, comparator]), comparator])))
     return pLista
 
 def toBuildMatrixDesign(pathIn, pathOut, maskEVs, maskThreadhold = None):

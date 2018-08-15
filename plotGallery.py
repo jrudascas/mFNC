@@ -429,8 +429,6 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=N
     new = np.zeros((lag * 2 + 1, group1.shape[1]))
     new2 = np.zeros((lag * 2 + 1, group2.shape[1]))
 
-
-
     for i in range(new.shape[0]):
         for j in range(new.shape[1]):
             new[i, j] = len(np.where(group1[:, j] == i - lag)[0])/group1.shape[0]

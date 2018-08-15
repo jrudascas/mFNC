@@ -70,21 +70,24 @@ p4 = []
 
 for slide in range(300, 330, 30):
     print()
-    slide = 120
+    slide = 280
 
     FNC = f.functionalNetworkConnectivity()
     lagged = 3
     measure = 'PC'
     windowsSize = slide
 
-    path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Minimal Conscience/'
-    group1, laggeds1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = False, reductionMeasure = 'max', onlyRSN=True)
+    path = '/home/runlab/data/COMA/COMA_ICA/MCS/'
+    group1, laggeds1, TD1, AWTD1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = False, reductionMeasure = 'max', onlyRSN=True)
 
-    path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
-    group2, laggeds2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = False, reductionMeasure = 'max', onlyRSN=True)
+    path = '/home/runlab/data/COMA/COMA_ICA/UWS/'
+    group2, laggeds2, TD2, AWTD2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = False, reductionMeasure = 'max', onlyRSN=True)
 
-    path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Control/'
-    group3, laggeds3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = False, reductionMeasure = 'max', onlyRSN=True)
+    path = '/home/runlab/data/COMA/COMA_ICA/Control/'
+    group3, laggeds3, TD3, AWTD3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = False, reductionMeasure = 'max', onlyRSN=True)
+
+    pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, labelFeautures=namesNodes_edge_to_edge,
+                           save='ThreadsLagPC.png')
 
     new = np.zeros((group1.shape[0], group1.shape[1]))
     new2 = np.zeros((group2.shape[0], group2.shape[1]))
@@ -110,7 +113,6 @@ for slide in range(300, 330, 30):
                     auxTemp1 = aux[aux != 1.]
                     new3[i,j] = len(np.where(abs(auxTemp1) > umbral)[0])
                 #new[i, j] = np.mean(aux)
-
 
     for i in range(new2.shape[0]):
         for j in range(new2.shape[1]):
@@ -157,6 +159,7 @@ for slide in range(300, 330, 30):
     pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group2), utils.buildFeaturesVector(group3),
                                              measure='manwhitneyu', outlier=outlier)
 
+    """
     print("Test Conectividad Promedio\n")
     pList1 = utils.toFindStatisticDifference(new, new2, measure='manwhitneyu', outlier=np.nan)
 
@@ -168,6 +171,7 @@ for slide in range(300, 330, 30):
 
     print ('--------------------')
     pList2 = utils.toFindStatisticDifference(new3, new6, measure='manwhitneyu', outlier=np.nan)
+    """
 
     print("Lista de P")
     print(pList1)
@@ -180,7 +184,7 @@ for slide in range(300, 330, 30):
     np.fill_diagonal(correlation_matrix2, 0)
     np.fill_diagonal(correlation_matrix3, 0)
 
-    #pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, labelFeautures=namesNodes_edge_to_edge, save='ThreadsLagPC.png')
+
 
     fig, ax = plt.subplots()
 
