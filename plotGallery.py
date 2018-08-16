@@ -523,10 +523,8 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=N
     print(utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), measure='manwhitneyu'))
 
 
-    #if save is not None:
-        #fig.savefig(save, dpi=dpi)
-
-
+    if save is not None:
+        fig.savefig(save, dpi=dpi)
 
     plt.show()
 

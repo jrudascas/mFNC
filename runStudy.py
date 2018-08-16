@@ -95,6 +95,8 @@ for slide in range(300, 330, 30):
     pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, labelFeautures=namesNodes_edge_to_edge,
                            save='ThreadsLagPC.png')
 
+    sys.exit(0)
+
     new = np.zeros((group1.shape[0], group1.shape[1]))
     new2 = np.zeros((group2.shape[0], group2.shape[1]))
 
