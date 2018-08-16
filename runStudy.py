@@ -1,10 +1,16 @@
+import matplotlib
+matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
+plt.ioff()
+
 import functionalNetworkConnectivity as f
 import utils
 import sys
 import plotGallery as pg
 import numpy as np
 from nilearn import plotting as plott
-import matplotlib.pyplot as plt
+
 
 TR = 2
 f_order = 2
