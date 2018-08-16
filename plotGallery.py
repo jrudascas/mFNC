@@ -1,4 +1,5 @@
 import numpy as np
+import utils
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 from matplotlib.spines import Spine
@@ -7,6 +8,7 @@ from matplotlib.projections import register_projection
 from nilearn import plotting
 import nibabel as nib
 from scipy import stats
+
 
 def plot1():
     from nilearn import datasets
@@ -489,23 +491,11 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=N
         ax.plot(scale*new[index, :] + (index*1.5) + index, color='red', linewidth=2.0)
         ax.plot(scale*new2[index, :] + (index*1.5) + index + 1.2, color='blue', linewidth=2.0)
 
-        #plt.text(-2, (index*1.5) + index, str((index*1.5) + index))
-        #plt.text(-2, (index*1.5) + index + 1.2, str((index*1.5) + index + 1.2))
-        #plt.text(-2, (index * 1.5) + index - 0.1, '0%', fontsize=6)
-        #plt.text(-2, (index * 1.5) + index + 1 - 0.1, '100%', fontsize=6)
-
-        #plt.text(-2, (index * 1.5) + index + 1.2,'0%', fontsize=6)
-        #plt.text(-2, (index * 1.5) + index + 1.0 + 1, '100%', fontsize=6)
-
         ax.plot(np.linspace(np.mean(scale*new[index, :]) + (index*1.5) + index, np.mean(scale*new[index, :]) + (index*1.5) + index, new.shape[1]), alpha=0.8, color='black', linewidth=1.0, linestyle= '--')
         ax.plot(np.linspace(np.mean(scale*new2[index, :]) + (index*1.5) + index + 1.2, np.mean(scale*new2[index, :]) + (index*1.5) + index + 1.2, new2.shape[1]), alpha=0.8, color='black', linewidth=1.0, linestyle= '--')
 
-        #ax.plot(np.linspace(np.mean(new2[index, :]) + (index * 1.5) + index + 2.2, np.mean(new2[index, :]) + (index * 1.5) + index + 2.2, new2.shape[1]), alpha=0.4, color='b', linewidth=1.0, linestyle='--')
-
         plt.text(46, np.mean(scale*new[index, :]) + (index*1.5) + index - 0.1, str(round(100*np.mean(new[index, :]))) + '%', fontsize=10)
         plt.text(46, np.mean(scale*new2[index, :]) + (index*1.5) + index + 1.2 - 0.1, str(round(100*np.mean(new2[index, :]))) + '%', fontsize=10)
-
-        import utils
 
 
     if labelFeautures is None:
@@ -521,7 +511,6 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=N
 
     print("HC vs UWS")
     utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), threshold=0.007, measure='manwhitneyu')
-
 
     if save is not None:
         fig.savefig(save, dpi=dpi)
