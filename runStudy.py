@@ -77,13 +77,13 @@ for slide in range(300, 330, 30):
     measure = 'PC'
     windowsSize = slide
 
-    path = '/home/runlab/data/COMA/COMA_ICA/MCS/'
+    path = '/home/runlab/data/COMA_ICA/MCS/'
     group1, laggeds1, TD1, AWTD1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = False, reductionMeasure = 'max', onlyRSN=True)
 
-    path = '/home/runlab/data/COMA/COMA_ICA/UWS/'
+    path = '/home/runlab/data/COMA_ICA/UWS/'
     group2, laggeds2, TD2, AWTD2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = False, reductionMeasure = 'max', onlyRSN=True)
 
-    path = '/home/runlab/data/COMA/COMA_ICA/Control/'
+    path = '/home/runlab/data/COMA_ICA/Control/'
     group3, laggeds3, TD3, AWTD3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged, measure=measure, reduce_neuronal = False, reductionMeasure = 'max', onlyRSN=True)
 
     pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, labelFeautures=namesNodes_edge_to_edge,
