@@ -69,7 +69,7 @@ class functionalNetworkConnectivity:
         listLaggeds = []
 
         for roi1 in indexROI:
-            print(float(roi1/numberROI))
+            print(str(float(roi1/numberROI)*10) + '%')
             for roi2 in indexROI:
                 for slide in windowSlide:
                     indexWindows = np.array(rango3) + slide

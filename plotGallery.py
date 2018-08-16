@@ -514,13 +514,13 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=N
     plt.xticks(range(new2.shape[1]), labelFeautures, rotation='vertical', fontsize=7)
 
     print("MCS vs UWS")
-    print(utils.toFindStatisticDifference(np.transpose(new), np.transpose(new2), measure='manwhitneyu'))
+    utils.toFindStatisticDifference(np.transpose(new), np.transpose(new2), threshold=0.007, measure='manwhitneyu')
 
     print("HC vs MCS")
-    print(utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new), measure='manwhitneyu'))
+    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new), threshold=0.007, measure='manwhitneyu')
 
     print("HC vs UWS")
-    print(utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), measure='manwhitneyu'))
+    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), threshold=0.007, measure='manwhitneyu')
 
 
     if save is not None:

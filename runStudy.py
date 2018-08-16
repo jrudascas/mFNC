@@ -76,7 +76,7 @@ p4 = []
 
 for slide in range(300, 330, 30):
     print()
-    slide = 280
+    slide = 120
 
     FNC = f.functionalNetworkConnectivity()
     lagged = 3
