@@ -330,7 +330,7 @@ class functionalNetworkConnectivity:
         else:
             return plt
 
-    def run(self, path, TR, f_lb, f_ub, wSize, lag, f_order=2, measure='PC', reduce_neuronal=True, reductionMeasure='max', onlyRSN=True):
+    def run(self, path, TR, wSize, lag, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC', reduce_neuronal=True, reductionMeasure='max', onlyRSN=True):
         print("\nFNC run started\n")
         correlation_matrix3D = []
         laggeds = []

@@ -32,39 +32,31 @@ coords = [[-60, 0, 20],
           [0, -100, 10]
           ]
 
-#TR = 2.46
 TR = 2.46
-f_order = 2
 outlier = -1.1
-f_lb = 0.005
-f_ub = 0.05
 umbral = 0.6
 lagged = 3
-measure = 'PC'
 windowsSize = 120
 
 FNC = f.functionalNetworkConnectivity()
 path = '/home/runlab/data/COMA_ICA/MCS/'
-group1, laggeds1, TD1, AWTD1 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize,
-                                       lag=lagged, measure=measure, reduce_neuronal=False, reductionMeasure='max',
-                                       onlyRSN=True)
+group1, laggeds1, TD1, AWTD1 = FNC.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
 
 path = '/home/runlab/data/COMA_ICA/UWS/'
-group2, laggeds2, TD2, AWTD2 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize,
-                                       lag=lagged, measure=measure, reduce_neuronal=False, reductionMeasure='max',
-                                       onlyRSN=True)
+group2, laggeds2, TD2, AWTD2 = FNC.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
 
 path = '/home/runlab/data/COMA_ICA/Control/'
-group3, laggeds3, TD3, AWTD3 = FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize,
-                                       lag=lagged, measure=measure, reduce_neuronal=False, reductionMeasure='max',
-                                       onlyRSN=True)
+group3, laggeds3, TD3, AWTD3 = FNC.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
 
-np.savetxt('/home/runlab/data/COMA_ICA/' + 'mcs.out', laggeds1, delimiter=' ', fmt='%s')
-np.savetxt('/home/runlab/data/COMA_ICA/' + 'uws.out', laggeds2, delimiter=' ', fmt='%s')
-np.savetxt('/home/runlab/data/COMA_ICA/' + 'hc.out', laggeds3, delimiter=' ', fmt='%s')
+np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDmcs.out', laggeds1, delimiter=' ', fmt='%s')
+np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDuws.out', laggeds2, delimiter=' ', fmt='%s')
+np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDhc.out', laggeds3, delimiter=' ', fmt='%s')
 
-pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, labelFeautures=namesNodes_edge_to_edge,
-                       save='ThreadsLagPC.png')
+np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDmcs.out', AWTD1, delimiter=' ', fmt='%s')
+np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDuws.out', AWTD2, delimiter=' ', fmt='%s')
+np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDhc.out', AWTD3, delimiter=' ', fmt='%s')
+
+pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, save='ThreadsLagPC.png')
 
 sys.exit(0)
 

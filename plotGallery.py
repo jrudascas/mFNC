@@ -426,7 +426,7 @@ def barchart4(group1, group2, group3, group4, title = "Group 1 vs Group 2", labe
 
 
 
-def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=None, save = None):
+def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, save = None):
 
     new = np.zeros((lag * 2 + 1, group1.shape[1]))
     new2 = np.zeros((lag * 2 + 1, group2.shape[1]))
