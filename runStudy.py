@@ -33,11 +33,11 @@ coords = [[-60, 0, 20],
           ]
 
 #TR = 2.46
-TR = 2
+TR = 2.46
 f_order = 2
 outlier = -1.1
-f_lb = 0.05
-f_ub = 0.1
+f_lb = 0.005
+f_ub = 0.05
 umbral = 0.6
 lagged = 3
 measure = 'PC'
