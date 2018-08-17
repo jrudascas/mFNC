@@ -444,7 +444,6 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=N
     # plot violin plot
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(9, 4))
 
-
     if group3 is not None:
         new3 = np.zeros((lag * 2 + 1, group3.shape[1]))
 
@@ -473,9 +472,11 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=N
                         showextrema=True)
 
     axes.set_title('violin plot')
+    if save is not None:
+        fig.savefig(save, dpi=dpi)
     plt.show()
 
-
+    """
     fig, ax = plt.subplots(figsize = (2000 / dpi, 3000 / dpi))
     plt.subplots_adjust(bottom=0.33)
 
@@ -502,20 +503,16 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, labelFeautures=N
         labelFeautures = np.array(range(new2.shape[1])) + 1
 
     plt.xticks(range(new2.shape[1]), labelFeautures, rotation='vertical', fontsize=7)
-
+    """
     print("MCS vs UWS")
-    utils.toFindStatisticDifference(np.transpose(new), np.transpose(new2), threshold=0.007, measure='manwhitneyu')
+    utils.toFindStatisticDifference(np.transpose(new), np.transpose(new2), threshold=0.01, measure='manwhitneyu')
 
     print("HC vs MCS")
-    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new), threshold=0.007, measure='manwhitneyu')
+    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new), threshold=0.01, measure='manwhitneyu')
 
     print("HC vs UWS")
-    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), threshold=0.007, measure='manwhitneyu')
+    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), threshold=0.01, measure='manwhitneyu')
 
-    if save is not None:
-        fig.savefig(save, dpi=dpi)
-
-    plt.show()
 
 
 def radar_factory(num_vars, frame='circle'):
