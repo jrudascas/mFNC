@@ -52,9 +52,10 @@ np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDmcs.out', laggeds1, delimiter=' ',
 np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDuws.out', laggeds2, delimiter=' ', fmt='%s')
 np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDhc.out', laggeds3, delimiter=' ', fmt='%s')
 
-np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDmcs.out', AWTD1, delimiter=' ', fmt='%s')
-np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDuws.out', AWTD2, delimiter=' ', fmt='%s')
-np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDhc.out', AWTD3, delimiter=' ', fmt='%s')
+print(AWTD1.shape)
+#np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDmcs.out', AWTD1, delimiter=' ', fmt='%s')
+#np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDuws.out', AWTD2, delimiter=' ', fmt='%s')
+#np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDhc.out', AWTD3, delimiter=' ', fmt='%s')
 
 pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, save='ThreadsLagPC.png')
 
