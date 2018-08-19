@@ -14,7 +14,7 @@ from nitime.viz import drawmatrix_channels
 
 import os
 
-TR = 2.46
+TR = 2.4
 measure = 'COV'
 lagged = 4
 
