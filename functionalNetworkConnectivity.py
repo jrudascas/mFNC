@@ -283,7 +283,7 @@ class functionalNetworkConnectivity:
         print("\n" + "Ended - Build Edge Connectivity Matrix based" + " --- " + time.strftime("%H:%M:%S") + "\n")
         return dynamic_connectivity_matrix
 
-    def run2(self, timeCourses, TR, lag, f_lb=0.005, f_ub=0.1, f_order=2, measure='PC'):
+    def run2(self, timeCourses, TR, lag, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC'):
 
         for index in range(timeCourses.shape[1] - 1):
             timeCourses[:, index] = self.butter_bandpass_filter(timeCourses[:, index], f_lb, f_ub, TR, order=f_order)
