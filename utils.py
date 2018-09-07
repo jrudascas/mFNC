@@ -78,7 +78,8 @@ def to_extract_time_series(path_input, path_atlas = None, list_path_altas = None
             print(fmri_data.shape[:-1])
 
             if roi.shape != fmri_data.shape[:-1]:
-                roi = np.append(roi, np.zeros(roi.shape[1:]), axis=0)
+                new_data = np.zeros((1, roi.shape[1], roi.shape[2]))
+                roi = np.append(roi, new_data, axis=0)
                 print(roi.shape)
             time_series.append(np.mean(fmri_data[roi != 0, :], axis=0))
     else:
