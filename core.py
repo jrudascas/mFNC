@@ -145,7 +145,7 @@ class Core:
                     for lag in kCircular:
                         time_serie2 = np.roll(data[:, roi2], lag)
 
-                        connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similaritymeasure(
+                        connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
                             time_serie1, time_serie2, measure)
 
                         td_matrix[roi1, roi2] = np.where(
@@ -157,7 +157,7 @@ class Core:
                             connectivity_matrix[roi1, roi2, :] == util.absmax(
                                 connectivity_matrix[roi1, roi2, :]))[0][0] - lagged)
 
-        return util.absmax(connectivity_matrix,axis=-1), td_matrix, awtd_matrix
+        return util.absmax(connectivity_matrix, axis=-1), td_matrix, awtd_matrix
 
     def to_build_connectivity_matrix_2_groups(self, time_series_g1, time_series_g2, measure='PC'):
 
@@ -288,7 +288,6 @@ class Core:
     def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC'):
 
         for index in range(time_series.shape[1] - 1):
-            print(len(time_series[:, index]))
             time_series[:, index] = self.butter_bandpass_filter(time_series[:, index], f_lb, f_ub, tr, order=f_order)
 
         if new_tr is not None:
@@ -296,11 +295,14 @@ class Core:
             list_time_serie = list(np.transpose(time_series))
             new_time_series = [util.to_interpolate_time_series(time_serie, tr, new_tr) for time_serie in
                                list_time_serie]
-            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(np.transpose(np.array(new_time_series)),
-                                                                              lagged=lag, measure=measure)
+            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(
+                np.transpose(np.array(new_time_series)),
+                lagged=lag, measure=measure)
             return connectivity_matrix, np.array(td_matrix * new_tr), np.array(awtd_matrix * new_tr)
         else:
-            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(time_series, lagged=lag, measure=measure)
+            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(time_series,
+                                                                                                   lagged=lag,
+                                                                                                   measure=measure)
             return connectivity_matrix, np.array(td_matrix * new_tr), np.array(awtd_matrix * new_tr)
 
     def run_2_groups(self, time_series_g1, time_series_g2, TR, f_lb=0.005, f_ub=0.05, f_order=2):
