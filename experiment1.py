@@ -6,7 +6,7 @@ plt.ioff()
 
 import numpy as np
 import nibabel as nib
-import functionalNetworkConnectivity as f
+import core as f
 from nilearn import plotting
 import scipy.stats as sc
 import scipy.ndimage.morphology as mp
@@ -146,7 +146,7 @@ for group in sorted(os.listdir(path)):
 
                 FNC = f.functionalNetworkConnectivity()
 
-                timeDelayMatrixs, amplitudeWeightedTimeDelayMatrixs= FNC.run2(np.transpose(np.array(timeCourse)), TR=TR, lag=lagged, measure=measure)
+                timeDelayMatrixs, amplitudeWeightedTimeDelayMatrixs= FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, measure=measure)
 
                 upperTD = np.copy(timeDelayMatrixs)
                 lowerTD = np.transpose(np.copy(timeDelayMatrixs))

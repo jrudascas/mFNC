@@ -20,12 +20,12 @@ from dipy.align.reslice import reslice
 import  utils as t
 import os.path
 
-generalPath = '/home/runlab/data/COMA/'
+generalPath = '/media/jrudascas/HDRUDAS/alejandra/'
 
 pathMask = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain_mask.nii.gz'
 dwiPath = 'data/functional/fmri.nii.gz'
-t1Path = 'data/structural/fwmmprage.nii.gz'
-maskPath = 'data/structural/fwc1mprage.nii.gz'
+t1Path = 'data/structural/fwmfT1.nii.gz'
+maskPath = 'data/structural/fwc1fT1.nii.gz'
 preResliced = 'data/_T1resliced.nii.gz'
 preBET = 'data/_bet.nii.gz'
 preBET_mask = 'data/_bet_mask.nii.gz'
@@ -57,21 +57,21 @@ for group in sorted(os.listdir(generalPath)):
                 print('-----------------------------------------')
 
                 print("Reslicing")
-                if os.path.exists(pathT1Resliced):
+                if not os.path.exists(pathT1Resliced):
                     T1Resliced, affine2 = reslice(T1Data, T1Affine, T1img.header.get_zooms()[:3], (2., 2., 2.))
                     mask_img = nib.Nifti1Image(T1Resliced.astype(np.float32), affine2)
                     nib.save(mask_img, pathT1Resliced)
 
                 print("BET")
-                if os.path.exists(pathBET):
+                if not os.path.exists(pathBET):
                     BET(pathT1Resliced, pathBET, '-m -f .4')
 
                 print("FAST")
-                if os.path.exists(pathDesignMatrix + '_bet_pve_0.nii.gz'):
+                if not os.path.exists(pathDesignMatrix + '_bet_pve_0.nii.gz'):
                     FAST(pathBET, parameters='-n 3 -t 1')
 
                 print('Building Matrix Design')
-                if os.path.exists(pathDesignMatrix + 'designMatrix.out'):
+                if not os.path.exists(pathDesignMatrix + 'designMatrix.out'):
                     maskEV = [pathDesignMatrix + '_bet_pve_0.nii.gz',
                               pathDesignMatrix + '_bet_pve_2.nii.gz',
                               pathBET_maks]
@@ -79,5 +79,5 @@ for group in sorted(os.listdir(generalPath)):
                     dm = t.toBuildMatrixDesign(pathfMRI, pathOut=pathDesignMatrix, maskEVs=maskEV, maskThreadhold=0.8)
 
                 print('GLM')
-                if os.path.exists(pathDesignMatrix + 'functional/' + 'fmriGLM.nii.gz'):
+                if not os.path.exists(pathDesignMatrix + 'functional/' + 'fmriGLM.nii.gz'):
                     GLM(pathfMRI, dm, pathOut=pathDesignMatrix + 'ppp.txt', pathRes=pathDesignMatrix + 'functional/' + 'fmriGLM.nii.gz', pathMask=pathMask)

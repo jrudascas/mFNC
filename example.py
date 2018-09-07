@@ -1,4 +1,4 @@
-import functionalNetworkConnectivity as f
+import core as f
 import numpy as np
 from nilearn import plotting as plott
 

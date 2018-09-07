@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 plt.ioff()
 
-import functionalNetworkConnectivity as f
+import core as f
 import utils
 import sys
 import plotGallery as pg

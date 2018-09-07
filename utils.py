@@ -1,6 +1,8 @@
 import numpy as np
 from scipy import stats
 from scipy import interpolate
+import nibabel as nib
+from exceptions import IllegalArgumentError
 
 def covariance(x, y):
     return np.dot(x,y)/x.shape[-1]
@@ -17,7 +19,7 @@ def mse(matrixA, matrixB):
     return err
 
 
-def toInterpolateTimeSerie(timeSerie, oldTR, newTR):
+def to_interpolate_time_series(timeSerie, oldTR, newTR):
     x = np.round(np.linspace(0, len(timeSerie)*oldTR, len(timeSerie)))
     xToInterpolate = np.round(np.linspace(0, len(timeSerie)*oldTR, (len(timeSerie)+1)*oldTR/newTR))
 
@@ -40,6 +42,44 @@ def buildFeaturesVector(data):
                 features[:, cont] = data[:, i, j]
                 cont += 1
     return features
+
+def to_compute_time_series_similarity(time_serie_1, time_serie_2, measure):
+
+    if measure not in ['PC', 'COV', 'DC']:
+        raise AttributeError('Not is posible to estimate the measure ' + measure)
+
+    import scipy.stats as sc
+    import distcorr as dc
+
+    if measure == 'PC':
+        return sc.pearsonr(time_serie_1, time_serie_2)[0]
+    elif measure == 'COV':
+        return covariance(time_serie_1, time_serie_2)
+    elif measure == 'DC':
+        return dc.distcorr(time_serie_1, time_serie_2)
+
+
+def to_extract_time_series(path_input, path_atlas = None, list_path_altas = None):
+    fmri_data = nib.load(path_input).get_data()
+
+    time_series = []
+
+    if path_atlas is not None:
+        atlas_data = nib.load(path_atlas).get_data()
+        index_roi = np.unique(atlas_data)
+        for index in index_roi:
+            if index != 0:
+                time_series.append(np.mean(fmri_data[atlas_data == index, :], axis=0))
+    elif list_path_altas is not None:
+        for path in list_path_altas:
+            time_series.append(np.mean(fmri_data[nib.load(path).get_data() != 0, :], axis=0))
+    else:
+        raise IllegalArgumentError('Both arguments, path_atlas and list_path_atlas, can no be None')
+
+    return np.transpose(np.array(time_series))
+
+def to_project_interval(x, e1, e2, s1, s2):
+    return ((s1 - s2)/(e1 - e2))*(x-e1) + s1
 
 def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05):
 

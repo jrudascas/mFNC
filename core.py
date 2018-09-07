@@ -9,9 +9,10 @@ from scipy import stats
 import time
 import distcorr as dc
 
+
 # Is necessary to install Tkinter -->sudo apt-get install python3-tk
 
-class functionalNetworkConnectivity:
+class Core:
     def __init__(self):
         pass
 
@@ -69,7 +70,7 @@ class functionalNetworkConnectivity:
         listLaggeds = []
 
         for roi1 in indexROI:
-            print(str(float(roi1/numberROI)*10) + '%')
+            print(str(float(roi1 / numberROI) * 10) + '%')
             for roi2 in indexROI:
                 for slide in windowSlide:
                     indexWindows = np.array(rango3) + slide
@@ -115,10 +116,10 @@ class functionalNetworkConnectivity:
 
         return dynamicLaggedConnectivityMatrix, listLaggeds, timeDelayMatrix, amplitudeWeightedTimeDelayMatrix
 
-    def buildLaggedConnectivityMatrix(self, data, lagged=0, measure='PC'):
+    def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC'):
 
         print('Building the correlation matrix and lagged map')
-        print(data.shape)
+
         timePoints, numberROI = data.shape
 
         if lagged == 0 or lagged is None:
@@ -131,42 +132,48 @@ class functionalNetworkConnectivity:
 
         indexROI = range(numberROI)
 
-        dynamicLaggedConnectivityMatrix = np.zeros((numberROI, numberROI, 2 * temp2 + 1))
-        timeDelayMatrix = np.zeros((numberROI, numberROI))
-        amplitudeWeightedTimeDelayMatrix = np.zeros((numberROI, numberROI))
+        connectivity_matrix = np.zeros((numberROI, numberROI, 2 * temp2 + 1))
+        td_matrix = np.zeros((numberROI, numberROI))
+        awtd_matrix = np.zeros((numberROI, numberROI))
 
         total = len(indexROI)
         for roi1 in indexROI:
             print(str(roi1) + '/' + str(total))
-
             for roi2 in indexROI:
-                    timeSerie1 = data[:, roi1]
+                time_serie1 = data[:, roi1]
+                if roi2 > roi1:
+                    for lag in kCircular:
+                        time_serie2 = np.roll(data[:, roi2], lag)
 
-                    if roi2 > roi1:
-                        for lag in kCircular:
-                            timeSerie2 = np.roll(data[:, roi2], lag)
+                        connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similaritymeasure(
+                            time_serie1, time_serie2, measure)
 
-                            if measure == 'PC':
-                                dynamicLaggedConnectivityMatrix[roi1, roi2, lag + lagged] = \
-                                    sc.pearsonr(timeSerie1, timeSerie2)[0]
-                            elif measure == 'COV':
-                                # dynamicLaggedConnectivityMatrix[roi1, roi2, slide, lag + lagged] = abs(np.cov(timeSerie1, timeSerie2, bias=True)[0][1])
-                                dynamicLaggedConnectivityMatrix[roi1, roi2, lag + lagged] = util.covariance(
-                                    timeSerie1, timeSerie2)
-                            elif measure == 'DC':
-                                dynamicLaggedConnectivityMatrix[roi1, roi2, lag + lagged] = dc.distcorr(timeSerie1, timeSerie2)
+                        td_matrix[roi1, roi2] = np.where(
+                            connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
 
-                        timeDelayMatrix[roi1, roi2] = np.where(
-                                dynamicLaggedConnectivityMatrix[roi1, roi2, :] == util.absmax(
-                                    dynamicLaggedConnectivityMatrix[roi1, roi2, :]))[0][0] - lagged
+                        awtd_matrix[roi1, roi2] = util.absmax(
+                            connectivity_matrix[roi1, roi2, :]) * (np.where(
+                            connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged)
 
-                        #amplitudeWeightedTimeDelayMatrix[roi1, roi2] = util.absmax(
-                        #            dynamicLaggedConnectivityMatrix[roi1, roi2, :]) * (np.where(
-                        #            dynamicLaggedConnectivityMatrix[roi1, roi2, :] == util.absmax(
-                        #                dynamicLaggedConnectivityMatrix[roi1, roi2, :]))[0][0] - lagged)
+        return util.absmax(connectivity_matrix,axis=-1), td_matrix, awtd_matrix
 
-        return timeDelayMatrix, amplitudeWeightedTimeDelayMatrix
-        #return timeDelayMatrix
+    def to_build_connectivity_matrix_2_groups(self, time_series_g1, time_series_g2, measure='PC'):
+
+        connectivity_matrix = np.zeros((time_series_g1.shape[-1], time_series_g2.shape[-1]))
+
+        index_roi_g1 = range(time_series_g1.shape[-1])
+        index_roi_g2 = range(time_series_g2.shape[-1])
+
+        for roi_g1 in index_roi_g1:
+            aux_time_serie_g1 = time_series_g1[:, roi_g1]
+            for roi_g2 in index_roi_g2:
+                connectivity_matrix[roi_g1 - 1, roi_g2 - 1] = util.to_compute_time_series_similarity(aux_time_serie_g1,
+                                                                                                     time_series_g2[:,
+                                                                                                     roi_g2], measure)
+
+        return connectivity_matrix
 
     def build_dynamic_connectivity_matrix(self, data, windowsSize=200, measure='PC'):
         shapeAxis2, shapeAxis = data.shape
@@ -182,7 +189,6 @@ class functionalNetworkConnectivity:
         # return dynamic_connectivity_matrix
 
         return dynamic_connectivity_matrix, np.max(dynamic_connectivity_matrix, axis=2)
-
 
     def reduce_node_to_node_connectivity(self, data, outlier=None, mandatory=True):
         recude_data = np.zeros((data.shape[1], data.shape[2]))
@@ -202,7 +208,6 @@ class functionalNetworkConnectivity:
 
         return recude_data
 
-
     def reduce_neuronal_gof(self, data, neuronal, gof):
         recude_data = np.copy(data)
         for index1 in range(data.shape[1]):
@@ -216,7 +221,6 @@ class functionalNetworkConnectivity:
 
         return recude_data
 
-
     def estimate_variance_group(self, data):
         var = np.zeros((data.shape[-1], data.shape[-1]))
         for index1 in range(data.shape[1]):
@@ -224,7 +228,6 @@ class functionalNetworkConnectivity:
                 if index2 > index1:
                     var[index1, index2] = np.var(data[:, index1, index2])
         return var
-
 
     def build_edge_connectivity_matrix(self, data):
         dimension = int((data.shape[1] * data.shape[1] - data.shape[1]) / 2)
@@ -252,7 +255,6 @@ class functionalNetworkConnectivity:
                                 cont2 += 1
                     cont1 += 1
         return connectivity_matrix
-
 
     # @jit
     def dynamic_build_edge_connectivity_matrix(self, data):
@@ -283,37 +285,39 @@ class functionalNetworkConnectivity:
         print("\n" + "Ended - Build Edge Connectivity Matrix based" + " --- " + time.strftime("%H:%M:%S") + "\n")
         return dynamic_connectivity_matrix
 
-    def run2(self, timeCourses, TR, lag, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC'):
+    def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC'):
 
-        for index in range(timeCourses.shape[1] - 1):
-            timeCourses[:, index] = self.butter_bandpass_filter(timeCourses[:, index], f_lb, f_ub, TR, order=f_order)
+        for index in range(time_series.shape[1] - 1):
+            time_series[:, index] = self.butter_bandpass_filter(time_series[:, index], f_lb, f_ub, tr, order=f_order)
+
+        if new_tr is not None:
+            # Interpolation in the time (to maximazate time scale)
+            list_time_serie = list(np.transpose(time_series))
+            new_time_series = [util.to_interpolate_time_series(time_serie, tr, new_tr) for time_serie in
+                               list_time_serie]
+            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(np.transpose(np.array(new_time_series)),
+                                                                              lagged=lag, measure=measure)
+            return connectivity_matrix, np.array(td_matrix * new_tr), np.array(awtd_matrix * new_tr)
+        else:
+            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(time_series, lagged=lag, measure=measure)
+            return connectivity_matrix, np.array(td_matrix * new_tr), np.array(awtd_matrix * new_tr)
+
+    def run_2_groups(self, time_series_g1, time_series_g2, TR, f_lb=0.005, f_ub=0.05, f_order=2):
+
+        for index in range(time_series_g1.shape[1] - 1):
+            time_series_g1[:, index] = self.butter_bandpass_filter(time_series_g1[:, index], f_lb, f_ub, TR,
+                                                                   order=f_order)
+
+        for index in range(time_series_g2.shape[1] - 1):
+            time_series_g2[:, index] = self.butter_bandpass_filter(time_series_g2[:, index], f_lb, f_ub, TR,
+                                                                   order=f_order)
 
         # Interpolation in the time (to maximazate time scale)
-        newTR = 0.5
-        listTimeSerie = list(np.transpose(timeCourses))
-        newTimeSeries = [util.toInterpolateTimeSerie(timeSerie, TR, newTR) for timeSerie in listTimeSerie]
+        # newTR = 0.5
+        # listTimeSerie = list(np.transpose(time_series_g1))
+        # newTimeSeries = [util.toInterpolateTimeSerie(timeSerie, TR, newTR) for timeSerie in listTimeSerie]
 
-        # newTimeSeries = np.transpose(timeCourses)
-        """
-        original = timeCourses[:,0]
-        interpolated = np.array(newTimeSeries)[0]
-    
-        x = np.round(np.linspace(0, len(original)*TR, len(original)))
-        y = original
-        plt.plot(x, y, label='Known points')
-        plt.show()
-    
-        xn = np.round(np.linspace(0, len(original)*TR, len(interpolated)))
-        yn = interpolated
-    
-        plt.plot(xn, yn, label='Interpolated values')
-    
-        plt.show()
-        """
-
-        timeDelayMatrix, amplitudeWeightedTimeDelayMatrix = self.buildLaggedConnectivityMatrix(np.transpose(np.array(newTimeSeries)), lagged=lag, measure=measure)
-
-        return np.array(timeDelayMatrix * newTR), np.array(amplitudeWeightedTimeDelayMatrix * newTR)
+        return self.to_build_connectivity_matrix_2_groups(time_series_g1, time_series_g2)
 
     def draw_correlation_matrix(self, correlation_matrix, title, namesTemplate=None, vmin=None, vmax=None,
                                 returnPlot=False):
@@ -330,7 +334,8 @@ class functionalNetworkConnectivity:
         else:
             return plt
 
-    def run(self, path, TR, wSize, lag, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC', reduce_neuronal=True, reductionMeasure='max', onlyRSN=True):
+    def run(self, path, TR, wSize, lag, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC', reduce_neuronal=True,
+            reductionMeasure='max', onlyRSN=True):
         print("\nFNC run started\n")
         correlation_matrix3D = []
         laggeds = []
@@ -342,7 +347,8 @@ class functionalNetworkConnectivity:
             infile = open(os.path.join(os.path.join(path, dir), 'metadata.txt'), 'r')
 
             functionalImg = nib.load(
-                os.path.join(os.path.join(os.path.join(path, dir), 'components'), 'icaAna_sub01_timecourses_ica_s1_.img'))
+                os.path.join(os.path.join(os.path.join(path, dir), 'components'),
+                             'icaAna_sub01_timecourses_ica_s1_.img'))
             functionalData = functionalImg.get_data()
 
             if onlyRSN is True:
@@ -360,12 +366,13 @@ class functionalNetworkConnectivity:
                 timeCourses = functionalData
 
             for index in range(timeCourses.shape[1] - 1):
-                timeCourses[:, index] = self.butter_bandpass_filter(timeCourses[:, index], f_lb, f_ub, TR, order=f_order)
+                timeCourses[:, index] = self.butter_bandpass_filter(timeCourses[:, index], f_lb, f_ub, TR,
+                                                                    order=f_order)
 
             # Interpolation in the time (to maximazate time scale)
             newTR = 1
             listTimeSerie = list(np.transpose(timeCourses))
-            newTimeSeries = [util.toInterpolateTimeSerie(timeSerie, TR, newTR) for timeSerie in listTimeSerie]
+            newTimeSeries = [util.to_interpolate_time_series(timeSerie, TR, newTR) for timeSerie in listTimeSerie]
 
             # newTimeSeries = np.transpose(timeCourses)
             """
@@ -391,14 +398,16 @@ class functionalNetworkConnectivity:
             if (reduce_neuronal):
                 if reductionMeasure == 'max':
                     correlation_matrix3D.append(
-                        self.reduce_neuronal_gof(util.absmax(util.absmax(correlation_matrix, axis=-1), axis=-1), neuronal,
+                        self.reduce_neuronal_gof(util.absmax(util.absmax(correlation_matrix, axis=-1), axis=-1),
+                                                 neuronal,
                                                  gof))
                 elif reductionMeasure == 'mean':
                     correlation_matrix3D.append(
                         self.reduce_neuronal_gof(np.mean(np.mean(correlation_matrix, axis=-1), axis=-1), neuronal, gof))
                 elif reductionMeasure == 'median':
                     correlation_matrix3D.append(
-                        self.reduce_neuronal_gof(np.median(np.median(correlation_matrix, axis=-1), axis=-1), neuronal, gof))
+                        self.reduce_neuronal_gof(np.median(np.median(correlation_matrix, axis=-1), axis=-1), neuronal,
+                                                 gof))
             else:
                 if reductionMeasure == 'max':
                     correlation_matrix3D.append(util.absmax(util.absmax(correlation_matrix, axis=-1), axis=-1))
@@ -414,7 +423,6 @@ class functionalNetworkConnectivity:
         return np.array(correlation_matrix3D), np.array(laggeds), np.array(timeDelayMatrixs), np.array(
             amplitudeWeightedTimeDelayMatrixs)
 
-
     def dynamic(self, path, TR, f_lb, f_ub, windowsSize, f_order=2, measure='PC', RSN=True):
         print("dynamic FNC started\n")
         cont = 0
@@ -428,7 +436,8 @@ class functionalNetworkConnectivity:
             infile = open(os.path.join(os.path.join(path, dir), 'metadata.txt'), 'r')
 
             functional_file = nib.load(
-                os.path.join(os.path.join(os.path.join(path, dir), 'components'), 'icaAna_sub01_timecourses_ica_s1_.img'))
+                os.path.join(os.path.join(os.path.join(path, dir), 'components'),
+                             'icaAna_sub01_timecourses_ica_s1_.img'))
             functional_img = functional_file.get_data()
 
             if RSN is True:
@@ -473,7 +482,6 @@ class functionalNetworkConnectivity:
 
         return matrix
         # print('Ending')
-
 
     def dynamic_atlas(self, path, atlas, TR, f_lb, f_ub, windowsSize, f_order=5, measure='PC'):
         print("Dynamic Atlas FNC started\n")
@@ -557,7 +565,6 @@ class functionalNetworkConnectivity:
 
         print("Dynamic Atlas FNC started\n")
         return matrix
-
 
     # @jit
     # def usingROI(self, atlas, fmri):
