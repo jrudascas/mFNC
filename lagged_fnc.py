@@ -50,6 +50,6 @@ for group in sorted(os.listdir(path_general)):
 
         fig, ax = plt.subplots()
         fig = plotting.plot_matrix(np.mean(np.array(list_connectivity_matrixs), axis=0), labels=namesNodes_node_to_node, vmax=1, vmin=-1, figure=fig)
-        ig.savefig(path_group + + group + '_mean.png', dpi=600)
+        fig.savefig(path_group + group + '_mean.png', dpi=600)
 
 
