@@ -49,7 +49,7 @@ for group in sorted(os.listdir(path_general)):
                 list_connectivity_matrixs.append(connectivity_matrix)
 
         fig, ax = plt.subplots()
-        fig = plotting.plot_matrix(np.mean(np.array(list_connectivity_matrixs), axis=0), labels=namesNodes_node_to_node, vmax=1, vmin=-1, figure=fig)
+        plotting.plot_matrix(np.mean(np.array(list_connectivity_matrixs), axis=0), labels=namesNodes_node_to_node, vmax=1, vmin=-1, figure=fig)
         fig.savefig(path_group + group + '_mean.png', dpi=600)
 
 
