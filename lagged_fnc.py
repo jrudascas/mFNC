@@ -16,7 +16,7 @@ lag = 4
 namesNodes_node_to_node = ['Auditory', 'Cerebellum', 'DMN', 'ECL', 'ECR', 'Salience', 'SensoriMotor', 'Vis_Lateral',
                            'Vis_Medial', 'Vis_Occipital']
 
-list_path_atlas = ['/home/runlab/data/Atlas/RSN/frAuditory_corr.nii.gz'
+list_path_atlas = ['/home/runlab/data/Atlas/RSN/frAuditory_corr.nii.gz',
                    '/home/runlab/data/Atlas/RSN/frCerebellum_corr.nii.gz',
                    '/home/runlab/data/Atlas/RSN/frDMN_corr.nii.gz',
                    '/home/runlab/data/Atlas/RSN/frECN_L_corr.nii.gz',
