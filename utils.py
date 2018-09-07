@@ -72,7 +72,15 @@ def to_extract_time_series(path_input, path_atlas = None, list_path_altas = None
                 time_series.append(np.mean(fmri_data[atlas_data == index, :], axis=0))
     elif list_path_altas is not None:
         for path in list_path_altas:
-            time_series.append(np.mean(fmri_data[nib.load(path).get_data() != 0, :], axis=0))
+            roi = nib.load(path).get_data()
+            print(roi.shape)
+            print(fmri_data.shape)
+            print(fmri_data.shape[:-1])
+
+            if roi.shape != fmri_data.shape[:-1]:
+                roi = np.append(roi, np.zeros(roi.shape[1:]), axis=0)
+                print(roi.shape)
+            time_series.append(np.mean(fmri_data[, :], axis=0))
     else:
         raise IllegalArgumentError('Both arguments, path_atlas and list_path_atlas, can no be None')
 
