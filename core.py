@@ -118,8 +118,6 @@ class Core:
 
     def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC'):
 
-        print('Building the correlation matrix and lagged map')
-
         timePoints, numberROI = data.shape
 
         if lagged == 0 or lagged is None:
@@ -138,7 +136,6 @@ class Core:
 
         total = len(indexROI)
         for roi1 in indexROI:
-            print(str(roi1) + '/' + str(total))
             for roi2 in indexROI:
                 time_serie1 = data[:, roi1]
                 if roi2 > roi1:

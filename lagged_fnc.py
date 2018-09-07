@@ -39,11 +39,11 @@ for group in sorted(os.listdir(path_general)):
         for dir in sorted(os.listdir(path_group)):
             path_subject = os.path.join(os.path.join(path_general, group), dir)
             if os.path.isdir(path_subject):
+                print(dir)
                 path_full_file = os.path.join(path_subject, name_file)
 
                 time_series_rsn = u.to_extract_time_series(path_full_file, list_path_altas=list_path_atlas)
 
-                print(time_series_rsn.shape)
                 connectivity_matrix, td_matrix, awtd_matrix = core.run2(time_series_rsn, tr=TR, lag=lag)
 
                 list_connectivity_matrixs.append(connectivity_matrix)
