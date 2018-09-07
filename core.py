@@ -288,6 +288,7 @@ class Core:
     def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC'):
 
         for index in range(time_series.shape[1] - 1):
+            print(len(time_series[:, index]))
             time_series[:, index] = self.butter_bandpass_filter(time_series[:, index], f_lb, f_ub, tr, order=f_order)
 
         if new_tr is not None:
