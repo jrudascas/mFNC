@@ -81,7 +81,7 @@ def to_extract_time_series(path_input, path_general, group, dir, path_atlas = No
                 roi = np.append(roi, new_data, axis=0)
 
             print(fmri_data[roi != 0, :].shape)
-            np.savetxt(path_general + group + '_' + dir + '_time_series_' + cont + '.txt', np.array(fmri_data[roi != 0, :]), delimiter=' ', fmt='%s')
+            np.savetxt(path_general + group + '_' + dir + '_time_series_' + str(cont) + '.txt', np.array(fmri_data[roi != 0, :]), delimiter=' ', fmt='%s')
 
             time_series.append(np.mean(fmri_data[roi != 0, :], axis=0))
             cont = cont + 1
