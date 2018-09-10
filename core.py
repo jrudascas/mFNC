@@ -300,7 +300,7 @@ class Core:
             connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(time_series,
                                                                                                    lagged=lag,
                                                                                                    measure=measure)
-            return connectivity_matrix, np.array(td_matrix * tr), np.array(awtd_matrix * tr)
+            return connectivity_matrix, td_matrix * tr, awtd_matrix * tr
 
     def run_2_groups(self, time_series_g1, time_series_g2, TR, f_lb=0.005, f_ub=0.05, f_order=2):
 

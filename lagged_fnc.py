@@ -12,7 +12,7 @@ import numpy as np
 import plotGallery as pg
 
 TR = 2.46
-lag = 4
+lag = 1
 
 namesNodes_node_to_node = ['Auditory', 'Cerebellum', 'DMN', 'ECL', 'ECR', 'Salience', 'SensoriMotor', 'Vis_Lateral',
                            'Vis_Medial', 'Vis_Occipital']
@@ -62,11 +62,13 @@ for group in sorted(os.listdir(path_general)):
         list_connectivity_matrixs_group.append(list_connectivity_matrixs)
         list_td_matrixs_group.append(list_td_matrixs)
 
-td_hc = np.array(list_td_matrixs_group[0])[:,np.triu_indices(10)]
+print(np.array(list_td_matrixs_group).shape)
+
+td_hc = np.array(list_td_matrixs_group[0])[:,np.triu_indices(10, k=1)]
 print(td_hc.shape)
-td_mcs = np.array(list_td_matrixs_group[1])[:,np.triu_indices(10)]
+td_mcs = np.array(list_td_matrixs_group[1])[:,np.triu_indices(10, k=1)]
 print(td_mcs.shape)
-td_uws = np.array(list_td_matrixs_group[2])[:,np.triu_indices(10)]
+td_uws = np.array(list_td_matrixs_group[2])[:,np.triu_indices(10, k=1)]
 print(td_uws.shape)
 
 pg.fivethirtyeightPlot(td_mcs, td_uws, group3=td_hc, lag=lag, save='ThreadsLagPC.png')
