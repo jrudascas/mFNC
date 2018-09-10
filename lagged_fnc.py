@@ -65,7 +65,7 @@ for group in sorted(os.listdir(path_general)):
 print(np.array(list_td_matrixs_group[0]).shape)
 print(np.triu_indices(10, k=1))
 
-td_hc = np.array(list_td_matrixs_group[0])[:,np.triu_indices(10, k=1)]
+td_hc = np.array(list_td_matrixs_group[0])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
 print(td_hc.shape)
 td_mcs = np.array(list_td_matrixs_group[1])[:,np.triu_indices(10, k=1)]
 print(td_mcs.shape)
