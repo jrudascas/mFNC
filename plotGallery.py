@@ -472,38 +472,11 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, save = None):
                         showextrema=True)
 
     axes.set_title('violin plot')
+
     if save is not None:
         fig.savefig(save, dpi=dpi)
     plt.show()
 
-    """
-    fig, ax = plt.subplots(figsize = (2000 / dpi, 3000 / dpi))
-    plt.subplots_adjust(bottom=0.33)
-
-    ax.grid(b=False)
-    #ax.axis('off')
-
-    ax.spines['top'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-
-    scale = 2.5
-    for index in range(new.shape[0]):
-        ax.plot(scale*new[index, :] + (index*1.5) + index, color='red', linewidth=2.0)
-        ax.plot(scale*new2[index, :] + (index*1.5) + index + 1.2, color='blue', linewidth=2.0)
-
-        ax.plot(np.linspace(np.mean(scale*new[index, :]) + (index*1.5) + index, np.mean(scale*new[index, :]) + (index*1.5) + index, new.shape[1]), alpha=0.8, color='black', linewidth=1.0, linestyle= '--')
-        ax.plot(np.linspace(np.mean(scale*new2[index, :]) + (index*1.5) + index + 1.2, np.mean(scale*new2[index, :]) + (index*1.5) + index + 1.2, new2.shape[1]), alpha=0.8, color='black', linewidth=1.0, linestyle= '--')
-
-        plt.text(46, np.mean(scale*new[index, :]) + (index*1.5) + index - 0.1, str(round(100*np.mean(new[index, :]))) + '%', fontsize=10)
-        plt.text(46, np.mean(scale*new2[index, :]) + (index*1.5) + index + 1.2 - 0.1, str(round(100*np.mean(new2[index, :]))) + '%', fontsize=10)
-
-
-    if labelFeautures is None:
-        labelFeautures = np.array(range(new2.shape[1])) + 1
-
-    plt.xticks(range(new2.shape[1]), labelFeautures, rotation='vertical', fontsize=7)
-    """
     print("MCS vs UWS")
     utils.toFindStatisticDifference(np.transpose(new), np.transpose(new2), threshold=0.01, measure='manwhitneyu')
 

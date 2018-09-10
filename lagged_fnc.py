@@ -9,6 +9,7 @@ import core as c
 from nilearn import plotting
 import os
 import numpy as np
+import plotGallery as pg
 
 TR = 2.46
 lag = 4
@@ -32,24 +33,42 @@ core = c.Core()
 path_general = '/home/runlab/data/COMA/'
 name_file = 'data/functional/fmriGLM.nii.gz'
 
+list_connectivity_matrixs_group = []
+list_td_matrixs_group = []
+
 for group in sorted(os.listdir(path_general)):
     path_group = os.path.join(path_general, group)
     if os.path.isdir(path_group):
         list_connectivity_matrixs = []
+        list_td_matrixs = []
         for dir in sorted(os.listdir(path_group)):
             path_subject = os.path.join(os.path.join(path_general, group), dir)
             if os.path.isdir(path_subject):
                 print(dir)
                 path_full_file = os.path.join(path_subject, name_file)
 
-                time_series_rsn = u.to_extract_time_series(path_full_file, path_general, group, dir, list_path_altas=list_path_atlas)
+                #time_series_rsn = u.to_extract_time_series(path_full_file, path_general, group, dir, list_path_altas=list_path_atlas)
+                time_series_rsn = u.to_extract_time_series(path_full_file, list_path_altas=list_path_atlas)
 
                 connectivity_matrix, td_matrix, awtd_matrix = core.run2(time_series_rsn, tr=TR, lag=lag)
 
                 list_connectivity_matrixs.append(connectivity_matrix)
+                list_td_matrixs.append(td_matrix)
 
         fig, ax = plt.subplots()
         plotting.plot_matrix(np.mean(np.array(list_connectivity_matrixs), axis=0), labels=namesNodes_node_to_node, vmax=1, vmin=-1, figure=fig)
         fig.savefig(path_group + group + '_mean.png', dpi=600)
+
+        list_connectivity_matrixs_group.append(list_connectivity_matrixs)
+        list_td_matrixs_group.append(list_td_matrixs)
+
+td_hc = np.array(list_td_matrixs_group[0])[:,np.triu_indices(10)]
+print(td_hc.shape)
+td_mcs = np.array(list_td_matrixs_group[1])[:,np.triu_indices(10)]
+print(td_mcs.shape)
+td_uws = np.array(list_td_matrixs_group[2])[:,np.triu_indices(10)]
+print(td_uws.shape)
+
+pg.fivethirtyeightPlot(td_mcs, td_uws, group3=td_hc, lag=lag, save='ThreadsLagPC.png')
 
 

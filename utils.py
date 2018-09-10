@@ -59,7 +59,7 @@ def to_compute_time_series_similarity(time_serie_1, time_serie_2, measure):
         return dc.distcorr(time_serie_1, time_serie_2)
 
 
-def to_extract_time_series(path_input, path_general, group, dir, path_atlas = None, list_path_altas = None):
+def to_extract_time_series(path_input, path_atlas = None, list_path_altas = None):
     fmri_data = nib.load(path_input).get_data()
 
     time_series = []
@@ -77,16 +77,15 @@ def to_extract_time_series(path_input, path_general, group, dir, path_atlas = No
 
             if roi.shape != fmri_data.shape[:-1]:
                 new_data = np.zeros((1, roi.shape[1], roi.shape[2]))
-
                 roi = np.append(roi, new_data, axis=0)
 
-            print(fmri_data[roi != 0, :].shape)
-            np.savetxt(path_general + group + '_' + dir + '_time_series_' + str(cont) + '.txt', np.array(fmri_data[roi != 0, :]), delimiter=' ', fmt='%s')
+            #print(fmri_data[roi != 0, :].shape)
+            #np.savetxt(path_general + group + '_' + dir + '_time_series_' + str(cont) + '.txt', np.array(fmri_data[roi != 0, :]), delimiter=' ', fmt='%s')
 
             time_series.append(np.mean(fmri_data[roi != 0, :], axis=0))
             cont = cont + 1
     else:
-        raise IllegalArgumentError('Both arguments, path_atlas and list_path_atlas, can no be None')
+        raise IllegalArgumentError('Both arguments, path_atlas and list_path_atlas, can not be None')
 
     return np.transpose(np.array(time_series))
 
