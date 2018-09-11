@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 plt.ioff()
 
-import core as f
+import core as core
 import utils
 import sys
 import plotGallery as pg
@@ -36,21 +36,21 @@ TR = 2.46
 outlier = -1.1
 umbral = 0.6
 lagged = 3
-windowsSize = 120
+windowsSize = None
 
-FNC = f.functionalNetworkConnectivity()
-path = '/home/runlab/data/COMA_ICA/MCS/'
-group1, laggeds1, TD1, AWTD1 = FNC.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
+core = core.Core()
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/MCS/'
+group1, laggeds1, TD1, AWTD1 = core.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
 
-path = '/home/runlab/data/COMA_ICA/UWS/'
-group2, laggeds2, TD2, AWTD2 = FNC.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/UWS/'
+group2, laggeds2, TD2, AWTD2 = core.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
 
-path = '/home/runlab/data/COMA_ICA/Control/'
-group3, laggeds3, TD3, AWTD3 = FNC.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
+path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Control/'
+group3, laggeds3, TD3, AWTD3 = core.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
 
-np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDmcs.out', laggeds1, delimiter=' ', fmt='%s')
-np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDuws.out', laggeds2, delimiter=' ', fmt='%s')
-np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDhc.out', laggeds3, delimiter=' ', fmt='%s')
+#np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDmcs.out', laggeds1, delimiter=' ', fmt='%s')
+#np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDuws.out', laggeds2, delimiter=' ', fmt='%s')
+#np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDhc.out', laggeds3, delimiter=' ', fmt='%s')
 
 print(AWTD1.shape)
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDmcs.out', AWTD1, delimiter=' ', fmt='%s')

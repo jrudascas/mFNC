@@ -12,10 +12,12 @@ import numpy as np
 import plotGallery as pg
 
 TR = 2.46
-lag = 1
+lag = 3
 
 namesNodes_node_to_node = ['Auditory', 'Cerebellum', 'DMN', 'ECL', 'ECR', 'Salience', 'SensoriMotor', 'Vis_Lateral',
                            'Vis_Medial', 'Vis_Occipital']
+
+path_general = '/home/runlab/data/COMA/'
 
 list_path_atlas = ['/home/runlab/data/Atlas/RSN/frAuditory_corr.nii.gz',
                    '/home/runlab/data/Atlas/RSN/frCerebellum_corr.nii.gz',
@@ -30,7 +32,6 @@ list_path_atlas = ['/home/runlab/data/Atlas/RSN/frAuditory_corr.nii.gz',
 
 core = c.Core()
 
-path_general = '/home/runlab/data/COMA/'
 name_file = 'data/functional/fmriGLM.nii.gz'
 
 list_connectivity_matrixs_group = []
