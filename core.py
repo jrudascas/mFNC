@@ -39,7 +39,7 @@ class Core:
 
     def buildDynamicLaggedConnectivityMatrix(self, data, windowsSize=200, lagged=0, measure='PC'):
 
-        print('Building the correlation matrix and lagged map')
+        #print('Building the correlation matrix and lagged map')
 
         timePoints, numberROI = data.shape
 
@@ -70,7 +70,7 @@ class Core:
         listLaggeds = []
 
         for roi1 in indexROI:
-            print(str(float(roi1 / numberROI) * 10) + '%')
+            #print(str(float(roi1 / numberROI) * 10) + '%')
             for roi2 in indexROI:
                 for slide in windowSlide:
                     indexWindows = np.array(rango3) + slide
@@ -134,7 +134,6 @@ class Core:
         td_matrix = np.zeros((numberROI, numberROI))
         awtd_matrix = np.zeros((numberROI, numberROI))
 
-        total = len(indexROI)
         for roi1 in indexROI:
             for roi2 in indexROI:
                 time_serie1 = data[:, roi1]
@@ -370,7 +369,7 @@ class Core:
                                                                     order=f_order)
 
             # Interpolation in the time (to maximazate time scale)
-            newTR = 1
+            newTR = 0.5
             listTimeSerie = list(np.transpose(timeCourses))
             newTimeSeries = [util.to_interpolate_time_series(timeSerie, TR, newTR) for timeSerie in listTimeSerie]
             newTimeSeries = np.transpose(timeCourses)
@@ -384,6 +383,7 @@ class Core:
                         self.reduce_neuronal_gof(util.absmax(util.absmax(correlation_matrix, axis=-1), axis=-1),
                                                  neuronal,
                                                  gof))
+                    timeDelayMatrixs.append(self.reduce_neuronal_gof(timeDelayMatrix * TR, neuronal, gof))
                 elif reductionMeasure == 'mean':
                     correlation_matrix3D.append(
                         self.reduce_neuronal_gof(np.mean(np.mean(correlation_matrix, axis=-1), axis=-1), neuronal, gof))
@@ -400,8 +400,8 @@ class Core:
                     correlation_matrix3D.append(np.median(np.median(correlation_matrix, axis=-1), axis=-1))
 
             laggeds.append(listLaggeds)
-            timeDelayMatrixs.append(timeDelayMatrix * newTR)
-            amplitudeWeightedTimeDelayMatrixs.append(amplitudeWeightedTimeDelayMatrix * newTR)
+
+            amplitudeWeightedTimeDelayMatrixs.append(amplitudeWeightedTimeDelayMatrix * TR)
 
         return np.array(correlation_matrix3D), np.array(laggeds), np.array(timeDelayMatrixs), np.array(
             amplitudeWeightedTimeDelayMatrixs)

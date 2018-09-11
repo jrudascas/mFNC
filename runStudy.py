@@ -32,28 +32,41 @@ coords = [[-60, 0, 20],
           [0, -100, 10]
           ]
 
-TR = 2
+TR = 2.46
 outlier = -1.1
 umbral = 0.6
 lagged = 3
-windowsSize = 120
-#path_general = '/home/jrudascas/Desktop/Projects/Dataset/Original'
-path_general = '/home/runlab/data/COMA_ICA'
+windowsSize = None
+path_general = '/home/jrudascas/Desktop/Projects/Dataset/Original'
+#path_general = '/home/runlab/data/COMA_ICA'
 core = core.Core()
 
-group1, laggeds1, TD1, AWTD1 = core.run(path=path_general + '/MCS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
-group2, laggeds2, TD2, AWTD2 = core.run(path=path_general + '/UWS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
-group3, laggeds3, TD3, AWTD3 = core.run(path=path_general + '/Control/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
+group1, laggeds1, TD1, AWTD1 = core.run(path=path_general + '/MCS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=True, onlyRSN=True)
+group2, laggeds2, TD2, AWTD2 = core.run(path=path_general + '/UWS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=True, onlyRSN=True)
+group3, laggeds3, TD3, AWTD3 = core.run(path=path_general + '/Control/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=True, onlyRSN=True)
 
-#np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDmcs.out', laggeds1, delimiter=' ', fmt='%s')
-#np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDuws.out', laggeds2, delimiter=' ', fmt='%s')
-#np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDhc.out', laggeds3, delimiter=' ', fmt='%s')
+np.savetxt(path_general + '/TD_mcs.out', utils.mean(TD1, outlier=outlier), delimiter=' ', fmt='%s')
+np.savetxt(path_general + '/TD_uws.out', laggeds2, delimiter=' ', fmt='%s')
+np.savetxt(path_general + '/TD_hc.out', laggeds3, delimiter=' ', fmt='%s')
 
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDmcs.out', AWTD1, delimiter=' ', fmt='%s')
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDuws.out', AWTD2, delimiter=' ', fmt='%s')
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDhc.out', AWTD3, delimiter=' ', fmt='%s')
 
 pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, save='ThreadsLagPC.png')
+
+print("\nLaggeds MCS UWS")
+pList1 = utils.toFindStatisticDifference(utils.mean(TD1, outlier=outlier), utils.mean(TD2, outlier=outlier),
+                                         measure='manwhitneyu', outlier=outlier)
+
+print("\nLaggeds MCS HC")
+pList1 = utils.toFindStatisticDifference(utils.mean(TD1, outlier=outlier), utils.mean(TD3, outlier=outlier),
+                                         measure='manwhitneyu', outlier=outlier)
+
+print("\nLaggeds UWS HC")
+pList1 = utils.toFindStatisticDifference(utils.mean(TD2, outlier=outlier), utils.mean(TD3, outlier=outlier),
+                                         measure='manwhitneyu', outlier=outlier)
+
 
 print("\nTest Graph MCS UWS")
 pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),

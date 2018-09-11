@@ -92,6 +92,21 @@ def to_extract_time_series(path_input, path_atlas = None, list_path_altas = None
 def to_project_interval(x, e1, e2, s1, s2):
     return ((s1 - s2)/(e1 - e2))*(x-e1) + s1
 
+def mean(data, outlier):
+    average = np.zeros((data.shape[0], data.shape[1]))
+    for index in range(data.shape[0]):
+        for index2 in range(data.shape[1]):
+            if all(data[index, index2, :] == outlier):
+                average[index, index2] = outlier
+            else:
+                aux = np.concatenate((data[index, :index2, index2], data[index, index2+1:, index2]))
+
+                average[index, index2] = np.mean(aux[aux != outlier])
+
+
+    return average
+
+
 def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05, is_corrected = False):
 
     print('Doing a multiple comparation by using ' + measure + ' test')
