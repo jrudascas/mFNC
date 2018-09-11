@@ -73,6 +73,18 @@ print(td_mcs.shape)
 td_uws = np.array(list_td_matrixs_group[2])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
 print(td_uws.shape)
 
+
 pg.fivethirtyeightPlot(td_mcs, td_uws, group3=td_hc, lag=lag, save='ThreadsLagPC.png')
 
 
+print("Test Graph MCS UWS\n")
+pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(list_connectivity_matrixs[1]), u.buildFeaturesVector(list_connectivity_matrixs[2]),
+                                         measure='manwhitneyu')
+
+print("Test Graph HC MCS\n")
+pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(list_connectivity_matrixs[0]), u.buildFeaturesVector(list_connectivity_matrixs[1]),
+                                         measure='manwhitneyu')
+
+print("Test Graph HC UWS\n")
+pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(list_connectivity_matrixs[0]), u.buildFeaturesVector(list_connectivity_matrixs[2]),
+                                         measure='manwhitneyu')
