@@ -92,14 +92,15 @@ def to_extract_time_series(path_input, path_atlas = None, list_path_altas = None
 def to_project_interval(x, e1, e2, s1, s2):
     return ((s1 - s2)/(e1 - e2))*(x-e1) + s1
 
-def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05):
+def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05, is_corrected = False):
 
     print('\nDoing a multiple comparation by using ' + measure + ' test\n')
     pLista = []
     if x.shape[-1] != y.shape[-1]:
         raise AttributeError('Shape incorrect')
 
-    #threshold = threshold/x.shape[-1]
+    if is_corrected:
+        threshold = threshold/x.shape[-1]
 
     if outlier is not None:
 

@@ -81,12 +81,12 @@ print(np.array(list_connectivity_matrixs_group[1]).shape)
 
 print("Test Graph MCS UWS\n")
 pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])), u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
-                                         measure='manwhitneyu')
+                                         measure='manwhitneyu', is_corrected=True)
 
 print("Test Graph HC MCS\n")
 pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])), u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
-                                         measure='manwhitneyu')
+                                         measure='manwhitneyu', is_corrected=True)
 
 print("Test Graph HC UWS\n")
 pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])), u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
-                                         measure='manwhitneyu')
+                                         measure='manwhitneyu', is_corrected=True)
