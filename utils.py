@@ -111,6 +111,8 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
 
     print('Doing a multiple comparation by using ' + measure + ' test')
     pLista = []
+    print(x.shape)
+    print(y.shape)
     if x.shape[-1] != y.shape[-1]:
         raise AttributeError('Shape incorrect')
 
