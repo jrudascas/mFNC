@@ -94,7 +94,7 @@ def to_project_interval(x, e1, e2, s1, s2):
 
 def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05, is_corrected = False):
 
-    print('\nDoing a multiple comparation by using ' + measure + ' test\n')
+    print('Doing a multiple comparation by using ' + measure + ' test')
     pLista = []
     if x.shape[-1] != y.shape[-1]:
         raise AttributeError('Shape incorrect')
@@ -102,27 +102,27 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
     if is_corrected:
         threshold = threshold/x.shape[-1]
 
-    if outlier is not None:
+    #if outlier is not None:
 
-        print('X')
-        print('')
+        #print('X')
+        #print('')
 
-        for comparator in range(x.shape[-1]):
-            if np.isnan(outlier):
-                print(np.mean(x[~np.isnan(x[:, comparator]), comparator]))
+        #for comparator in range(x.shape[-1]):
+        #    if np.isnan(outlier):
+        #        print(np.mean(x[~np.isnan(x[:, comparator]), comparator]))
                 #print(x[~np.isnan(x[:, comparator]), comparator])
-            else:
-                print(np.mean(x[x[:, comparator] != outlier, comparator]))
+        #    else:
+        #        print(np.mean(x[x[:, comparator] != outlier, comparator]))
 
-        print('Y')
-        print('')
+        #print('Y')
+        #print('')
 
-        for comparator in range(y.shape[-1]):
-            if np.isnan(outlier):
-                print(np.mean(y[~np.isnan(y[:, comparator]), comparator]))
+        #for comparator in range(y.shape[-1]):
+        #    if np.isnan(outlier):
+        #        print(np.mean(y[~np.isnan(y[:, comparator]), comparator]))
                 #print(y[~np.isnan(y[:, comparator]), comparator])
-            else:
-                print(np.mean(y[y[:, comparator] != outlier, comparator]))
+        #    else:
+        #        print(np.mean(y[y[:, comparator] != outlier, comparator]))
 
     print('Number of comparator ' + str(x.shape[-1]))
 

@@ -32,34 +32,42 @@ coords = [[-60, 0, 20],
           [0, -100, 10]
           ]
 
-TR = 2.46
+TR = 2
 outlier = -1.1
 umbral = 0.6
 lagged = 3
-windowsSize = None
-
+windowsSize = 120
+#path_general = '/home/jrudascas/Desktop/Projects/Dataset/Original'
+path_general = '/home/runlab/data/COMA_ICA'
 core = core.Core()
-path = '/home/jrudascas/Desktop/Projects/Dataset/Original/MCS/'
-group1, laggeds1, TD1, AWTD1 = core.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
 
-path = '/home/jrudascas/Desktop/Projects/Dataset/Original/UWS/'
-group2, laggeds2, TD2, AWTD2 = core.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
-
-path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Control/'
-group3, laggeds3, TD3, AWTD3 = core.run(path=path, TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
+group1, laggeds1, TD1, AWTD1 = core.run(path=path_general + '/MCS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=True, onlyRSN=True)
+group2, laggeds2, TD2, AWTD2 = core.run(path=path_general + '/UWS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=True, onlyRSN=True)
+group3, laggeds3, TD3, AWTD3 = core.run(path=path_general + '/Control/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=True, onlyRSN=True)
 
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDmcs.out', laggeds1, delimiter=' ', fmt='%s')
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDuws.out', laggeds2, delimiter=' ', fmt='%s')
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDhc.out', laggeds3, delimiter=' ', fmt='%s')
 
-print(AWTD1.shape)
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDmcs.out', AWTD1, delimiter=' ', fmt='%s')
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDuws.out', AWTD2, delimiter=' ', fmt='%s')
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'AWTDhc.out', AWTD3, delimiter=' ', fmt='%s')
 
 pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, save='ThreadsLagPC.png')
 
-#sys.exit(0)
+print("\nTest Graph MCS UWS")
+pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),
+                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
+
+print("\nTest Graph HC MCS")
+pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group3),
+                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
+
+print("\nTest Graph HC UWS")
+pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group2), utils.buildFeaturesVector(group3),
+                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
+
+sys.exit(0)
 
 new = np.zeros((group1.shape[0], group1.shape[1]))
 new2 = np.zeros((group2.shape[0], group2.shape[1]))
@@ -119,18 +127,6 @@ for i in range(new5.shape[0]):
 # cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group1, outlier=-1.1), allNode=True), node_size=2000, alpha=0.5, scale=20, namesNodes=namesNodes_node_to_node, save="MCS1")
 # cm.draw_graph(cm.buildG_from_adjacency_matrix(FNC.reduce_node_to_node_connectivity(group2, outlier=-1.1), allNode=True), node_size=2000, alpha=0.5, scale=20, namesNodes=namesNodes_node_to_node, save="VS1")
 # pg.barchart(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2), title= "Non-Lagged Linear Correlation", labelGroup1="MCS", labelGroup2="VS/UWS", xLabel="", yLabel="Average Connectivity Level", outlier=outlier, save="fig11.png", labelFeautures=namesNodes_edge_to_edge)
-
-print("Test Graph MCS UWS\n")
-pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),
-                                         measure='manwhitneyu', outlier=outlier)
-
-print("Test Graph HC MCS\n")
-pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group3),
-                                         measure='manwhitneyu', outlier=outlier)
-
-print("Test Graph HC UWS\n")
-pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group2), utils.buildFeaturesVector(group3),
-                                         measure='manwhitneyu', outlier=outlier)
 
 """
 print("Test Conectividad Promedio\n")
