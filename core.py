@@ -373,24 +373,7 @@ class Core:
             newTR = 1
             listTimeSerie = list(np.transpose(timeCourses))
             newTimeSeries = [util.to_interpolate_time_series(timeSerie, TR, newTR) for timeSerie in listTimeSerie]
-
-            # newTimeSeries = np.transpose(timeCourses)
-            """
-            original = timeCourses[:,0]
-            interpolated = np.array(newTimeSeries)[0]
-    
-            x = np.round(np.linspace(0, len(original)*TR, len(original)))
-            y = original
-            plt.plot(x, y, label='Known points')
-            plt.show()
-    
-            xn = np.round(np.linspace(0, len(original)*TR, len(interpolated)))
-            yn = interpolated
-    
-            plt.plot(xn, yn, label='Interpolated values')
-    
-            plt.show()
-            """
+            newTimeSeries = np.transpose(timeCourses)
 
             correlation_matrix, listLaggeds, timeDelayMatrix, amplitudeWeightedTimeDelayMatrix = self.buildDynamicLaggedConnectivityMatrix(
                 np.transpose(np.array(newTimeSeries)), windowsSize=wSize, lagged=lag, measure=measure)

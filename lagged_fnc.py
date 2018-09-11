@@ -11,7 +11,7 @@ import os
 import numpy as np
 import plotGallery as pg
 
-TR = 2.46
+TR = 2
 lag = 3
 
 namesNodes_node_to_node = ['Auditory', 'Cerebellum', 'DMN', 'ECL', 'ECR', 'Salience', 'SensoriMotor', 'Vis_Lateral',
