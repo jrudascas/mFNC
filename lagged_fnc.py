@@ -51,7 +51,7 @@ for group in sorted(os.listdir(path_general)):
                 #time_series_rsn = u.to_extract_time_series(path_full_file, path_general, group, dir, list_path_altas=list_path_atlas)
                 time_series_rsn = u.to_extract_time_series(path_full_file, list_path_altas=list_path_atlas)
 
-                connectivity_matrix, td_matrix, awtd_matrix = core.run2(time_series_rsn, tr=TR, lag=lag)
+                connectivity_matrix, td_matrix, awtd_matrix, tr = core.run2(time_series_rsn, tr=TR, lag=lag)
 
                 list_connectivity_matrixs.append(connectivity_matrix)
                 list_td_matrixs.append(td_matrix)
