@@ -77,14 +77,16 @@ print(td_uws.shape)
 pg.fivethirtyeightPlot(td_mcs, td_uws, group3=td_hc, lag=lag, save='ThreadsLagPC.png')
 
 
+print(np.array(list_connectivity_matrixs_group[1]).shape)
+
 print("Test Graph MCS UWS\n")
-pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(list_connectivity_matrixs[1]), u.buildFeaturesVector(list_connectivity_matrixs[2]),
+pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])), u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
                                          measure='manwhitneyu')
 
 print("Test Graph HC MCS\n")
-pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(list_connectivity_matrixs[0]), u.buildFeaturesVector(list_connectivity_matrixs[1]),
+pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])), u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
                                          measure='manwhitneyu')
 
 print("Test Graph HC UWS\n")
-pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(list_connectivity_matrixs[0]), u.buildFeaturesVector(list_connectivity_matrixs[2]),
+pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])), u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
                                          measure='manwhitneyu')

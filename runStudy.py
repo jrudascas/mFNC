@@ -11,7 +11,7 @@ import utils
 import sys
 import plotGallery as pg
 import numpy as np
-
+from nilearn import plotting as plott
 # np.set_printoptions(precision=3)
 # np.set_printoptions(threshold=np.inf)
 
@@ -59,7 +59,7 @@ print(AWTD1.shape)
 
 pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, save='ThreadsLagPC.png')
 
-sys.exit(0)
+#sys.exit(0)
 
 new = np.zeros((group1.shape[0], group1.shape[1]))
 new2 = np.zeros((group2.shape[0], group2.shape[1]))
@@ -149,9 +149,9 @@ pList2 = utils.toFindStatisticDifference(new3, new6, measure='manwhitneyu', outl
 print("Lista de P")
 print(pList1)
 
-correlation_matrix1 = FNC.reduce_node_to_node_connectivity(group1, outlier=outlier, mandatory=True)
-correlation_matrix2 = FNC.reduce_node_to_node_connectivity(group2, outlier=outlier, mandatory=True)
-correlation_matrix3 = FNC.reduce_node_to_node_connectivity(group3, outlier=outlier, mandatory=True)
+correlation_matrix1 = core.reduce_node_to_node_connectivity(group1, outlier=outlier, mandatory=True)
+correlation_matrix2 = core.reduce_node_to_node_connectivity(group2, outlier=outlier, mandatory=True)
+correlation_matrix3 = core.reduce_node_to_node_connectivity(group3, outlier=outlier, mandatory=True)
 
 np.fill_diagonal(correlation_matrix1, 0)
 np.fill_diagonal(correlation_matrix2, 0)
