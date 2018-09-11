@@ -41,9 +41,9 @@ windowsSize = 120
 path_general = '/home/runlab/data/COMA_ICA'
 core = core.Core()
 
-group1, laggeds1, TD1, AWTD1 = core.run(path=path_general + '/MCS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=True, onlyRSN=True)
-group2, laggeds2, TD2, AWTD2 = core.run(path=path_general + '/UWS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=True, onlyRSN=True)
-group3, laggeds3, TD3, AWTD3 = core.run(path=path_general + '/Control/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=True, onlyRSN=True)
+group1, laggeds1, TD1, AWTD1 = core.run(path=path_general + '/MCS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
+group2, laggeds2, TD2, AWTD2 = core.run(path=path_general + '/UWS/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
+group3, laggeds3, TD3, AWTD3 = core.run(path=path_general + '/Control/', TR=TR, wSize=windowsSize, lag=lagged, reduce_neuronal=False, onlyRSN=True)
 
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDmcs.out', laggeds1, delimiter=' ', fmt='%s')
 #np.savetxt('/home/runlab/data/COMA_ICA/' + 'TDuws.out', laggeds2, delimiter=' ', fmt='%s')
