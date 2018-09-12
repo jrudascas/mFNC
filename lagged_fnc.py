@@ -1,7 +1,9 @@
 import matplotlib
+
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
+
 plt.ioff()
 
 import utils as u
@@ -48,7 +50,7 @@ for group in sorted(os.listdir(path_general)):
                 print(dir)
                 path_full_file = os.path.join(path_subject, name_file)
 
-                #time_series_rsn = u.to_extract_time_series(path_full_file, path_general, group, dir, list_path_altas=list_path_atlas)
+                # time_series_rsn = u.to_extract_time_series(path_full_file, path_general, group, dir, list_path_altas=list_path_atlas)
                 time_series_rsn = u.to_extract_time_series(path_full_file, list_path_altas=list_path_atlas)
 
                 connectivity_matrix, td_matrix, awtd_matrix, tr = core.run2(time_series_rsn, tr=TR, lag=lag)
@@ -57,42 +59,49 @@ for group in sorted(os.listdir(path_general)):
                 list_td_matrixs.append(td_matrix)
 
         fig, ax = plt.subplots()
-        plotting.plot_matrix(np.mean(np.array(list_connectivity_matrixs), axis=0), labels=namesNodes_node_to_node, vmax=1, vmin=-1, figure=fig)
+        plotting.plot_matrix(np.mean(np.array(list_connectivity_matrixs), axis=0), labels=namesNodes_node_to_node,
+                             vmax=1, vmin=-1, figure=fig)
         fig.savefig(path_group + group + '_mean.png', dpi=600)
 
         list_connectivity_matrixs_group.append(list_connectivity_matrixs)
         list_td_matrixs_group.append(list_td_matrixs)
 
-#td_hc = np.array(list_td_matrixs_group[0])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
-#td_mcs = np.array(list_td_matrixs_group[1])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
-#td_uws = np.array(list_td_matrixs_group[2])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
+td_hc = np.array(list_td_matrixs_group[0])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
+td_mcs = np.array(list_td_matrixs_group[1])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
+td_uws = np.array(list_td_matrixs_group[2])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
 
-#pg.fivethirtyeightPlot(td_mcs, td_uws, group3=td_hc, lag=lag, save='ThreadsLagPC.png')
+pg.fivethirtyeightPlot(td_mcs, td_uws, group3=td_hc, lag=lag, save='ThreadsLagPC.png')
 
 print("Test Graph MCS UWS\n")
-pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])), u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
-                                         measure='manwhitneyu', is_corrected=True)
+pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
+                                     u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
+                                     is_corrected=True)
 
 print("Test Graph HC MCS\n")
-pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])), u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
-                                         measure='manwhitneyu', is_corrected=True)
+pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])),
+                                     u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
+                                     is_corrected=True)
 
 print("Test Graph HC UWS\n")
-pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])), u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
-                                         measure='manwhitneyu', is_corrected=True)
+pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])),
+                                     u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
+                                     is_corrected=True)
 
 print("\nLaggeds HC MCS")
-pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[0]), axis=-1), np.mean(np.array(list_td_matrixs_group[1]), axis=-1),
-                                         measure='manwhitneyu')
+pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[0]), axis=-1),
+                                     np.mean(np.array(list_td_matrixs_group[1]), axis=-1))
 
 print("\nLaggeds HC UWS")
-pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[0]), axis=-1), np.mean(np.array(list_td_matrixs_group[2]), axis=-1),
-                                         measure='manwhitneyu')
+pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[0]), axis=-1),
+                                     np.mean(np.array(list_td_matrixs_group[2]), axis=-1))
 
 print("\nLaggeds MCS UWS")
-pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[1]), axis=-1), np.mean(np.array(list_td_matrixs_group[2]), axis=-1),
-                                         measure='manwhitneyu')
+pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[1]), axis=-1),
+                                     np.mean(np.array(list_td_matrixs_group[2]), axis=-1))
 
-np.savetxt(path_general + 'mean_td_hc.txt', np.mean(np.array(list_td_matrixs_group[0]), axis=-1), delimiter=' ', fmt='%s')
-np.savetxt(path_general + 'mean_td_mcs.txt', np.mean(np.array(list_td_matrixs_group[1]), axis=-1), delimiter=' ', fmt='%s')
-np.savetxt(path_general + 'mean_td_uws.txt', np.mean(np.array(list_td_matrixs_group[2]), axis=-1), delimiter=' ', fmt='%s')
+np.savetxt(path_general + 'mean_td_hc.txt', np.mean(np.array(list_td_matrixs_group[0]), axis=-1), delimiter=' ',
+           fmt='%s')
+np.savetxt(path_general + 'mean_td_mcs.txt', np.mean(np.array(list_td_matrixs_group[1]), axis=-1), delimiter=' ',
+           fmt='%s')
+np.savetxt(path_general + 'mean_td_uws.txt', np.mean(np.array(list_td_matrixs_group[2]), axis=-1), delimiter=' ',
+           fmt='%s')

@@ -478,13 +478,13 @@ def fivethirtyeightPlot(group1, group2, group3 = None, lag = 0, save = None):
     plt.show()
 
     print("MCS vs UWS")
-    utils.toFindStatisticDifference(np.transpose(new), np.transpose(new2), threshold=0.01, measure='manwhitneyu')
+    utils.toFindStatisticDifference(np.transpose(new), np.transpose(new2), threshold=0.01)
 
     print("HC vs MCS")
-    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new), threshold=0.01, measure='manwhitneyu')
+    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new), threshold=0.01)
 
     print("HC vs UWS")
-    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), threshold=0.01, measure='manwhitneyu')
+    utils.toFindStatisticDifference(np.transpose(new3), np.transpose(new2), threshold=0.01)
 
 
 
