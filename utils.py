@@ -111,8 +111,6 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
 
     print('Doing a multiple comparation by using ' + measure + ' test')
     pLista = []
-    print(x.shape)
-    print(y.shape)
     if x.shape[-1] != y.shape[-1]:
         raise AttributeError('Shape incorrect')
 
@@ -146,10 +144,11 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
     for comparator in range(x.shape[-1]):
         if measure == 'manwhitneyu':
             if outlier is None:
-                if not all(x[:,comparator] == y[:,comparator]):
-                    t, p = stats.mannwhitneyu(x[:,comparator], y[:, comparator])
-                else:
+                print(x[:,comparator] == y[:,comparator])
+                if all(x[:,comparator] == y[:,comparator]):
                     p = 1
+                else:
+                    t, p = stats.mannwhitneyu(x[:, comparator], y[:, comparator])
             elif np.isnan(outlier):
                 auxTemp1 = x[~np.isnan(x[:, comparator]), comparator]
                 auxTemp2 = y[~np.isnan(y[:, comparator]), comparator]
