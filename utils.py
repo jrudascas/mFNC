@@ -145,19 +145,12 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
         if measure == 'manwhitneyu':
             if outlier is None:
                 print(x[:,comparator])
-                print(len(x[:, comparator]))
+                print(y[:, comparator])
 
-                if len(x[:, comparator] == y[:, comparator]) == 1:
-                    if x[:, comparator] == y[:, comparator]:
-                        p = 1.
-                    else:
-                        t, p = stats.mannwhitneyu(x[:, comparator], y[:, comparator])
+                if x[:, comparator] == y[:, comparator]:
+                    p = 1.
                 else:
-                    if all(x[:,comparator] == y[:,comparator]):
-                        p = 1.
-                    else:
-                        t, p = stats.mannwhitneyu(x[:, comparator], y[:, comparator])
-
+                    t, p = stats.mannwhitneyu(x[:, comparator], y[:, comparator])
             elif np.isnan(outlier):
                 auxTemp1 = x[~np.isnan(x[:, comparator]), comparator]
                 auxTemp2 = y[~np.isnan(y[:, comparator]), comparator]
