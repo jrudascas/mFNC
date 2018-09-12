@@ -63,9 +63,6 @@ for group in sorted(os.listdir(path_general)):
         list_connectivity_matrixs_group.append(list_connectivity_matrixs)
         list_td_matrixs_group.append(list_td_matrixs)
 
-print(np.array(list_td_matrixs_group[0]).shape)
-print(np.triu_indices(10, k=1))
-
 #td_hc = np.array(list_td_matrixs_group[0])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
 #td_mcs = np.array(list_td_matrixs_group[1])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
 #td_uws = np.array(list_td_matrixs_group[2])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
