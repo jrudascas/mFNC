@@ -144,7 +144,7 @@ for group in sorted(os.listdir(path)):
 
                 print(len(timeCourse))
 
-                FNC = f.core()
+                FNC = f.Core()
 
                 connectivity_matrix, timeDelayMatrixs, amplitudeWeightedTimeDelayMatrixs= FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, measure=measure)
 
