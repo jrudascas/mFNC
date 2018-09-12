@@ -146,7 +146,7 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
             if outlier is None:
                 print(x[:,comparator] == y[:,comparator])
                 if all(x[:,comparator] == y[:,comparator]):
-                    p = 1
+                    p = 1.
                 else:
                     t, p = stats.mannwhitneyu(x[:, comparator], y[:, comparator])
             elif np.isnan(outlier):
