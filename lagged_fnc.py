@@ -71,7 +71,7 @@ td_mcs = np.array(list_td_matrixs_group[1])[:,np.triu_indices(10, k=1)[0], np.tr
 td_uws = np.array(list_td_matrixs_group[2])[:,np.triu_indices(10, k=1)[0], np.triu_indices(10, k=1)[1]]
 
 pg.fivethirtyeightPlot(td_mcs, td_uws, group3=td_hc, lag=lag, save='ThreadsLagPC.png')
-
+"""
 print("Test Graph MCS UWS\n")
 pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
                                      u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
@@ -98,7 +98,7 @@ pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[0]),
 print("\nLaggeds MCS UWS")
 pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[1]), axis=-1),
                                      np.mean(np.array(list_td_matrixs_group[2]), axis=-1))
-
+"""
 np.savetxt(path_general + 'mean_td_hc.txt', np.mean(np.array(list_td_matrixs_group[0]), axis=-1), delimiter=' ',
            fmt='%s')
 np.savetxt(path_general + 'mean_td_mcs.txt', np.mean(np.array(list_td_matrixs_group[1]), axis=-1), delimiter=' ',
