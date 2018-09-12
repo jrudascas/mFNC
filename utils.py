@@ -146,7 +146,7 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
             if outlier is None:
                 print(x[:,comparator] == y[:,comparator])
 
-                if len(x[:,comparator]) == 1:
+                if len(x[:, comparator] == y[:, comparator]) == 1:
                     if x[:, comparator] == y[:, comparator]:
                         p = 1.
                     else:
