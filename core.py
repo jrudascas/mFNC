@@ -116,7 +116,7 @@ class Core:
 
         return dynamicLaggedConnectivityMatrix, listLaggeds, timeDelayMatrix, amplitudeWeightedTimeDelayMatrix
 
-    def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC'):
+    def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC', tri_up = False):
 
         timePoints, numberROI = data.shape
 
@@ -135,23 +135,40 @@ class Core:
         awtd_matrix = np.zeros((numberROI, numberROI))
 
         for roi1 in indexROI:
+            print(str(float(roi1 / numberROI) * 10) + '%')
             for roi2 in indexROI:
                 time_serie1 = data[:, roi1]
-                # if roi2 > roi1:
-                for lag in kCircular:
-                    time_serie2 = np.roll(data[:, roi2], lag)
+                if tri_up:
+                    if roi2 > roi1:
+                        for lag in kCircular:
+                            time_serie2 = np.roll(data[:, roi2], lag)
 
-                    connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
-                        time_serie1, time_serie2, measure)
+                            connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
+                                time_serie1, time_serie2, measure)
 
-                    td_matrix[roi1, roi2] = np.where(
-                        connectivity_matrix[roi1, roi2, :] == util.absmax(
-                            connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
+                            td_matrix[roi1, roi2] = np.where(
+                                connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                    connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
 
-                    awtd_matrix[roi1, roi2] = util.absmax(
-                        connectivity_matrix[roi1, roi2, :]) * (np.where(
-                        connectivity_matrix[roi1, roi2, :] == util.absmax(
-                            connectivity_matrix[roi1, roi2, :]))[0][0] - lagged)
+                            awtd_matrix[roi1, roi2] = util.absmax(
+                                connectivity_matrix[roi1, roi2, :]) * (np.where(
+                                connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                    connectivity_matrix[roi1, roi2, :]))[0][0] - lagged)
+                else:
+                    for lag in kCircular:
+                        time_serie2 = np.roll(data[:, roi2], lag)
+
+                        connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
+                            time_serie1, time_serie2, measure)
+
+                        td_matrix[roi1, roi2] = np.where(
+                            connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
+
+                        awtd_matrix[roi1, roi2] = util.absmax(
+                            connectivity_matrix[roi1, roi2, :]) * (np.where(
+                            connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged)
 
         return util.absmax(connectivity_matrix, axis=-1), td_matrix, awtd_matrix
 
@@ -281,7 +298,7 @@ class Core:
         print("\n" + "Ended - Build Edge Connectivity Matrix based" + " --- " + time.strftime("%H:%M:%S") + "\n")
         return dynamic_connectivity_matrix
 
-    def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC'):
+    def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC', tri_up = False):
 
         for index in range(time_series.shape[1] - 1):
             time_series[:, index] = self.butter_bandpass_filter(time_series[:, index], f_lb, f_ub, tr, order=f_order)
@@ -298,7 +315,8 @@ class Core:
         else:
             connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(time_series,
                                                                                                    lagged=lag,
-                                                                                                   measure=measure)
+                                                                                                   measure=measure,
+                                                                                                   tri_up=tri_up)
             return connectivity_matrix, td_matrix, awtd_matrix, tr
 
     def run_2_groups(self, time_series_g1, time_series_g2, TR, f_lb=0.005, f_ub=0.05, f_order=2):

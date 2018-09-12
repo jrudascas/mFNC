@@ -146,7 +146,7 @@ for group in sorted(os.listdir(path)):
 
                 FNC = f.Core()
 
-                connectivity_matrix, timeDelayMatrixs, amplitudeWeightedTimeDelayMatrixs= FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, measure=measure)
+                connectivity_matrix, timeDelayMatrixs, amplitudeWeightedTimeDelayMatrixs= FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, measure=measure, tri_up=True)
 
                 upperTD = np.copy(timeDelayMatrixs)
                 lowerTD = np.transpose(np.copy(timeDelayMatrixs))
