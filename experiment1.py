@@ -17,6 +17,7 @@ import os
 TR = 2.46
 measure = 'COV'
 lagged = 4
+new_tr = 0.5
 
 t1MNI = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
 
@@ -146,23 +147,25 @@ for group in sorted(os.listdir(path)):
 
                 FNC = f.Core()
 
-                connectivity_matrix, timeDelayMatrixs, amplitudeWeightedTimeDelayMatrixs= FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, measure=measure, tri_up=True)
+                connectivity_matrix, td_matrix, awtd_matrix, tr = FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, new_tr=new_tr, measure=measure, tri_up=True)
 
-                upperTD = np.copy(timeDelayMatrixs)
-                lowerTD = np.transpose(np.copy(timeDelayMatrixs))
+                td_matrix = td_matrix * tr
+                awtd_matrix = awtd_matrix * tr
+
+                upperTD = np.copy(td_matrix)
+                lowerTD = np.transpose(np.copy(td_matrix))
 
                 timeDelayMatrixTotal = upperTD - lowerTD
                 timeDelayProjection = np.mean(timeDelayMatrixTotal, axis=0)
 
-                upperAWTD = np.copy(amplitudeWeightedTimeDelayMatrixs)
-                lowerAWTD = np.transpose(np.copy(amplitudeWeightedTimeDelayMatrixs))
+                upperAWTD = np.copy(awtd_matrix)
+                lowerAWTD = np.transpose(np.copy(awtd_matrix))
 
                 amplitudeWeightedTimeDelayMatrixTotal = upperAWTD - lowerAWTD
                 amplitudeWeightedTimeDelayProjection = np.mean(amplitudeWeightedTimeDelayMatrixTotal, axis=0)
 
                 timeDelayMap = np.zeros(greyMatterData.shape)
                 amplitudeWeightedTimeDelayMap = np.zeros(greyMatterData.shape)
-                #plott.plot_matrix(timeDelayMatrixs)
 
                 roiIndex = 0
                 for slide in range(1, greyMatterData.shape[-1] - 1, 3):
@@ -319,20 +322,20 @@ for group in sorted(os.listdir(path)):
                 timeDelayMapList.append(timeDelayMap)
                 amplitudeWeightedTimeDelayMapList.append(amplitudeWeightedTimeDelayMap)
 
-            timeDelayMatrixs = np.array(timeDelayMapList)
+            td_matrix = np.array(timeDelayMapList)
             AWTDMatrix = np.array(amplitudeWeightedTimeDelayMapList)
 
-            labels = range(timeDelayMatrixs.shape[0])
+            labels = range(td_matrix.shape[0])
 
-            TDcorrelationMatrix = np.zeros((timeDelayMatrixs.shape[0], timeDelayMatrixs.shape[0]))
-            AWTDcorrelationMatrix = np.zeros((timeDelayMatrixs.shape[0], timeDelayMatrixs.shape[0]))
+            TDcorrelationMatrix = np.zeros((td_matrix.shape[0], td_matrix.shape[0]))
+            AWTDcorrelationMatrix = np.zeros((td_matrix.shape[0], td_matrix.shape[0]))
 
-            for indexSubject in range(timeDelayMatrixs.shape[0]):
-                for indexSubject2 in range(timeDelayMatrixs.shape[0]):
+            for indexSubject in range(td_matrix.shape[0]):
+                for indexSubject2 in range(td_matrix.shape[0]):
                     #correlationMatrix[indexSubject, indexSubject2] = np.corrcoef(timeDelayMatrixs[indexSubject, :, :], timeDelayMatrixs[indexSubject2, :, :])
 
-                    subject1FlattedTD = np.ndarray.flatten(timeDelayMatrixs[indexSubject, :, :, :])
-                    subject2FlattedTD = np.ndarray.flatten(timeDelayMatrixs[indexSubject2, :, :, :])
+                    subject1FlattedTD = np.ndarray.flatten(td_matrix[indexSubject, :, :, :])
+                    subject2FlattedTD = np.ndarray.flatten(td_matrix[indexSubject2, :, :, :])
                     subject1FlattedAWTD = np.ndarray.flatten(AWTDMatrix[indexSubject, :, :, :])
                     subject2FlattedAWTD = np.ndarray.flatten(AWTDMatrix[indexSubject2, :, :, :])
 
@@ -349,35 +352,3 @@ for group in sorted(os.listdir(path)):
             fig01 = drawmatrix_channels(AWTDcorrelationMatrix, labels, color_anchor=(0.,1.))
             fig01.savefig(os.path.join(pathInto, 'AWTDCorrelation.png'))
             #plt.show()
-
-            """
-            path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Control/'
-            #path = '/home/jrudascas/Desktop/Projects/Dataset/Original/Vegetative State/'
-            
-            FNC = f.functionalNetworkConnectivity()
-            
-            group, laggeds, timeDelayMatrixs, amplitudeWeightedTimeDelayMatrixs= FNC.run(path=path, TR=TR, f_lb=f_lb, f_ub=f_ub, f_order=f_order, wSize=windowsSize, lag=lagged,
-                                                                                         measure=measure, reduce_neuronal=False, reductionMeasure='max', onlyRSN=True)
-            
-            correlationMatrix = np.zeros((timeDelayMatrixs.shape[0], timeDelayMatrixs.shape[0]))
-            
-            labels = range(timeDelayMatrixs.shape[0])
-            
-            for indexSubject in range(timeDelayMatrixs.shape[0]):
-                for indexSubject2 in range(timeDelayMatrixs.shape[0]):
-                    triIndex = np.triu_indices(10, k=1)
-            
-                    data1 = timeDelayMatrixs[indexSubject, :, :]
-                    data2 = timeDelayMatrixs[indexSubject2, :, :]
-            
-                    data1 = data1[triIndex]
-                    data2 = data2[triIndex]
-                    #correlationMatrix[indexSubject, indexSubject2] = np.corrcoef(timeDelayMatrixs[indexSubject, :, :], timeDelayMatrixs[indexSubject2, :, :])
-                    #correlationMatrix[indexSubject, indexSubject2] = dc.u_distance_correlation_sqr(timeDelayMatrixs[indexSubject, :, :], timeDelayMatrixs[indexSubject2, :, :])
-            #        correlationMatrix[indexSubject, indexSubject2] = util.mse(timeDelayMatrixs[indexSubject, :, :], timeDelayMatrixs[indexSubject2, :, :])
-                    correlationMatrix[indexSubject, indexSubject2] = abs(sc.pearsonr(data1, data2)[0])
-            
-            #plott.plot_matrix(correlationMatrix, labels=labels)
-            drawmatrix_channels(correlationMatrix, labels, color_anchor=(0.,1.))
-            plott.show()
-            """

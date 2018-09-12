@@ -135,25 +135,24 @@ class Core:
         awtd_matrix = np.zeros((numberROI, numberROI))
 
         for roi1 in indexROI:
-            print(str(float(roi1 / numberROI) * 10) + '%')
+            print(str(float(roi1 / numberROI) * 100) + '%')
+            time_serie1 = data[:, roi1]
             for roi2 in indexROI:
-                time_serie1 = data[:, roi1]
-                if tri_up:
-                    if roi2 > roi1:
-                        for lag in kCircular:
-                            time_serie2 = np.roll(data[:, roi2], lag)
+                if roi2 > roi1 and tri_up:
+                    for lag in kCircular:
+                        time_serie2 = np.roll(data[:, roi2], lag)
 
-                            connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
-                                time_serie1, time_serie2, measure)
+                        connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
+                            time_serie1, time_serie2, measure)
 
-                            td_matrix[roi1, roi2] = np.where(
-                                connectivity_matrix[roi1, roi2, :] == util.absmax(
-                                    connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
+                        td_matrix[roi1, roi2] = np.where(
+                            connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
 
-                            awtd_matrix[roi1, roi2] = util.absmax(
-                                connectivity_matrix[roi1, roi2, :]) * (np.where(
-                                connectivity_matrix[roi1, roi2, :] == util.absmax(
-                                    connectivity_matrix[roi1, roi2, :]))[0][0] - lagged)
+                        awtd_matrix[roi1, roi2] = util.absmax(
+                            connectivity_matrix[roi1, roi2, :]) * (np.where(
+                            connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged)
                 else:
                     for lag in kCircular:
                         time_serie2 = np.roll(data[:, roi2], lag)
@@ -298,7 +297,7 @@ class Core:
         print("\n" + "Ended - Build Edge Connectivity Matrix based" + " --- " + time.strftime("%H:%M:%S") + "\n")
         return dynamic_connectivity_matrix
 
-    def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC', tri_up = False):
+    def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC', tri_up=False):
 
         for index in range(time_series.shape[1] - 1):
             time_series[:, index] = self.butter_bandpass_filter(time_series[:, index], f_lb, f_ub, tr, order=f_order)
