@@ -82,14 +82,6 @@ pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connect
                                          measure='manwhitneyu', is_corrected=True)
 
 print("\nLaggeds HC MCS")
-print(np.array(list_td_matrixs_group[0]).shape)
-
-
-np.savetxt(path_general + 'mean_td_hc.txt', np.mean(np.array(list_td_matrixs_group[0]), axis=-1), delimiter=' ', fmt='%s')
-np.savetxt(path_general + 'mean_td_mcs.txt', np.mean(np.array(list_td_matrixs_group[1]), axis=-1), delimiter=' ', fmt='%s')
-np.savetxt(path_general + 'mean_td_uws.txt', np.mean(np.array(list_td_matrixs_group[2]), axis=-1), delimiter=' ', fmt='%s')
-
-
 pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[0]), axis=-1), np.mean(np.array(list_td_matrixs_group[1]), axis=-1),
                                          measure='manwhitneyu', is_corrected=True)
 
@@ -100,3 +92,9 @@ pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[0]),
 print("\nLaggeds MCS UWS")
 pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[1]), axis=-1), np.mean(np.array(list_td_matrixs_group[2]), axis=-1),
                                          measure='manwhitneyu', is_corrected=True)
+
+np.savetxt(path_general + 'mean_td_hc.txt', np.mean(np.array(list_td_matrixs_group[0]), axis=-1), delimiter=' ', fmt='%s')
+np.savetxt(path_general + 'mean_td_mcs.txt', np.mean(np.array(list_td_matrixs_group[1]), axis=-1), delimiter=' ', fmt='%s')
+np.savetxt(path_general + 'mean_td_uws.txt', np.mean(np.array(list_td_matrixs_group[2]), axis=-1), delimiter=' ', fmt='%s')
+
+print(np.array(list_td_matrixs_group[0])[0,:,:])
