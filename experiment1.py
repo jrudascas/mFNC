@@ -28,10 +28,10 @@ maskPath = 'data/structural/fwc1mprage.nii.gz'
 timeDelayMapList = []
 amplitudeWeightedTimeDelayMapList = []
 
+print("Starting...")
 for group in sorted(os.listdir(path)):
     pathInto = os.path.join(path, group)
     if os.path.isdir(pathInto):
-
         for dir in sorted(os.listdir(pathInto)):
             fMRI = os.path.join(os.path.join(pathInto, dir), dwiPath)
             if os.path.isdir(os.path.join(pathInto, dir)):
@@ -146,7 +146,7 @@ for group in sorted(os.listdir(path)):
 
                 FNC = f.functionalNetworkConnectivity()
 
-                timeDelayMatrixs, amplitudeWeightedTimeDelayMatrixs= FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, measure=measure)
+                connectivity_matrix, timeDelayMatrixs, amplitudeWeightedTimeDelayMatrixs= FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, measure=measure)
 
                 upperTD = np.copy(timeDelayMatrixs)
                 lowerTD = np.transpose(np.copy(timeDelayMatrixs))

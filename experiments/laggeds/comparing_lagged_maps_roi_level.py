@@ -15,7 +15,7 @@ path_atlas_nmi = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/HarvardOxfor
 
 path_general = '/home/jrudascas/Desktop/Test/'
 name_td_map = 'TD_Map.nii'
-path_relative_mask = 'data/structural/fwc1mprage.nii.gz'
+
 
 img_atlas = nib.load(path_atlas_nmi)
 data_atlas = img_atlas.get_data()
@@ -56,9 +56,17 @@ for group in sorted(os.listdir(path_general)):
 
         list_group_td_map.append(TDMap)
 
+print('HC vs MCS\n')
 ut.toFindStatisticDifference(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[1]), threshold=0.01)
+print('HC vs MCS\n')
 ut.toFindStatisticDifference(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[2]), threshold=0.01)
+print('HC vs MCS\n')
 ut.toFindStatisticDifference(np.asarray(list_group_td_map[1]), np.asarray(list_group_td_map[2]), threshold=0.01)
+
+#display = plotting.plot_anat(os.path.join(pathInto, 'meanTDMap_' + group + '.nii'), cut_coords=[0,-60,45])
+#dis.add_contours(nib.Nifti1Image((data_atlas == 31).astype(int), affine=affine_atlas), filled=False, alpha=0.7, levels=[0.5], colors='b')
+
+#plotting.show()
 
 regr = linear_model.LinearRegression()
 

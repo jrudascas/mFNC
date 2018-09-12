@@ -68,17 +68,17 @@ pList1 = utils.toFindStatisticDifference(utils.mean(TD2, outlier=outlier), utils
                                          measure='manwhitneyu', outlier=outlier)
 
 
-print("\nTest Graph MCS UWS")
-pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),
-                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
+#print("\nTest Graph MCS UWS")
+#pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),
+#                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
 
-print("\nTest Graph HC MCS")
-pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group3),
-                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
+#print("\nTest Graph HC MCS")
+#pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group3),
+#                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
 
-print("\nTest Graph HC UWS")
-pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group2), utils.buildFeaturesVector(group3),
-                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
+#print("\nTest Graph HC UWS")
+#pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group2), utils.buildFeaturesVector(group3),
+#                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
 
 sys.exit(0)
 
