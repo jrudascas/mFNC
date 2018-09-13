@@ -8,7 +8,7 @@ from scipy.signal import butter, filtfilt
 from scipy import stats
 import time
 import distcorr as dc
-
+from numba import jit
 
 # Is necessary to install Tkinter -->sudo apt-get install python3-tk
 
@@ -149,10 +149,7 @@ class Core:
                             connectivity_matrix[roi1, roi2, :] == util.absmax(
                                 connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
 
-                        awtd_matrix[roi1, roi2] = util.absmax(
-                            connectivity_matrix[roi1, roi2, :]) * (np.where(
-                            connectivity_matrix[roi1, roi2, :] == util.absmax(
-                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged)
+                        awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
                 else:
                     for lag in kCircular:
                         time_serie2 = np.roll(data[:, roi2], lag)
@@ -164,10 +161,7 @@ class Core:
                             connectivity_matrix[roi1, roi2, :] == util.absmax(
                                 connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
 
-                        awtd_matrix[roi1, roi2] = util.absmax(
-                            connectivity_matrix[roi1, roi2, :]) * (np.where(
-                            connectivity_matrix[roi1, roi2, :] == util.absmax(
-                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged)
+                        awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
 
         return util.absmax(connectivity_matrix, axis=-1), td_matrix, awtd_matrix
 
@@ -297,6 +291,7 @@ class Core:
         print("\n" + "Ended - Build Edge Connectivity Matrix based" + " --- " + time.strftime("%H:%M:%S") + "\n")
         return dynamic_connectivity_matrix
 
+    @jit
     def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC', tri_up=False):
 
         for index in range(time_series.shape[1] - 1):

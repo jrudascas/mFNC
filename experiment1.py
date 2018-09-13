@@ -155,17 +155,17 @@ for group in sorted(os.listdir(path)):
                 upperTD = np.copy(td_matrix)
                 lowerTD = np.transpose(np.copy(td_matrix))
 
-                timeDelayMatrixTotal = upperTD - lowerTD
-                timeDelayProjection = np.mean(timeDelayMatrixTotal, axis=0)
+                td_matrix_total = upperTD - lowerTD
+                td_projection = np.mean(td_matrix_total, axis=0)
 
                 upperAWTD = np.copy(awtd_matrix)
                 lowerAWTD = np.transpose(np.copy(awtd_matrix))
 
-                amplitudeWeightedTimeDelayMatrixTotal = upperAWTD - lowerAWTD
-                amplitudeWeightedTimeDelayProjection = np.mean(amplitudeWeightedTimeDelayMatrixTotal, axis=0)
+                awtd_matrix_total = upperAWTD - lowerAWTD
+                awtd_projection = np.mean(awtd_matrix_total, axis=0)
 
-                timeDelayMap = np.zeros(greyMatterData.shape)
-                amplitudeWeightedTimeDelayMap = np.zeros(greyMatterData.shape)
+                td_map = np.zeros(greyMatterData.shape)
+                awtd_map = np.zeros(greyMatterData.shape)
 
                 roiIndex = 0
                 for slide in range(1, greyMatterData.shape[-1] - 1, 3):
@@ -255,72 +255,72 @@ for group in sorted(os.listdir(path)):
 
                                 if (np.mean(np.mean(indexfMRI, axis=0)) != 0):
 
-                                    timeDelayMap[row - 1, col - 1, slide - 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row - 1, col, slide - 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row - 1, col + 1, slide - 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row, col - 1, slide - 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row, col, slide - 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row, col + 1, slide - 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row + 1, col - 1, slide - 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row + 1, col, slide - 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row + 1, col + 1, slide - 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row - 1, col - 1, slide] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row - 1, col, slide] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row - 1, col + 1, slide] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row, col - 1, slide] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row, col, slide] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row, col + 1, slide] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row + 1, col - 1, slide] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row + 1, col, slide] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row + 1, col + 1, slide] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row - 1, col - 1, slide + 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row - 1, col, slide + 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row - 1, col + 1, slide + 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row, col - 1, slide + 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row, col, slide + 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row, col + 1, slide + 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row + 1, col - 1, slide + 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row + 1, col, slide + 1] = timeDelayProjection[roiIndex]
-                                    timeDelayMap[row + 1, col + 1, slide + 1] = timeDelayProjection[roiIndex]
+                                    td_map[row - 1, col - 1, slide - 1] = td_projection[roiIndex]
+                                    td_map[row - 1, col, slide - 1] = td_projection[roiIndex]
+                                    td_map[row - 1, col + 1, slide - 1] = td_projection[roiIndex]
+                                    td_map[row, col - 1, slide - 1] = td_projection[roiIndex]
+                                    td_map[row, col, slide - 1] = td_projection[roiIndex]
+                                    td_map[row, col + 1, slide - 1] = td_projection[roiIndex]
+                                    td_map[row + 1, col - 1, slide - 1] = td_projection[roiIndex]
+                                    td_map[row + 1, col, slide - 1] = td_projection[roiIndex]
+                                    td_map[row + 1, col + 1, slide - 1] = td_projection[roiIndex]
+                                    td_map[row - 1, col - 1, slide] = td_projection[roiIndex]
+                                    td_map[row - 1, col, slide] = td_projection[roiIndex]
+                                    td_map[row - 1, col + 1, slide] = td_projection[roiIndex]
+                                    td_map[row, col - 1, slide] = td_projection[roiIndex]
+                                    td_map[row, col, slide] = td_projection[roiIndex]
+                                    td_map[row, col + 1, slide] = td_projection[roiIndex]
+                                    td_map[row + 1, col - 1, slide] = td_projection[roiIndex]
+                                    td_map[row + 1, col, slide] = td_projection[roiIndex]
+                                    td_map[row + 1, col + 1, slide] = td_projection[roiIndex]
+                                    td_map[row - 1, col - 1, slide + 1] = td_projection[roiIndex]
+                                    td_map[row - 1, col, slide + 1] = td_projection[roiIndex]
+                                    td_map[row - 1, col + 1, slide + 1] = td_projection[roiIndex]
+                                    td_map[row, col - 1, slide + 1] = td_projection[roiIndex]
+                                    td_map[row, col, slide + 1] = td_projection[roiIndex]
+                                    td_map[row, col + 1, slide + 1] = td_projection[roiIndex]
+                                    td_map[row + 1, col - 1, slide + 1] = td_projection[roiIndex]
+                                    td_map[row + 1, col, slide + 1] = td_projection[roiIndex]
+                                    td_map[row + 1, col + 1, slide + 1] = td_projection[roiIndex]
 
-                                    amplitudeWeightedTimeDelayMap[row - 1, col - 1, slide - 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row - 1, col, slide - 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row - 1, col + 1, slide - 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row, col - 1, slide - 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row, col, slide - 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row, col + 1, slide - 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row + 1, col - 1, slide - 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row + 1, col, slide - 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row + 1, col + 1, slide - 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row - 1, col - 1, slide] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row - 1, col, slide] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row - 1, col + 1, slide] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row, col - 1, slide] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row, col, slide] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row, col + 1, slide] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row + 1, col - 1, slide] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row + 1, col, slide] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row + 1, col + 1, slide] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row - 1, col - 1, slide + 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row - 1, col, slide + 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row - 1, col + 1, slide + 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row, col - 1, slide + 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row, col, slide + 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row, col + 1, slide + 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row + 1, col - 1, slide + 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row + 1, col, slide + 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
-                                    amplitudeWeightedTimeDelayMap[row + 1, col + 1, slide + 1] = amplitudeWeightedTimeDelayProjection[roiIndex]
+                                    awtd_map[row - 1, col - 1, slide - 1] = awtd_projection[roiIndex]
+                                    awtd_map[row - 1, col, slide - 1] = awtd_projection[roiIndex]
+                                    awtd_map[row - 1, col + 1, slide - 1] = awtd_projection[roiIndex]
+                                    awtd_map[row, col - 1, slide - 1] = awtd_projection[roiIndex]
+                                    awtd_map[row, col, slide - 1] = awtd_projection[roiIndex]
+                                    awtd_map[row, col + 1, slide - 1] = awtd_projection[roiIndex]
+                                    awtd_map[row + 1, col - 1, slide - 1] = awtd_projection[roiIndex]
+                                    awtd_map[row + 1, col, slide - 1] = awtd_projection[roiIndex]
+                                    awtd_map[row + 1, col + 1, slide - 1] = awtd_projection[roiIndex]
+                                    awtd_map[row - 1, col - 1, slide] = awtd_projection[roiIndex]
+                                    awtd_map[row - 1, col, slide] = awtd_projection[roiIndex]
+                                    awtd_map[row - 1, col + 1, slide] = awtd_projection[roiIndex]
+                                    awtd_map[row, col - 1, slide] = awtd_projection[roiIndex]
+                                    awtd_map[row, col, slide] = awtd_projection[roiIndex]
+                                    awtd_map[row, col + 1, slide] = awtd_projection[roiIndex]
+                                    awtd_map[row + 1, col - 1, slide] = awtd_projection[roiIndex]
+                                    awtd_map[row + 1, col, slide] = awtd_projection[roiIndex]
+                                    awtd_map[row + 1, col + 1, slide] = awtd_projection[roiIndex]
+                                    awtd_map[row - 1, col - 1, slide + 1] = awtd_projection[roiIndex]
+                                    awtd_map[row - 1, col, slide + 1] = awtd_projection[roiIndex]
+                                    awtd_map[row - 1, col + 1, slide + 1] = awtd_projection[roiIndex]
+                                    awtd_map[row, col - 1, slide + 1] = awtd_projection[roiIndex]
+                                    awtd_map[row, col, slide + 1] = awtd_projection[roiIndex]
+                                    awtd_map[row, col + 1, slide + 1] = awtd_projection[roiIndex]
+                                    awtd_map[row + 1, col - 1, slide + 1] = awtd_projection[roiIndex]
+                                    awtd_map[row + 1, col, slide + 1] = awtd_projection[roiIndex]
+                                    awtd_map[row + 1, col + 1, slide + 1] = awtd_projection[roiIndex]
 
                                     roiIndex = roiIndex + 1
 
-                nib.save(nib.Nifti1Image(timeDelayMap, affine=greyMatterAffine), os.path.join(os.path.join(pathInto, dir), 'TD_Map.nii'))
-                nib.save(nib.Nifti1Image(amplitudeWeightedTimeDelayMap, affine=greyMatterAffine), os.path.join(os.path.join(pathInto, dir), 'AWTD_Map.nii'))
+                nib.save(nib.Nifti1Image(td_map, affine=greyMatterAffine), os.path.join(os.path.join(pathInto, dir), 'TD_Map.nii'))
+                nib.save(nib.Nifti1Image(awtd_map, affine=greyMatterAffine), os.path.join(os.path.join(pathInto, dir), 'AWTD_Map.nii'))
 
-                plotting.plot_stat_map(nib.Nifti1Image(timeDelayMap, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, vmax=0.5*lagged, output_file=os.path.join(os.path.join(pathInto, dir), 'TD_Map.png'))
-                plotting.plot_stat_map(nib.Nifti1Image(amplitudeWeightedTimeDelayMap, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, output_file=os.path.join(os.path.join(pathInto, dir), 'AWTD_Map.png'))
+                plotting.plot_stat_map(nib.Nifti1Image(td_map, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, vmax=0.5 * lagged, output_file=os.path.join(os.path.join(pathInto, dir), 'TD_Map.png'))
+                plotting.plot_stat_map(nib.Nifti1Image(awtd_map, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, output_file=os.path.join(os.path.join(pathInto, dir), 'AWTD_Map.png'))
 
-                timeDelayMapList.append(timeDelayMap)
-                amplitudeWeightedTimeDelayMapList.append(amplitudeWeightedTimeDelayMap)
+                timeDelayMapList.append(td_map)
+                amplitudeWeightedTimeDelayMapList.append(awtd_map)
 
             td_matrix = np.array(timeDelayMapList)
             AWTDMatrix = np.array(amplitudeWeightedTimeDelayMapList)
