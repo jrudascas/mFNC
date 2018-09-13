@@ -300,8 +300,11 @@ class Core:
             list_time_serie = list(np.transpose(time_series))
             new_time_series = [util.to_interpolate_time_series(time_serie, tr, new_tr) for time_serie in
                                list_time_serie]
-            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(
-                np.transpose(np.array(new_time_series)), lagged=lag, measure=measure, tri_up=tri_up)
+            new_time_series = np.transpose(np.array(new_time_series))
+            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(new_time_series,
+                                                                                                   lagged = lag,
+                                                                                                   measure = measure,
+                                                                                                   tri_up = tri_up)
             return connectivity_matrix, td_matrix, awtd_matrix, new_tr
         else:
             connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(time_series,
