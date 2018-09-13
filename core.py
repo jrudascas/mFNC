@@ -8,6 +8,7 @@ from scipy.signal import butter, filtfilt
 from scipy import stats
 import time
 import distcorr as dc
+import time
 import numba
 
 # Is necessary to install Tkinter -->sudo apt-get install python3-tk
@@ -116,39 +117,40 @@ class Core:
 
         return dynamicLaggedConnectivityMatrix, listLaggeds, timeDelayMatrix, amplitudeWeightedTimeDelayMatrix
 
-    #@numba.jit
+    @numba.jit
     def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC', tri_up = False):
 
-        timePoints, numberROI = data.shape
+        t = time.time()
+        time_points, roit_number = data.shape
 
         if lagged == 0 or lagged is None:
-            kCircular = []
-            kCircular.append(0)
+            kCircular = [0]
             temp2 = 0
         else:
             kCircular = range(-1 * lagged, lagged + 1, 1)
             temp2 = lagged
 
-        indexROI = range(numberROI)
+        index_roi = range(roit_number)
 
-        connectivity_matrix = np.zeros((numberROI, numberROI, 2 * temp2 + 1))
-        td_matrix = np.zeros((numberROI, numberROI))
-        awtd_matrix = np.zeros((numberROI, numberROI))
+        connectivity_matrix = np.zeros((roit_number, roit_number, 2 * temp2 + 1))
+        td_matrix = np.zeros((roit_number, roit_number))
+        awtd_matrix = np.zeros((roit_number, roit_number))
 
-        for roi1 in indexROI:
-            print(str(float(roi1 / numberROI) * 100) + '%')
-            #time_serie1 = data[:, roi1]
-            for roi2 in indexROI:
-                if roi2 > roi1 and tri_up:
-                    for lag in kCircular:
-                        connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
-                            data[:, roi1], np.roll(data[:, roi2], lag), measure)
+        for roi1 in index_roi:
+            print(str(float(roi1 / roit_number) * 100) + '%')
+            for roi2 in index_roi:
+                if tri_up:
+                    if roi2 > roi1:
+                        for lag in kCircular:
+                            connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
+                                data[:, roi1], np.roll(data[:, roi2], lag), measure)
 
-                        td_matrix[roi1, roi2] = np.where(
-                            connectivity_matrix[roi1, roi2, :] == util.absmax(
-                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
+                            td_matrix[roi1, roi2] = np.where(
+                                connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                    connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
 
-                        awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
+                            awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[
+                                roi1, roi2]
                 else:
                     for lag in kCircular:
                         connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
@@ -160,6 +162,7 @@ class Core:
 
                         awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
 
+        print("Time: " + str(t - time.time()))
         return util.absmax(connectivity_matrix, axis=-1), td_matrix, awtd_matrix
 
     def to_build_connectivity_matrix_2_groups(self, time_series_g1, time_series_g2, measure='PC'):
@@ -298,9 +301,11 @@ class Core:
             list_time_serie = list(np.transpose(time_series))
             new_time_series = [util.to_interpolate_time_series(time_serie, tr, new_tr) for time_serie in
                                list_time_serie]
-            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(
-                np.transpose(np.array(new_time_series)),
-                lagged=lag, measure=measure)
+            new_time_series = np.transpose(np.array(new_time_series))
+            connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(new_time_series,
+                                                                                                   lagged=lag,
+                                                                                                   measure=measure,
+                                                                                                   tri_up=tri_up)
             return connectivity_matrix, td_matrix, awtd_matrix, new_tr
         else:
             connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(time_series,
