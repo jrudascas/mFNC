@@ -162,7 +162,7 @@ class Core:
 
                         awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
 
-        print("Time: " + str(t - time.time()))
+        print("Time: " + str(time.time() - t))
         return util.absmax(connectivity_matrix, axis=-1), td_matrix, awtd_matrix
 
     def to_build_connectivity_matrix_2_groups(self, time_series_g1, time_series_g2, measure='PC'):

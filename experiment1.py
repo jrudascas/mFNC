@@ -54,7 +54,7 @@ for group in sorted(os.listdir(path)):
                 t1Data = t1Img.get_data()
                 t1Affine = t1Img.get_affine()
 
-                greyMatterData = (greyMatterData > 0.95)
+                greyMatterData = (greyMatterData > 0.4)
 
                 greyMatterData = mp.binary_closing(greyMatterData)
 
@@ -144,9 +144,9 @@ for group in sorted(os.listdir(path)):
                                 if (np.mean(np.mean(indexfMRI, axis=0)) != 0):
                                     timeCourse.append(np.mean(indexfMRI, axis=0))
 
-                FNC = f.Core()
+                c = f.Core()
 
-                connectivity_matrix, td_matrix, awtd_matrix, tr = FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, new_tr=new_tr, measure=measure, tri_up=True)
+                connectivity_matrix, td_matrix, awtd_matrix, tr = c.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, new_tr=new_tr, measure=measure, tri_up=True)
 
                 td_matrix = td_matrix * tr
                 awtd_matrix = awtd_matrix * tr
