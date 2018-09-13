@@ -8,7 +8,7 @@ from scipy.signal import butter, filtfilt
 from scipy import stats
 import time
 import distcorr as dc
-from numba import jit
+import numba
 
 # Is necessary to install Tkinter -->sudo apt-get install python3-tk
 
@@ -116,6 +116,7 @@ class Core:
 
         return dynamicLaggedConnectivityMatrix, listLaggeds, timeDelayMatrix, amplitudeWeightedTimeDelayMatrix
 
+    @numba.jit
     def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC', tri_up = False):
 
         timePoints, numberROI = data.shape
@@ -135,7 +136,7 @@ class Core:
         awtd_matrix = np.zeros((numberROI, numberROI))
 
         for roi1 in indexROI:
-            print(str(float(roi1 / numberROI) * 100) + '%')
+            #print(str(float(roi1 / numberROI) * 100) + '%')
             time_serie1 = data[:, roi1]
             for roi2 in indexROI:
                 if roi2 > roi1 and tri_up:
@@ -291,7 +292,6 @@ class Core:
         print("\n" + "Ended - Build Edge Connectivity Matrix based" + " --- " + time.strftime("%H:%M:%S") + "\n")
         return dynamic_connectivity_matrix
 
-    @jit
     def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC', tri_up=False):
 
         for index in range(time_series.shape[1] - 1):
