@@ -116,10 +116,8 @@ class Core:
 
         return dynamicLaggedConnectivityMatrix, listLaggeds, timeDelayMatrix, amplitudeWeightedTimeDelayMatrix
 
-    @numba.jit
+    #@numba.jit
     def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC', tri_up = False):
-        t = time()
-
 
         timePoints, numberROI = data.shape
 
@@ -162,7 +160,6 @@ class Core:
 
                         awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
 
-        print("Time: " + str(time() - t))
         return util.absmax(connectivity_matrix, axis=-1), td_matrix, awtd_matrix
 
     def to_build_connectivity_matrix_2_groups(self, time_series_g1, time_series_g2, measure='PC'):
