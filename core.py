@@ -139,16 +139,17 @@ class Core:
         for roi1 in indexROI:
             print(str(float(roi1 / roi_number) * 100) + '%')
             for roi2 in indexROI:
-                if roi2 > roi1 and tri_up:
-                    for lag in k_circular:
-                        connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
-                            data[:, roi1], np.roll(data[:, roi2], lag), measure)
+                if tri_up:
+                    if roi2 > roi1:
+                        for lag in k_circular:
+                            connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
+                                data[:, roi1], np.roll(data[:, roi2], lag), measure)
 
-                        td_matrix[roi1, roi2] = np.where(
-                            connectivity_matrix[roi1, roi2, :] == util.absmax(
-                                connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
+                            td_matrix[roi1, roi2] = np.where(
+                                connectivity_matrix[roi1, roi2, :] == util.absmax(
+                                    connectivity_matrix[roi1, roi2, :]))[0][0] - lagged
 
-                        awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
+                            awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
                 else:
                     print('Hola Mundo')
                     for lag in k_circular:
