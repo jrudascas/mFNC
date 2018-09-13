@@ -144,8 +144,6 @@ for group in sorted(os.listdir(path)):
                                 if (np.mean(np.mean(indexfMRI, axis=0)) != 0):
                                     timeCourse.append(np.mean(indexfMRI, axis=0))
 
-                print(len(timeCourse))
-
                 FNC = f.Core()
 
                 connectivity_matrix, td_matrix, awtd_matrix, tr = FNC.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, new_tr=new_tr, measure=measure, tri_up=True)

@@ -3,6 +3,8 @@ from scipy import stats
 from scipy import interpolate
 import nibabel as nib
 from exceptions import IllegalArgumentError
+import scipy.stats as sc
+import distcorr as dc
 
 def covariance(x, y):
     return np.dot(x,y)/x.shape[-1]
@@ -48,13 +50,10 @@ def to_compute_time_series_similarity(time_serie_1, time_serie_2, measure):
     if measure not in ['PC', 'COV', 'DC']:
         raise AttributeError('Not is posible to estimate the measure ' + measure)
 
-    import scipy.stats as sc
-    import distcorr as dc
-
-    if measure == 'PC':
-        return sc.pearsonr(time_serie_1, time_serie_2)[0]
-    elif measure == 'COV':
+    if measure == 'COV':
         return covariance(time_serie_1, time_serie_2)
+    elif measure == 'PC':
+        return sc.pearsonr(time_serie_1, time_serie_2)[0]
     elif measure == 'DC':
         return dc.distcorr(time_serie_1, time_serie_2)
 

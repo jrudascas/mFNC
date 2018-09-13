@@ -118,29 +118,29 @@ class Core:
 
     @numba.jit
     def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC', tri_up = False):
+        t = time()
 
-        timePoints, numberROI = data.shape
+        time_points, roi_number = data.shape
+        print("ROIs number: " + roi_number)
 
         if lagged == 0 or lagged is None:
-            kCircular = []
-            kCircular.append(0)
+            k_circular = [0]
             temp2 = 0
         else:
-            kCircular = range(-1 * lagged, lagged + 1, 1)
+            k_circular = range(-1 * lagged, lagged + 1, 1)
             temp2 = lagged
 
-        indexROI = range(numberROI)
+        indexROI = range(roi_number)
 
-        connectivity_matrix = np.zeros((numberROI, numberROI, 2 * temp2 + 1))
-        td_matrix = np.zeros((numberROI, numberROI))
-        awtd_matrix = np.zeros((numberROI, numberROI))
+        connectivity_matrix = np.zeros((roi_number, roi_number, 2 * temp2 + 1))
+        td_matrix = np.zeros((roi_number, roi_number))
+        awtd_matrix = np.zeros((roi_number, roi_number))
 
         for roi1 in indexROI:
-            print(str(float(roi1 / numberROI) * 100) + '%')
-            #time_serie1 = data[:, roi1]
+            print(str(float(roi1 / roi_number) * 100) + '%')
             for roi2 in indexROI:
                 if roi2 > roi1 and tri_up:
-                    for lag in kCircular:
+                    for lag in k_circular:
                         connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
                             data[:, roi1], np.roll(data[:, roi2], lag), measure)
 
@@ -150,7 +150,8 @@ class Core:
 
                         awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
                 else:
-                    for lag in kCircular:
+                    print('Hola Mundo')
+                    for lag in k_circular:
                         connectivity_matrix[roi1, roi2, lag + lagged] = util.to_compute_time_series_similarity(
                             data[:, roi1], np.roll(data[:, roi2], lag), measure)
 
@@ -160,6 +161,7 @@ class Core:
 
                         awtd_matrix[roi1, roi2] = util.absmax(connectivity_matrix[roi1, roi2, :]) * td_matrix[roi1, roi2]
 
+        print("Time: " + str(time() - t))
         return util.absmax(connectivity_matrix, axis=-1), td_matrix, awtd_matrix
 
     def to_build_connectivity_matrix_2_groups(self, time_series_g1, time_series_g2, measure='PC'):
