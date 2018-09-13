@@ -53,7 +53,7 @@ for group in sorted(os.listdir(path)):
                 t1Data = t1Img.get_data()
                 t1Affine = t1Img.get_affine()
 
-                greyMatterData = (greyMatterData > 0.4)
+                greyMatterData = (greyMatterData > 0.6)
 
                 greyMatterData = mp.binary_closing(greyMatterData)
 

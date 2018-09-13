@@ -35,18 +35,11 @@ for group in sorted(os.listdir(path_general)):
         dict_td_maps[group] = np.array(td_maps)
         dict_td_maps_new[group] = aux
 
-
-
 affine = nib.load(path_td_map).affine
 group = 'HC'
 differences_hc_mcs = np.zeros((dict_td_maps[group].shape[1], dict_td_maps[group].shape[2], dict_td_maps[group].shape[3]))
 differences_hc_uws = np.zeros((dict_td_maps[group].shape[1], dict_td_maps[group].shape[2], dict_td_maps[group].shape[3]))
 differences_mcs_uws = np.zeros((dict_td_maps[group].shape[1], dict_td_maps[group].shape[2], dict_td_maps[group].shape[3]))
-
-e1 = 0
-e2 = 1
-s1 = -7
-s2 = 7
 
 print(dict_td_maps[group].shape)
 
@@ -55,24 +48,15 @@ for dim1 in range(dict_td_maps[group].shape[1]):
         for dim3 in range(dict_td_maps[group].shape[3]):
             if np.sum(dict_td_maps['HC'][:, dim1, dim2, dim3]) != 0 and np.sum(dict_td_maps['MCS'][:, dim1, dim2, dim3]) != 0:
                 t, p = stats.mannwhitneyu(dict_td_maps['HC'][dict_td_maps['HC'][:, dim1, dim2, dim3] != 0, dim1, dim2, dim3], dict_td_maps['MCS'][dict_td_maps['MCS'][:, dim1, dim2, dim3] != 0, dim1, dim2, dim3])
-                #differences_hc_mcs[dim1, dim2, dim3] = u.to_project_interval(1-p,e1, e2, s1, s2)
-                differences_hc_mcs[dim1, dim2, dim3] = 10 - p*10
-            else:
-                differences_hc_mcs[dim1, dim2, dim3] = 0
+                differences_hc_mcs[dim1, dim2, dim3] = stats.norm.isf(p)
 
             if np.sum(dict_td_maps['HC'][:, dim1, dim2, dim3]) != 0 and np.sum(dict_td_maps['UWS'][:, dim1, dim2, dim3]) != 0:
                 t, p = stats.mannwhitneyu(dict_td_maps['HC'][dict_td_maps['HC'][:, dim1, dim2, dim3] != 0, dim1, dim2, dim3], dict_td_maps['UWS'][dict_td_maps['UWS'][:, dim1, dim2, dim3] != 0, dim1, dim2, dim3])
-                #differences_hc_uws[dim1, dim2, dim3] = u.to_project_interval(1-p,e1, e2, s1, s2)
-                differences_hc_uws[dim1, dim2, dim3] = 10 - p*10
-            else:
-                differences_hc_uws[dim1, dim2, dim3] = 0
+                differences_hc_uws[dim1, dim2, dim3] = stats.norm.isf(p)
 
             if np.sum(dict_td_maps['MCS'][:, dim1, dim2, dim3]) != 0 and np.sum(dict_td_maps['UWS'][:, dim1, dim2, dim3]) != 0:
                 t, p = stats.mannwhitneyu(dict_td_maps['MCS'][dict_td_maps['MCS'][:, dim1, dim2, dim3] != 0, dim1, dim2, dim3], dict_td_maps['UWS'][dict_td_maps['UWS'][:, dim1, dim2, dim3] != 0, dim1, dim2, dim3])
-                #differences_mcs_uws[dim1, dim2, dim3] = u.to_project_interval(1-p,e1, e2, s1, s2)
-                differences_mcs_uws[dim1, dim2, dim3] = 10 - p*10
-            else:
-                differences_mcs_uws[dim1, dim2, dim3] = 0
+                differences_mcs_uws[dim1, dim2, dim3] = stats.norm.isf(p)
 
 nib.save(nib.Nifti1Image(dict_td_maps['HC'], affine=affine), os.path.join(path_general, 'hc.nii'))
 nib.save(nib.Nifti1Image(dict_td_maps['MCS'], affine=affine), os.path.join(path_general, 'mcs.nii'))
