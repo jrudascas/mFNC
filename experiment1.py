@@ -11,6 +11,7 @@ from nilearn import plotting
 import scipy.stats as sc
 import scipy.ndimage.morphology as mp
 from nitime.viz import drawmatrix_channels
+import timeit
 
 import os
 
@@ -53,7 +54,7 @@ for group in sorted(os.listdir(path)):
                 t1Data = t1Img.get_data()
                 t1Affine = t1Img.get_affine()
 
-                greyMatterData = (greyMatterData > 0.6)
+                greyMatterData = (greyMatterData > 0.95)
 
                 greyMatterData = mp.binary_closing(greyMatterData)
 
