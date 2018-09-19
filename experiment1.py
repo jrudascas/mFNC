@@ -43,7 +43,7 @@ for group in sorted(os.listdir(path_study)):
                 print('Subject: ' + dir)
                 full_path_fMRI = os.path.join(path_subject, path_relative_fMRI)
 
-                img_fMRI = nib.load(path_subject)
+                img_fMRI = nib.load(full_path_fMRI)
                 data_fMRI = img_fMRI.get_data()
                 affine_fMRI = img_fMRI.get_affine()
 
