@@ -20,76 +20,65 @@ measure = 'COV'
 lagged = 4
 new_tr = 0.5
 
-t1MNI = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
+path_study = '/home/runlab/data/COMA/'
+path_relative_fMRI = 'data/functional/fmriGLM.nii.gz'
+path_mask = path_study + 'HC/Cahodessur/data/structural/fwc1mprage.nii.gz'
 
-path = '/home/runlab/data/COMA/'
+img_grey_matter = nib.load(path_mask)
+data_grey_matter = img_grey_matter.get_data()
+affine_grey_matter = img_grey_matter.get_affine()
 
-dwiPath = 'data/functional/fmriGLM.nii.gz'
-t1Path = 'data/structural/fwmmprage.nii.gz'
-maskPath = 'data/structural/fwc1mprage.nii.gz'
-timeDelayMapList = []
-amplitudeWeightedTimeDelayMapList = []
+data_grey_matter = (data_grey_matter > 0.4)
+data_grey_matter = mp.binary_closing(data_grey_matter)
 
-print("Starting...")
-for group in sorted(os.listdir(path)):
-    pathInto = os.path.join(path, group)
-    if os.path.isdir(pathInto):
-        for dir in sorted(os.listdir(pathInto)):
-            fMRI = os.path.join(os.path.join(pathInto, dir), dwiPath)
-            if os.path.isdir(os.path.join(pathInto, dir)):
+td_map_list = []
+awtd_map_list = []
+
+for group in sorted(os.listdir(path_study)):
+    path_group = os.path.join(path_study, group)
+    if os.path.isdir(path_group):
+        for dir in sorted(os.listdir(path_group)):
+            path_subject = os.path.join(path_group, dir)
+            if os.path.isdir(path_subject):
                 print('Subject: ' + dir)
+                full_path_fMRI = os.path.join(path_subject, path_relative_fMRI)
 
-                t1 = os.path.join(os.path.join(pathInto, dir), t1Path)
-                greyMatter = os.path.join(os.path.join(pathInto, dir), maskPath)
+                img_fMRI = nib.load(path_subject)
+                data_fMRI = img_fMRI.get_data()
+                affine_fMRI = img_fMRI.get_affine()
 
-                greyMatterImg = nib.load(greyMatter)
-                greyMatterData = greyMatterImg.get_data()
-                greyMatterAffine = greyMatterImg.get_affine()
+                time_courses = []
+                for slide in range(1, data_grey_matter.shape[-1] - 1, 3):
+                    for col in range(1, data_grey_matter.shape[1] - 1, 3):
+                        for row in range(1, data_grey_matter.shape[0] - 1, 3):
 
-                fMRIImg = nib.load(fMRI)
-                fMRIData = fMRIImg.get_data()
-                fMRIAffine = fMRIImg.get_affine()
-
-                t1Img = nib.load(t1)
-                t1Data = t1Img.get_data()
-                t1Affine = t1Img.get_affine()
-
-                greyMatterData = (greyMatterData > 0.4)
-
-                greyMatterData = mp.binary_closing(greyMatterData)
-
-                timeCourse = []
-                for slide in range(1, greyMatterData.shape[-1] - 1, 3):
-                    for col in range(1, greyMatterData.shape[1] - 1, 3):
-                        for row in range(1, greyMatterData.shape[0] - 1, 3):
-
-                            indexGreyMatter = [greyMatterData[row-1, col-1, slide-1],
-                                               greyMatterData[row-1, col, slide-1],
-                                               greyMatterData[row-1, col+1, slide-1],
-                                               greyMatterData[row, col-1, slide-1],
-                                               greyMatterData[row, col, slide-1],
-                                               greyMatterData[row, col + 1, slide-1],
-                                               greyMatterData[row + 1, col-1, slide-1],
-                                               greyMatterData[row + 1, col, slide-1],
-                                               greyMatterData[row + 1, col+1, slide-1],
-                                               greyMatterData[row-1, col-1, slide],
-                                               greyMatterData[row-1, col, slide],
-                                               greyMatterData[row-1, col+1, slide],
-                                               greyMatterData[row, col-1, slide],
-                                               greyMatterData[row, col, slide],
-                                               greyMatterData[row, col + 1, slide],
-                                               greyMatterData[row + 1, col-1, slide],
-                                               greyMatterData[row + 1, col, slide],
-                                               greyMatterData[row + 1, col+1, slide],
-                                               greyMatterData[row - 1, col - 1, slide+1],
-                                               greyMatterData[row - 1, col, slide+1],
-                                               greyMatterData[row - 1, col + 1, slide+1],
-                                               greyMatterData[row, col - 1, slide+1],
-                                               greyMatterData[row, col, slide+1],
-                                               greyMatterData[row, col + 1, slide+1],
-                                               greyMatterData[row + 1, col - 1, slide+1],
-                                               greyMatterData[row + 1, col, slide+1],
-                                               greyMatterData[row + 1, col + 1, slide+1]]
+                            indexGreyMatter = [data_grey_matter[row - 1, col - 1, slide - 1],
+                                               data_grey_matter[row - 1, col, slide - 1],
+                                               data_grey_matter[row - 1, col + 1, slide - 1],
+                                               data_grey_matter[row, col - 1, slide - 1],
+                                               data_grey_matter[row, col, slide - 1],
+                                               data_grey_matter[row, col + 1, slide - 1],
+                                               data_grey_matter[row + 1, col - 1, slide - 1],
+                                               data_grey_matter[row + 1, col, slide - 1],
+                                               data_grey_matter[row + 1, col + 1, slide - 1],
+                                               data_grey_matter[row - 1, col - 1, slide],
+                                               data_grey_matter[row - 1, col, slide],
+                                               data_grey_matter[row - 1, col + 1, slide],
+                                               data_grey_matter[row, col - 1, slide],
+                                               data_grey_matter[row, col, slide],
+                                               data_grey_matter[row, col + 1, slide],
+                                               data_grey_matter[row + 1, col - 1, slide],
+                                               data_grey_matter[row + 1, col, slide],
+                                               data_grey_matter[row + 1, col + 1, slide],
+                                               data_grey_matter[row - 1, col - 1, slide + 1],
+                                               data_grey_matter[row - 1, col, slide + 1],
+                                               data_grey_matter[row - 1, col + 1, slide + 1],
+                                               data_grey_matter[row, col - 1, slide + 1],
+                                               data_grey_matter[row, col, slide + 1],
+                                               data_grey_matter[row, col + 1, slide + 1],
+                                               data_grey_matter[row + 1, col - 1, slide + 1],
+                                               data_grey_matter[row + 1, col, slide + 1],
+                                               data_grey_matter[row + 1, col + 1, slide + 1]]
                             """
                 
                             indexGreyMatter = [greyMatterData[row, col, slide],
@@ -112,41 +101,41 @@ for group in sorted(os.listdir(path)):
                                                       fMRIData[row + 1, col, slide + 1],
                                                       fMRIData[row + 1, col + 1, slide + 1]])
                                 """
-                                indexfMRI= np.array([fMRIData[row-1, col-1, slide-1],
-                                                     fMRIData[row-1, col, slide-1],
-                                                     fMRIData[row-1, col+1, slide-1],
-                                                     fMRIData[row, col-1, slide-1],
-                                                     fMRIData[row, col, slide-1],
-                                                     fMRIData[row, col + 1, slide-1],
-                                                     fMRIData[row + 1, col-1, slide-1],
-                                                     fMRIData[row + 1, col, slide-1],
-                                                     fMRIData[row + 1, col+1, slide-1],
+                                indexfMRI= np.array([data_fMRI[row - 1, col - 1, slide - 1],
+                                                     data_fMRI[row - 1, col, slide - 1],
+                                                     data_fMRI[row - 1, col + 1, slide - 1],
+                                                     data_fMRI[row, col - 1, slide - 1],
+                                                     data_fMRI[row, col, slide - 1],
+                                                     data_fMRI[row, col + 1, slide - 1],
+                                                     data_fMRI[row + 1, col - 1, slide - 1],
+                                                     data_fMRI[row + 1, col, slide - 1],
+                                                     data_fMRI[row + 1, col + 1, slide - 1],
 
-                                                     fMRIData[row-1, col-1, slide],
-                                                     fMRIData[row-1, col, slide],
-                                                     fMRIData[row-1, col+1, slide],
-                                                     fMRIData[row, col-1, slide],
-                                                     fMRIData[row, col, slide],
-                                                     fMRIData[row, col + 1, slide],
-                                                     fMRIData[row + 1, col-1, slide],
-                                                     fMRIData[row + 1, col, slide],
-                                                     fMRIData[row + 1, col+1, slide],
+                                                     data_fMRI[row - 1, col - 1, slide],
+                                                     data_fMRI[row - 1, col, slide],
+                                                     data_fMRI[row - 1, col + 1, slide],
+                                                     data_fMRI[row, col - 1, slide],
+                                                     data_fMRI[row, col, slide],
+                                                     data_fMRI[row, col + 1, slide],
+                                                     data_fMRI[row + 1, col - 1, slide],
+                                                     data_fMRI[row + 1, col, slide],
+                                                     data_fMRI[row + 1, col + 1, slide],
 
-                                                     fMRIData[row - 1, col - 1, slide+1],
-                                                     fMRIData[row - 1, col, slide+1],
-                                                     fMRIData[row - 1, col + 1, slide+1],
-                                                     fMRIData[row, col - 1, slide+1],
-                                                     fMRIData[row, col, slide+1],
-                                                     fMRIData[row, col + 1, slide+1],
-                                                     fMRIData[row + 1, col - 1, slide+1],
-                                                     fMRIData[row + 1, col, slide+1],
-                                                     fMRIData[row + 1, col + 1, slide+1]])
+                                                     data_fMRI[row - 1, col - 1, slide + 1],
+                                                     data_fMRI[row - 1, col, slide + 1],
+                                                     data_fMRI[row - 1, col + 1, slide + 1],
+                                                     data_fMRI[row, col - 1, slide + 1],
+                                                     data_fMRI[row, col, slide + 1],
+                                                     data_fMRI[row, col + 1, slide + 1],
+                                                     data_fMRI[row + 1, col - 1, slide + 1],
+                                                     data_fMRI[row + 1, col, slide + 1],
+                                                     data_fMRI[row + 1, col + 1, slide + 1]])
                                 if (np.mean(np.mean(indexfMRI, axis=0)) != 0):
-                                    timeCourse.append(np.mean(indexfMRI, axis=0))
+                                    time_courses.append(np.mean(indexfMRI, axis=0))
 
                 c = f.Core()
 
-                connectivity_matrix, td_matrix, awtd_matrix, tr = c.run2(np.transpose(np.array(timeCourse)), tr=TR, lag=lagged, new_tr=new_tr, measure=measure, tri_up=True)
+                connectivity_matrix, td_matrix, awtd_matrix, tr = c.run2(np.transpose(np.array(time_courses)), tr=TR, lag=lagged, new_tr=new_tr, measure=measure, tri_up=True)
 
                 td_matrix = td_matrix * tr
                 awtd_matrix = awtd_matrix * tr
@@ -163,13 +152,13 @@ for group in sorted(os.listdir(path)):
                 awtd_matrix_total = upperAWTD - lowerAWTD
                 awtd_projection = np.mean(awtd_matrix_total, axis=0)
 
-                td_map = np.zeros(greyMatterData.shape)
-                awtd_map = np.zeros(greyMatterData.shape)
+                td_map = np.zeros(data_grey_matter.shape)
+                awtd_map = np.zeros(data_grey_matter.shape)
 
                 roiIndex = 0
-                for slide in range(1, greyMatterData.shape[-1] - 1, 3):
-                    for col in range(1, greyMatterData.shape[1] - 1, 3):
-                        for row in range(1, greyMatterData.shape[0] - 1, 3):
+                for slide in range(1, data_grey_matter.shape[-1] - 1, 3):
+                    for col in range(1, data_grey_matter.shape[1] - 1, 3):
+                        for row in range(1, data_grey_matter.shape[0] - 1, 3):
                             """
                             indexGreyMatter = [greyMatterData[row, col, slide],
                                                greyMatterData[row, col + 1, slide],
@@ -181,33 +170,33 @@ for group in sorted(os.listdir(path)):
                                                greyMatterData[row + 1, col + 1, slide + 1]]
                             """
 
-                            indexGreyMatter = [greyMatterData[row-1, col-1, slide-1],
-                                               greyMatterData[row-1, col, slide-1],
-                                               greyMatterData[row-1, col+1, slide-1],
-                                               greyMatterData[row, col-1, slide-1],
-                                               greyMatterData[row, col, slide-1],
-                                               greyMatterData[row, col + 1, slide-1],
-                                               greyMatterData[row + 1, col-1, slide-1],
-                                               greyMatterData[row + 1, col, slide-1],
-                                               greyMatterData[row + 1, col+1, slide-1],
-                                               greyMatterData[row-1, col-1, slide],
-                                               greyMatterData[row-1, col, slide],
-                                               greyMatterData[row-1, col+1, slide],
-                                               greyMatterData[row, col-1, slide],
-                                               greyMatterData[row, col, slide],
-                                               greyMatterData[row, col + 1, slide],
-                                               greyMatterData[row + 1, col-1, slide],
-                                               greyMatterData[row + 1, col, slide],
-                                               greyMatterData[row + 1, col+1, slide],
-                                               greyMatterData[row - 1, col - 1, slide+1],
-                                               greyMatterData[row - 1, col, slide+1],
-                                               greyMatterData[row - 1, col + 1, slide+1],
-                                               greyMatterData[row, col - 1, slide+1],
-                                               greyMatterData[row, col, slide+1],
-                                               greyMatterData[row, col + 1, slide+1],
-                                               greyMatterData[row + 1, col - 1, slide+1],
-                                               greyMatterData[row + 1, col, slide+1],
-                                               greyMatterData[row + 1, col + 1, slide+1]]
+                            indexGreyMatter = [data_grey_matter[row - 1, col - 1, slide - 1],
+                                               data_grey_matter[row - 1, col, slide - 1],
+                                               data_grey_matter[row - 1, col + 1, slide - 1],
+                                               data_grey_matter[row, col - 1, slide - 1],
+                                               data_grey_matter[row, col, slide - 1],
+                                               data_grey_matter[row, col + 1, slide - 1],
+                                               data_grey_matter[row + 1, col - 1, slide - 1],
+                                               data_grey_matter[row + 1, col, slide - 1],
+                                               data_grey_matter[row + 1, col + 1, slide - 1],
+                                               data_grey_matter[row - 1, col - 1, slide],
+                                               data_grey_matter[row - 1, col, slide],
+                                               data_grey_matter[row - 1, col + 1, slide],
+                                               data_grey_matter[row, col - 1, slide],
+                                               data_grey_matter[row, col, slide],
+                                               data_grey_matter[row, col + 1, slide],
+                                               data_grey_matter[row + 1, col - 1, slide],
+                                               data_grey_matter[row + 1, col, slide],
+                                               data_grey_matter[row + 1, col + 1, slide],
+                                               data_grey_matter[row - 1, col - 1, slide + 1],
+                                               data_grey_matter[row - 1, col, slide + 1],
+                                               data_grey_matter[row - 1, col + 1, slide + 1],
+                                               data_grey_matter[row, col - 1, slide + 1],
+                                               data_grey_matter[row, col, slide + 1],
+                                               data_grey_matter[row, col + 1, slide + 1],
+                                               data_grey_matter[row + 1, col - 1, slide + 1],
+                                               data_grey_matter[row + 1, col, slide + 1],
+                                               data_grey_matter[row + 1, col + 1, slide + 1]]
 
                             if np.count_nonzero(indexGreyMatter) > len(indexGreyMatter)*1/2: # more than 50% of voxel are into the grey matter
 
@@ -222,35 +211,35 @@ for group in sorted(os.listdir(path)):
                                 timeDelayMap[row + 1, col + 1, slide + 1] = timeDelayProjection[roiIndex]
                 
                                 """
-                                indexfMRI= np.array([fMRIData[row-1, col-1, slide-1],
-                                                     fMRIData[row-1, col, slide-1],
-                                                     fMRIData[row-1, col+1, slide-1],
-                                                     fMRIData[row, col-1, slide-1],
-                                                     fMRIData[row, col, slide-1],
-                                                     fMRIData[row, col + 1, slide-1],
-                                                     fMRIData[row + 1, col-1, slide-1],
-                                                     fMRIData[row + 1, col, slide-1],
-                                                     fMRIData[row + 1, col+1, slide-1],
+                                indexfMRI= np.array([data_fMRI[row - 1, col - 1, slide - 1],
+                                                     data_fMRI[row - 1, col, slide - 1],
+                                                     data_fMRI[row - 1, col + 1, slide - 1],
+                                                     data_fMRI[row, col - 1, slide - 1],
+                                                     data_fMRI[row, col, slide - 1],
+                                                     data_fMRI[row, col + 1, slide - 1],
+                                                     data_fMRI[row + 1, col - 1, slide - 1],
+                                                     data_fMRI[row + 1, col, slide - 1],
+                                                     data_fMRI[row + 1, col + 1, slide - 1],
 
-                                                     fMRIData[row-1, col-1, slide],
-                                                     fMRIData[row-1, col, slide],
-                                                     fMRIData[row-1, col+1, slide],
-                                                     fMRIData[row, col-1, slide],
-                                                     fMRIData[row, col, slide],
-                                                     fMRIData[row, col + 1, slide],
-                                                     fMRIData[row + 1, col-1, slide],
-                                                     fMRIData[row + 1, col, slide],
-                                                     fMRIData[row + 1, col+1, slide],
+                                                     data_fMRI[row - 1, col - 1, slide],
+                                                     data_fMRI[row - 1, col, slide],
+                                                     data_fMRI[row - 1, col + 1, slide],
+                                                     data_fMRI[row, col - 1, slide],
+                                                     data_fMRI[row, col, slide],
+                                                     data_fMRI[row, col + 1, slide],
+                                                     data_fMRI[row + 1, col - 1, slide],
+                                                     data_fMRI[row + 1, col, slide],
+                                                     data_fMRI[row + 1, col + 1, slide],
 
-                                                     fMRIData[row - 1, col - 1, slide+1],
-                                                     fMRIData[row - 1, col, slide+1],
-                                                     fMRIData[row - 1, col + 1, slide+1],
-                                                     fMRIData[row, col - 1, slide+1],
-                                                     fMRIData[row, col, slide+1],
-                                                     fMRIData[row, col + 1, slide+1],
-                                                     fMRIData[row + 1, col - 1, slide+1],
-                                                     fMRIData[row + 1, col, slide+1],
-                                                     fMRIData[row + 1, col + 1, slide+1]])
+                                                     data_fMRI[row - 1, col - 1, slide + 1],
+                                                     data_fMRI[row - 1, col, slide + 1],
+                                                     data_fMRI[row - 1, col + 1, slide + 1],
+                                                     data_fMRI[row, col - 1, slide + 1],
+                                                     data_fMRI[row, col, slide + 1],
+                                                     data_fMRI[row, col + 1, slide + 1],
+                                                     data_fMRI[row + 1, col - 1, slide + 1],
+                                                     data_fMRI[row + 1, col, slide + 1],
+                                                     data_fMRI[row + 1, col + 1, slide + 1]])
 
                                 if (np.mean(np.mean(indexfMRI, axis=0)) != 0):
 
@@ -312,42 +301,35 @@ for group in sorted(os.listdir(path)):
 
                                     roiIndex = roiIndex + 1
 
-                nib.save(nib.Nifti1Image(td_map, affine=greyMatterAffine), os.path.join(os.path.join(pathInto, dir), 'TD_Map.nii'))
-                nib.save(nib.Nifti1Image(awtd_map, affine=greyMatterAffine), os.path.join(os.path.join(pathInto, dir), 'AWTD_Map.nii'))
+                nib.save(nib.Nifti1Image(td_map, affine=affine_grey_matter), os.path.join(os.path.join(path_group, dir), 'TD_Map.nii'))
+                nib.save(nib.Nifti1Image(awtd_map, affine=affine_grey_matter), os.path.join(os.path.join(path_group, dir), 'AWTD_Map.nii'))
 
-                plotting.plot_stat_map(nib.Nifti1Image(td_map, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, vmax=0.5 * lagged, output_file=os.path.join(os.path.join(pathInto, dir), 'TD_Map.png'))
-                plotting.plot_stat_map(nib.Nifti1Image(awtd_map, affine=greyMatterAffine), cut_coords=[0, -28, 3], bg_img=t1MNI, output_file=os.path.join(os.path.join(pathInto, dir), 'AWTD_Map.png'))
+                plotting.plot_stat_map(nib.Nifti1Image(td_map, affine=affine_grey_matter), cut_coords=[0, -28, 3], bg_img=t1MNI, vmax=0.5 * lagged, output_file=os.path.join(os.path.join(path_group, dir), 'TD_Map.png'))
+                plotting.plot_stat_map(nib.Nifti1Image(awtd_map, affine=affine_grey_matter), cut_coords=[0, -28, 3], bg_img=t1MNI, output_file=os.path.join(os.path.join(path_group, dir), 'AWTD_Map.png'))
 
-                timeDelayMapList.append(td_map)
-                amplitudeWeightedTimeDelayMapList.append(awtd_map)
+                td_map_list.append(td_map)
+                awtd_map_list.append(awtd_map)
 
-            td_matrix = np.array(timeDelayMapList)
-            AWTDMatrix = np.array(amplitudeWeightedTimeDelayMapList)
+            td_matrixs = np.array(td_map_list)
+            awtd_matrixs = np.array(awtd_map_list)
 
-            labels = range(td_matrix.shape[0])
+            labels = range(td_matrixs.shape[0])
 
-            TDcorrelationMatrix = np.zeros((td_matrix.shape[0], td_matrix.shape[0]))
-            AWTDcorrelationMatrix = np.zeros((td_matrix.shape[0], td_matrix.shape[0]))
+            td_correlation_matrix = np.zeros((td_matrixs.shape[0], td_matrixs.shape[0]))
+            awtd_correlation_matrix = np.zeros((td_matrixs.shape[0], td_matrixs.shape[0]))
 
-            for indexSubject in range(td_matrix.shape[0]):
-                for indexSubject2 in range(td_matrix.shape[0]):
-                    #correlationMatrix[indexSubject, indexSubject2] = np.corrcoef(timeDelayMatrixs[indexSubject, :, :], timeDelayMatrixs[indexSubject2, :, :])
+            for index1 in range(td_matrixs.shape[0]):
+                for index2 in range(td_matrixs.shape[0]):
+                    td_flatted_1 = np.ndarray.flatten(td_matrixs[index1, :, :, :])
+                    td_flatted_2 = np.ndarray.flatten(td_matrixs[index2, :, :, :])
+                    awtd_flatted_1 = np.ndarray.flatten(awtd_matrixs[index1, :, :, :])
+                    awtd_flatted_2 = np.ndarray.flatten(awtd_matrixs[index2, :, :, :])
 
-                    subject1FlattedTD = np.ndarray.flatten(td_matrix[indexSubject, :, :, :])
-                    subject2FlattedTD = np.ndarray.flatten(td_matrix[indexSubject2, :, :, :])
-                    subject1FlattedAWTD = np.ndarray.flatten(AWTDMatrix[indexSubject, :, :, :])
-                    subject2FlattedAWTD = np.ndarray.flatten(AWTDMatrix[indexSubject2, :, :, :])
+                    td_correlation_matrix[index1, index2] = abs(sc.pearsonr(td_flatted_1, td_flatted_2)[0])
+                    awtd_correlation_matrix[index1, index2] = abs(sc.pearsonr(awtd_flatted_1, awtd_flatted_2)[0])
 
-                    #correlationMatrix[indexSubject, indexSubject2] = dc.u_distance_correlation_sqr(subject1Flatted, subject2Flatted)
-            #        correlationMatrix[indexSubject, indexSubject2] = util.mse(timeDelayMatrixs[indexSubject, :, :], timeDelayMatrixs[indexSubject2, :, :])
-                    TDcorrelationMatrix[indexSubject, indexSubject2] = abs(sc.pearsonr(subject1FlattedTD, subject2FlattedTD)[0])
-                    AWTDcorrelationMatrix[indexSubject, indexSubject2] = abs(sc.pearsonr(subject1FlattedAWTD, subject2FlattedAWTD)[0])
+            fig = drawmatrix_channels(td_correlation_matrix, labels, color_anchor=(0., 1.))
+            fig.savefig(os.path.join(path_group, 'TDCorrelation.png'))
 
-            #plott.plot_matrix(correlationMatrix, labels=labels)
-            fig = drawmatrix_channels(TDcorrelationMatrix, labels, color_anchor=(0.,1.))
-            fig.savefig(os.path.join(pathInto, 'TDCorrelation.png'))
-            #plt.show()
-
-            fig01 = drawmatrix_channels(AWTDcorrelationMatrix, labels, color_anchor=(0.,1.))
-            fig01.savefig(os.path.join(pathInto, 'AWTDCorrelation.png'))
-            #plt.show()
+            fig01 = drawmatrix_channels(awtd_correlation_matrix, labels, color_anchor=(0., 1.))
+            fig01.savefig(os.path.join(path_group, 'AWTDCorrelation.png'))

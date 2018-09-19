@@ -19,18 +19,21 @@ lag = 3
 namesNodes_node_to_node = ['Auditory', 'Cerebellum', 'DMN', 'ECL', 'ECR', 'Salience', 'SensoriMotor', 'Vis_Lateral',
                            'Vis_Medial', 'Vis_Occipital']
 
-path_general = '/home/runlab/data/COMA/'
+#path_general = '/home/runlab/data/COMA/'
+#path_general_atlas = '/home/runlab/data/Atlas/RSN/'
+path_general = '/home/jrudascas/Desktop/Test/'
+path_general_atlas = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/RSN/'
 
-list_path_atlas = ['/home/runlab/data/Atlas/RSN/frAuditory_corr.nii.gz',
-                   '/home/runlab/data/Atlas/RSN/frCerebellum_corr.nii.gz',
-                   '/home/runlab/data/Atlas/RSN/frDMN_corr.nii.gz',
-                   '/home/runlab/data/Atlas/RSN/frECN_L_corr.nii.gz',
-                   '/home/runlab/data/Atlas/RSN/frECN_R_corr.nii.gz',
-                   '/home/runlab/data/Atlas/RSN/frSalience_corr.nii.gz',
-                   '/home/runlab/data/Atlas/RSN/frSensorimotor_corr.nii.gz',
-                   '/home/runlab/data/Atlas/RSN/frVisual_lateral_corr.nii.gz',
-                   '/home/runlab/data/Atlas/RSN/frVisual_medial_corr.nii.gz',
-                   '/home/runlab/data/Atlas/RSN/frVisual_occipital_corr.nii.gz']
+list_path_atlas = [path_general_atlas + 'frAuditory_corr.nii.gz',
+                   path_general_atlas + 'frCerebellum_corr.nii.gz',
+                   path_general_atlas + 'frDMN_corr.nii.gz',
+                   path_general_atlas + 'frECN_L_corr.nii.gz',
+                   path_general_atlas + 'frECN_R_corr.nii.gz',
+                   path_general_atlas + 'frSalience_corr.nii.gz',
+                   path_general_atlas + 'frSensorimotor_corr.nii.gz',
+                   path_general_atlas + 'frVisual_lateral_corr.nii.gz',
+                   path_general_atlas + 'frVisual_medial_corr.nii.gz',
+                   path_general_atlas + 'frVisual_occipital_corr.nii.gz']
 
 core = c.Core()
 
@@ -50,7 +53,6 @@ for group in sorted(os.listdir(path_general)):
                 print(dir)
                 path_full_file = os.path.join(path_subject, name_file)
 
-                # time_series_rsn = u.to_extract_time_series(path_full_file, path_general, group, dir, list_path_altas=list_path_atlas)
                 time_series_rsn = u.to_extract_time_series(path_full_file, list_path_altas=list_path_atlas)
 
                 connectivity_matrix, td_matrix, awtd_matrix, tr = core.run2(time_series_rsn, tr=TR, lag=lag)

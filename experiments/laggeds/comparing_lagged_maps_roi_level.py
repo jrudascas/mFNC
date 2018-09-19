@@ -1,6 +1,6 @@
 import numpy as np
 
-from sklearn import datasets, linear_model
+from sklearn import linear_model
 import matplotlib.pyplot as plt
 
 import nibabel as nib
@@ -8,14 +8,43 @@ from nilearn import plotting
 from sklearn.metrics import mean_squared_error, r2_score
 import utils as ut
 import os
-import warnings
+import csv
 
 path_t1_mni = '/home/jrudascas/Desktop/DWITest/Additionals/Standards/MNI152_T1_2mm_brain.nii.gz'
 path_atlas_nmi = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz'
+path_atlas_nmi = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/2mm/AAL2.nii'
+
+crs_r_hc = '/home/jrudascas/Desktop/Test/crs_r_hc.csv'
+crs_r_mcs = '/home/jrudascas/Desktop/Test/crs_r_mcs.csv'
+crs_r_uws = '/home/jrudascas/Desktop/Test/crs_r_uws.csv'
+
+crs_r = '/home/jrudascas/Desktop/Test/crs_r.csv'
+
+crs_r_hc_values = []
+crs_r_mcs_values = []
+crs_r_uws_values = []
+
+with open(crs_r_hc) as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
+    for row in reader:
+        crs_r_hc_values.append(int(row[1]))
+
+with open(crs_r_mcs) as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
+    for row in reader:
+        crs_r_mcs_values.append(int(row[1]))
+
+with open(crs_r_uws) as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
+    for row in reader:
+        crs_r_uws_values.append(int(row[1]))
+
+crs_r_hc_values = np.array(crs_r_hc_values)
+crs_r_mcs_values = np.array(crs_r_mcs_values)
+crs_r_uws_values = np.array(crs_r_uws_values)
 
 path_general = '/home/jrudascas/Desktop/Test/'
 name_td_map = 'TD_Map.nii'
-
 
 img_atlas = nib.load(path_atlas_nmi)
 data_atlas = img_atlas.get_data()
@@ -57,11 +86,11 @@ for group in sorted(os.listdir(path_general)):
         list_group_td_map.append(TDMap)
 
 print('HC vs MCS\n')
-ut.toFindStatisticDifference(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[1]), threshold=0.01)
-print('HC vs MCS\n')
-ut.toFindStatisticDifference(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[2]), threshold=0.01)
-print('HC vs MCS\n')
-ut.toFindStatisticDifference(np.asarray(list_group_td_map[1]), np.asarray(list_group_td_map[2]), threshold=0.01)
+ut.toFindStatisticDifference(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[1]), threshold=0.0005)
+print('HC vs UWS\n')
+ut.toFindStatisticDifference(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[2]), threshold=0.0005)
+print('MCS vs UWS\n')
+ut.toFindStatisticDifference(np.asarray(list_group_td_map[1]), np.asarray(list_group_td_map[2]), threshold=0.0005)
 
 #display = plotting.plot_anat(os.path.join(pathInto, 'meanTDMap_' + group + '.nii'), cut_coords=[0,-60,45])
 #dis.add_contours(nib.Nifti1Image((data_atlas == 31).astype(int), affine=affine_atlas), filled=False, alpha=0.7, levels=[0.5], colors='b')
@@ -70,16 +99,18 @@ ut.toFindStatisticDifference(np.asarray(list_group_td_map[1]), np.asarray(list_g
 
 regr = linear_model.LinearRegression()
 
-listRoiTo = [2]
+listRoiTo = range(121)
 #listRoiTo = [2, 8, 11, 17, 18, 33, 39, 41]
 
 
 for roiTo in listRoiTo:
     # Train the model using the training sets
-    x_train = np.linspace(1, len(list_group_td_map[0]) + len(list_group_td_map[1]) + len(list_group_td_map[2]), len(list_group_td_map[0]) + len(list_group_td_map[1]) + len(list_group_td_map[2]))
 
-    y_train = np.concatenate((np.asarray(list_group_td_map[0])[:, roiTo], np.asarray(list_group_td_map[1])[:, roiTo]), axis=0)
-    y_train = np.concatenate((y_train, np.asarray(list_group_td_map[2])[:, roiTo]), axis=0)
+    x_train = np.concatenate((crs_r_hc_values, crs_r_mcs_values, crs_r_uws_values), axis=0)
+    #x_train = np.concatenate((crs_r_mcs_values, crs_r_uws_values), axis=0)
+
+    y_train = np.concatenate((np.asarray(list_group_td_map[0])[:, roiTo], np.asarray(list_group_td_map[1])[:, roiTo], np.asarray(list_group_td_map[2])[:, roiTo]), axis=0)
+    #y_train = np.concatenate((np.asarray(list_group_td_map[1])[:, roiTo], np.asarray(list_group_td_map[2])[:, roiTo]), axis=0)
 
     x_test = x_train
 
@@ -87,17 +118,19 @@ for roiTo in listRoiTo:
 
     y_pred = regr.predict(np.transpose(np.matrix(x_test)))
 
-    plt.plot(x_test, y_pred, color='blue', linewidth=3)
+
 
     #print("Mean squared error: %.2f" % mean_squared_error(y_train, y_pred))
     #print('R2: %.2f' % r2_score(y_train, y_pred))
 
-    plt.scatter(range(0, len(list_group_td_map[0])), np.asarray(list_group_td_map[0])[:, roiTo], alpha=0.5)
-    plt.scatter(range(len(list_group_td_map[0]), len(list_group_td_map[0]) + len(list_group_td_map[1])), np.asarray(list_group_td_map[1])[:, roiTo], alpha=0.5)
-    plt.scatter(range(len(list_group_td_map[0]) + len(list_group_td_map[1]), len(list_group_td_map[0]) + len(list_group_td_map[1]) + len(list_group_td_map[2])), np.asarray(list_group_td_map[2])[:, roiTo], alpha=0.5)
-    plt.title('ROI: ' + str(roiTo) + ' - ' + 'R2: ' + str(r2_score(y_train, y_pred)))
 
-    print(y_train)
-    print(y_pred)
+    plt.xlim(0, 30)
+    plt.ylim(-0.3, 0.3)
+
+    plt.plot(x_test, y_pred, color='blue', linewidth=3)
+    plt.scatter(crs_r_hc_values, np.asarray(list_group_td_map[0])[:, roiTo], alpha=0.5)
+    plt.scatter(crs_r_mcs_values, np.asarray(list_group_td_map[1])[:, roiTo], alpha=0.5)
+    plt.scatter(crs_r_uws_values, np.asarray(list_group_td_map[2])[:, roiTo], alpha=0.5)
+    plt.title('ROI: ' + str(roiTo) + ' - ' + 'R2: ' + str(r2_score(y_train, y_pred)))
 
     plt.show()
