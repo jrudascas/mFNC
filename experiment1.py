@@ -22,6 +22,7 @@ new_tr = 0.5
 
 path_study = '/home/runlab/data/COMA/'
 path_relative_fMRI = 'data/functional/fmriGLM.nii.gz'
+
 path_mask = path_study + 'HC/Cahodessur/data/structural/fwc1mprage.nii.gz'
 
 img_grey_matter = nib.load(path_mask)
@@ -304,8 +305,8 @@ for group in sorted(os.listdir(path_study)):
                 nib.save(nib.Nifti1Image(td_map, affine=affine_grey_matter), os.path.join(os.path.join(path_group, dir), 'TD_Map.nii'))
                 nib.save(nib.Nifti1Image(awtd_map, affine=affine_grey_matter), os.path.join(os.path.join(path_group, dir), 'AWTD_Map.nii'))
 
-                plotting.plot_stat_map(nib.Nifti1Image(td_map, affine=affine_grey_matter), cut_coords=[0, -28, 3], bg_img=t1MNI, vmax=0.5 * lagged, output_file=os.path.join(os.path.join(path_group, dir), 'TD_Map.png'))
-                plotting.plot_stat_map(nib.Nifti1Image(awtd_map, affine=affine_grey_matter), cut_coords=[0, -28, 3], bg_img=t1MNI, output_file=os.path.join(os.path.join(path_group, dir), 'AWTD_Map.png'))
+                plotting.plot_stat_map(nib.Nifti1Image(td_map, affine=affine_grey_matter), cut_coords=[0, -28, 3], vmax=0.5 * lagged, output_file=os.path.join(os.path.join(path_group, dir), 'TD_Map.png'))
+                plotting.plot_stat_map(nib.Nifti1Image(awtd_map, affine=affine_grey_matter), cut_coords=[0, -28, 3], vmax=0.5 * lagged, output_file=os.path.join(os.path.join(path_group, dir), 'AWTD_Map.png'))
 
                 td_map_list.append(td_map)
                 awtd_map_list.append(awtd_map)
