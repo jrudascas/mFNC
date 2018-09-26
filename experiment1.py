@@ -81,6 +81,7 @@ for group in sorted(os.listdir(path_study)):
 
                 c = f.Core()
 
+                print(len(time_courses))
                 connectivity_matrix, td_matrix, awtd_matrix, tr = c.run2(np.transpose(np.array(time_courses)), tr=TR,
                                                                          lag=lagged, new_tr=new_tr, measure=measure,
                                                                          tri_up=True)
