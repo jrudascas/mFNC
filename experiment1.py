@@ -20,7 +20,7 @@ import os
 TR = 2.46
 measure = 'COV'
 lagged = 4
-new_tr = 0.5
+new_tr = None
 
 path_study = '/home/runlab/data/COMA/'
 path_relative_fMRI = 'data/functional/fmriGLM.nii.gz'
