@@ -12,7 +12,7 @@ from scipy import stats
 import utils as u
 from nilearn import plotting
 
-path_general = '/home/jrudascas/Desktop/Test/'
+path_general = '/home/jrudascas/Desktop/Test/New/'
 name_td_map = 'TD_Map.nii'
 
 dict_td_maps = {}

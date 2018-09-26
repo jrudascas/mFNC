@@ -1,10 +1,10 @@
 import numpy as np
 from scipy import stats
 from scipy import interpolate
-import nibabel as nib
 from exceptions import IllegalArgumentError
 import scipy.stats as sc
 import distcorr as dc
+
 
 def covariance(x, y):
     return np.dot(x,y)/x.shape[-1]
@@ -45,6 +45,39 @@ def buildFeaturesVector(data):
                 cont += 1
     return features
 
+
+def plot_linear_regression(tupla_x, tupla_y, title, save = False):
+    from sklearn import linear_model
+    from sklearn.metrics import r2_score
+    import matplotlib.pyplot as plt
+
+    print('Plotting linear regression')
+
+    regr = linear_model.LinearRegression()
+
+    x_train = np.concatenate(tupla_x, axis=0)
+
+    y_train = np.concatenate(tupla_y, axis=0)
+
+    x_test = x_train
+
+    regr.fit(np.transpose(np.matrix(x_train)), np.transpose(np.matrix(y_train)))
+
+    y_pred = regr.predict(np.transpose(np.matrix(x_test)))
+
+    plt.xlim(0, 30)
+    #plt.ylim(-0.05, 0.05)
+
+    plt.plot(x_test, y_pred, color='blue', linewidth=3)
+
+    for element in range(len(tupla_x)):
+        plt.scatter(tupla_x[element], tupla_y[element], alpha=0.5)
+
+    plt.title(title + ' - ' + 'R2: ' + str(r2_score(y_train, y_pred)))
+    if save:
+        plt.savefig(title + '.png')
+    plt.show()
+
 def to_compute_time_series_similarity(time_serie_1, time_serie_2, measure):
 
     if measure not in ['PC', 'COV', 'DC']:
@@ -59,7 +92,10 @@ def to_compute_time_series_similarity(time_serie_1, time_serie_2, measure):
 
 
 def to_extract_time_series(path_input, path_atlas = None, list_path_altas = None):
-    fmri_data = nib.load(path_input).get_data()
+    import nibabel as nib
+
+    img_fMRI = nib.load(path_input)
+    data_fMRI = img_fMRI.get_data()
 
     time_series = []
 
@@ -68,26 +104,25 @@ def to_extract_time_series(path_input, path_atlas = None, list_path_altas = None
         index_roi = np.unique(atlas_data)
         for index in index_roi:
             if index != 0:
-                time_series.append(np.mean(fmri_data[atlas_data == index, :], axis=0))
+                time_series.append(np.mean(data_fMRI[atlas_data == index, :], axis=0))
     elif list_path_altas is not None:
-
         for path in list_path_altas:
-            roi = nib.load(path).get_data()
+            img_roi = nib.load(path)
+            data_roi = img_roi.get_data()
 
-            if roi.shape != fmri_data.shape[:-1]:
-                new_data = np.zeros((1, roi.shape[1], roi.shape[2]))
-                roi = np.append(roi, new_data, axis=0)
+            if data_roi.shape != data_fMRI.shape[:-1]:
+                new_data = np.zeros((1, data_roi.shape[1], data_roi.shape[2]))
+                data_roi = np.append(data_roi, new_data, axis=0)
 
-            #print(fmri_data[roi != 0, :].shape)
-            #np.savetxt(path_general + group + '_' + dir + '_time_series_' + str(cont) + '.txt', np.array(fmri_data[roi != 0, :]), delimiter=' ', fmt='%s')
+            #time_series_filtered = []
 
-            time_series_np = fmri_data[roi != 0, :]
-            time_series_filtered = []
-            for i in range(time_series_np.shape[0]):
-                if not all(time_series_np[i,:] == 0):
-                    time_series_filtered.append(time_series_np[i,:])
+            #for i in range(time_series_np.shape[0]):
+            #    if not all(time_series_np[i,:] == 0):
+            #        time_series_filtered.append(time_series_np[i,:])
 
-            time_series.append(np.mean(np.array(time_series_filtered), axis=0))
+            #time_series.append(np.mean(np.array(time_series_filtered), axis=0))
+
+            time_series.append(np.mean(data_fMRI[data_roi != 0, :], axis=0))
     else:
         raise IllegalArgumentError('Both arguments, path_atlas and list_path_atlas, can not be None')
 
@@ -176,8 +211,10 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
             #print(x[~np.isnan(x[:, comparator]), comparator])
             #print(y[~np.isnan(y[:, comparator]), comparator])
             print('Comparator ' + str(comparator + 1) + ' (' + str(p) + ')')
-            print(' - x:mean: ' + str(np.mean(x[~np.isnan(x[:, comparator]), comparator])) + ' x:std: ' + str(np.std(x[~np.isnan(x[:, comparator]), comparator])))
-            print(' - y:mean: ' + str(np.mean(y[~np.isnan(y[:, comparator]), comparator])) + ' y:std: ' + str(np.std(y[~np.isnan(y[:, comparator]), comparator])))
+            print("x: " + str((x[~np.isnan(x[:, comparator]), comparator])))
+            print("y: " + str((y[~np.isnan(y[:, comparator]), comparator])))
+            #print(' - x:mean: ' + str(np.mean(x[~np.isnan(x[:, comparator]), comparator])) + ' x:std: ' + str(np.std(x[~np.isnan(x[:, comparator]), comparator])))
+            #print(' - y:mean: ' + str(np.mean(y[~np.isnan(y[:, comparator]), comparator])) + ' y:std: ' + str(np.std(y[~np.isnan(y[:, comparator]), comparator])))
     return pLista
 
 def toBuildMatrixDesign(pathIn, pathOut, maskEVs, maskThreadhold = None):
