@@ -132,9 +132,9 @@ class Core:
 
         index_roi = range(roit_number)
         print('e')
-        connectivity_matrix = np.zeros((roit_number, roit_number, 2 * temp2 + 1))
-        td_matrix = np.zeros((roit_number, roit_number))
-        awtd_matrix = np.zeros((roit_number, roit_number))
+        connectivity_matrix = np.zeros((roit_number, roit_number, 2 * temp2 + 1), dtype=np.float16)
+        td_matrix = np.zeros((roit_number, roit_number), dtype=np.float16)
+        awtd_matrix = np.zeros((roit_number, roit_number), dtype=np.float16)
         print('f')
         for roi1 in index_roi:
             print(str(float(roi1 / roit_number) * 100) + '%')
