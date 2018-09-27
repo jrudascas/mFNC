@@ -1,3 +1,4 @@
+'''
 import matplotlib
 
 matplotlib.use('Agg')
@@ -52,7 +53,7 @@ for group in sorted(os.listdir(path_study)):
                 affine_fMRI = img_fMRI.get_affine()
 
                 time_courses = []
-                print(data_grey_matter.shape)
+
                 for slide in range(1, data_grey_matter.shape[-1] - 1, 2):
                     for col in range(1, data_grey_matter.shape[1] - 1, 2):
                         for row in range(1, data_grey_matter.shape[0] - 1, 2):
@@ -220,14 +221,15 @@ new_tr = 0.5
 path_study = '/home/runlab/data/COMA/'
 path_relative_fMRI = 'data/functional/fmriGLM.nii.gz'
 
-path_mask = path_study + 'HC/Cahodessur/data/structural/fwc1mprage.nii.gz'
+path_mask = '/home/runlab/data/Atlas/WM_mask_2mm.nii.gz'
 
 img_grey_matter = nib.load(path_mask)
-data_grey_matter = img_grey_matter.get_data()
+data_grey_matter = img_grey_matter.get_data().astype(np.int32)
 affine_grey_matter = img_grey_matter.get_affine()
 
-data_grey_matter = (data_grey_matter > 0.4)
-data_grey_matter = mp.binary_closing(data_grey_matter)
+
+#data_grey_matter = (data_grey_matter > 0.4)
+#data_grey_matter = mp.binary_closing(data_grey_matter)
 
 td_map_list = []
 awtd_map_list = []
@@ -532,4 +534,3 @@ for group in sorted(os.listdir(path_study)):
             fig01 = drawmatrix_channels(awtd_correlation_matrix, labels, color_anchor=(0., 1.))
             fig01.savefig(os.path.join(path_group, 'AWTDCorrelation.png'))
 
-'''
