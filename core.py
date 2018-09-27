@@ -119,7 +119,7 @@ class Core:
 
     @numba.jit
     def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC', tri_up = False):
-
+        print('d')
         t = time.time()
         time_points, roit_number = data.shape
 
@@ -131,11 +131,11 @@ class Core:
             temp2 = lagged
 
         index_roi = range(roit_number)
-
+        print('e')
         connectivity_matrix = np.zeros((roit_number, roit_number, 2 * temp2 + 1))
         td_matrix = np.zeros((roit_number, roit_number))
         awtd_matrix = np.zeros((roit_number, roit_number))
-
+        print('f')
         for roi1 in index_roi:
             print(str(float(roi1 / roit_number) * 100) + '%')
             for roi2 in index_roi:
@@ -291,10 +291,10 @@ class Core:
         return dynamic_connectivity_matrix
 
     def run2(self, time_series, tr, lag, new_tr=None, f_lb=0.005, f_ub=0.05, f_order=2, measure='PC', tri_up=False):
-
+        print('a')
         for index in range(time_series.shape[1] - 1):
             time_series[:, index] = self.butter_bandpass_filter(time_series[:, index], f_lb, f_ub, tr, order=f_order)
-
+        print('b')
         if new_tr is not None:
             # Interpolation in the time (to maximazate time scale)
             list_time_serie = list(np.transpose(time_series))
@@ -307,6 +307,7 @@ class Core:
                                                                                                    tri_up=tri_up)
             return connectivity_matrix, td_matrix, awtd_matrix, new_tr
         else:
+            print('c')
             connectivity_matrix, td_matrix, awtd_matrix = self.to_build_lagged_connectivity_matrix(time_series,
                                                                                                    lagged=lag,
                                                                                                    measure=measure,
