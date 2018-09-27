@@ -64,7 +64,7 @@ for group in sorted(os.listdir(path_study)):
                                                data_grey_matter[row, col + 1, slide + 1],
                                                data_grey_matter[row + 1, col, slide + 1],
                                                data_grey_matter[row + 1, col + 1, slide + 1]]
-
+                            print(indexGreyMatter)
                             if np.count_nonzero(indexGreyMatter) > len(
                                     indexGreyMatter) * 1 / 2:  # more than 50% of voxel are into the grey matter
 
