@@ -29,7 +29,7 @@ path_mask = '/home/runlab/data/Atlas/WM_mask_2mm.nii.gz'
 
 
 img_grey_matter = nib.load(path_mask)
-data_grey_matter = img_grey_matter.get_data().astype(bool)
+data_grey_matter = img_grey_matter.get_data().astype(np.int8)
 affine_grey_matter = img_grey_matter.get_affine()
 
 #data_grey_matter = (data_grey_matter > 0.9)
