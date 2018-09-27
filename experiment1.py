@@ -52,6 +52,7 @@ for group in sorted(os.listdir(path_study)):
                 affine_fMRI = img_fMRI.get_affine()
 
                 time_courses = []
+                print(data_grey_matter.shape)
                 for slide in range(1, data_grey_matter.shape[-1] - 1, 2):
                     for col in range(1, data_grey_matter.shape[1] - 1, 2):
                         for row in range(1, data_grey_matter.shape[0] - 1, 2):
