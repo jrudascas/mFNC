@@ -65,7 +65,7 @@ for group in sorted(os.listdir(path_study)):
                                                data_grey_matter[row, col + 1, slide + 1],
                                                data_grey_matter[row + 1, col, slide + 1],
                                                data_grey_matter[row + 1, col + 1, slide + 1]]
-                            print(indexGreyMatter)
+
                             if np.count_nonzero(indexGreyMatter) > len(
                                     indexGreyMatter) * 1 / 2:  # more than 50% of voxel are into the grey matter
 
@@ -122,18 +122,6 @@ for group in sorted(os.listdir(path_study)):
 
                             if np.count_nonzero(indexGreyMatter) > len(
                                     indexGreyMatter) * 1 / 2:  # more than 50% of voxel are into the grey matter
-
-                                """
-                                timeDelayMap[row, col, slide] = timeDelayProjection[roiIndex]
-                                timeDelayMap[row, col + 1, slide] = timeDelayProjection[roiIndex]
-                                timeDelayMap[row + 1, col, slide] = timeDelayProjection[roiIndex]
-                                timeDelayMap[row + 1, col + 1, slide] = timeDelayProjection[roiIndex]
-                                timeDelayMap[row, col, slide + 1] = timeDelayProjection[roiIndex]
-                                timeDelayMap[row, col + 1, slide + 1] = timeDelayProjection[roiIndex]
-                                timeDelayMap[row + 1, col, slide + 1] = timeDelayProjection[roiIndex]
-                                timeDelayMap[row + 1, col + 1, slide + 1] = timeDelayProjection[roiIndex]
-
-                                """
 
                                 indexfMRI = np.array([data_fMRI[row, col, slide],
                                                      data_fMRI[row, col + 1, slide],
