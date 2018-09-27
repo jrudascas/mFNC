@@ -29,7 +29,7 @@ path_mask = '/home/runlab/data/Atlas/WM_mask_2mm.nii.gz'
 
 
 img_grey_matter = nib.load(path_mask)
-data_grey_matter = img_grey_matter.get_data().astype(np.int8)
+data_grey_matter = img_grey_matter.get_data().astype(np.int32)
 affine_grey_matter = img_grey_matter.get_affine()
 
 #data_grey_matter = (data_grey_matter > 0.9)
@@ -82,7 +82,7 @@ for group in sorted(os.listdir(path_study)):
 
                 c = f.Core()
 
-                print(len(time_courses))
+                print("Size " + str(len(time_courses)))
                 connectivity_matrix, td_matrix, awtd_matrix, tr = c.run2(np.transpose(np.array(time_courses)), tr=TR,
                                                                          lag=lagged, new_tr=new_tr, measure=measure,
                                                                          tri_up=True)
