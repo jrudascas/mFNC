@@ -9,7 +9,7 @@ import csv
 path_t1_mni = '/home/jrudascas/Desktop/DWITest/Additionals/Standards/MNI152_T1_2mm_brain.nii.gz'
 #path_atlas_nmi = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz'
 path_atlas_nmi = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/2mm/AAL2.nii'
-path_general = '/home/jrudascas/Desktop/Test/New/'
+path_general = '/home/jrudascas/Desktop/Test/NewTest/'
 
 crs_r_hc = path_general + 'crs_r_hc.csv'
 crs_r_mcs = path_general + 'crs_r_mcs.csv'

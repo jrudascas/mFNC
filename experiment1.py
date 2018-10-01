@@ -1,4 +1,3 @@
-'''
 import matplotlib
 
 matplotlib.use('Agg')
@@ -193,7 +192,6 @@ for dir in sorted(os.listdir(path_group)):
     fig01.savefig(os.path.join(path_group, 'AWTDCorrelation.png'))
 
 '''
-
 import matplotlib
 
 matplotlib.use('Agg')
@@ -537,3 +535,4 @@ for dir in sorted(os.listdir(path_group)):
 
     fig01 = drawmatrix_channels(awtd_correlation_matrix, labels, color_anchor=(0., 1.))
     fig01.savefig(os.path.join(path_group, 'AWTDCorrelation.png'))
+'''

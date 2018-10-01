@@ -1,7 +1,6 @@
 import numpy as np
 from scipy import stats
 from scipy import interpolate
-from exceptions import IllegalArgumentError
 import scipy.stats as sc
 import distcorr as dc
 
@@ -124,7 +123,7 @@ def to_extract_time_series(path_input, path_atlas = None, list_path_altas = None
 
             time_series.append(np.mean(data_fMRI[data_roi != 0, :], axis=0))
     else:
-        raise IllegalArgumentError('Both arguments, path_atlas and list_path_atlas, can not be None')
+        raise AttributeError('Both arguments, path_atlas and list_path_atlas, can not be None')
 
     return np.transpose(np.array(time_series))
 
