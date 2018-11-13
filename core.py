@@ -9,7 +9,7 @@ from scipy import stats
 import time
 import distcorr as dc
 import time
-import numba
+#import numba
 
 # Is necessary to install Tkinter -->sudo apt-get install python3-tk
 
@@ -117,7 +117,7 @@ class Core:
 
         return dynamicLaggedConnectivityMatrix, listLaggeds, timeDelayMatrix, amplitudeWeightedTimeDelayMatrix
 
-    @numba.jit
+    #@numba.jit
     def to_build_lagged_connectivity_matrix(self, data, lagged=0, measure='PC', tri_up = False):
 
         t = time.time()

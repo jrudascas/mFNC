@@ -23,10 +23,13 @@ measure = 'COV'
 lagged = 4
 new_tr = None
 
+# path_study = '/home/jrudascas/Desktop/Test/Old/'
+# path_mask = '/home/jrudascas/Desktop/DWITest/Additionals/Standards/WM_mask_2mm.nii.gz'
+
 # path_study = '/home/runlab/data/COMA/HC/'
-path_relative_fMRI = 'data/functional/fmriGLM.nii.gz'
 path_mask = '/home/runlab/data/Atlas/WM_mask_2mm.nii.gz'
 
+path_relative_fMRI = 'data/functional/fmriGLM.nii.gz'
 img_grey_matter = nib.load(path_mask)
 data_grey_matter = img_grey_matter.get_data().astype(np.int32)
 affine_grey_matter = img_grey_matter.get_affine()
@@ -167,29 +170,29 @@ for dir in sorted(os.listdir(path_group)):
         td_map_list.append(td_map)
         awtd_map_list.append(awtd_map)
 
-    td_matrixs = np.array(td_map_list)
-    awtd_matrixs = np.array(awtd_map_list)
+        td_matrixs = np.array(td_map_list)
+        awtd_matrixs = np.array(awtd_map_list)
 
-    labels = range(td_matrixs.shape[0])
+        labels = range(td_matrixs.shape[0])
 
-    td_correlation_matrix = np.zeros((td_matrixs.shape[0], td_matrixs.shape[0]))
-    awtd_correlation_matrix = np.zeros((td_matrixs.shape[0], td_matrixs.shape[0]))
+        td_correlation_matrix = np.zeros((td_matrixs.shape[0], td_matrixs.shape[0]))
+        awtd_correlation_matrix = np.zeros((td_matrixs.shape[0], td_matrixs.shape[0]))
 
-    for index1 in range(td_matrixs.shape[0]):
-        for index2 in range(td_matrixs.shape[0]):
-            td_flatted_1 = np.ndarray.flatten(td_matrixs[index1, :, :, :])
-            td_flatted_2 = np.ndarray.flatten(td_matrixs[index2, :, :, :])
-            awtd_flatted_1 = np.ndarray.flatten(awtd_matrixs[index1, :, :, :])
-            awtd_flatted_2 = np.ndarray.flatten(awtd_matrixs[index2, :, :, :])
+        for index1 in range(td_matrixs.shape[0]):
+            for index2 in range(td_matrixs.shape[0]):
+                td_flatted_1 = np.ndarray.flatten(td_matrixs[index1, :, :, :])
+                td_flatted_2 = np.ndarray.flatten(td_matrixs[index2, :, :, :])
+                awtd_flatted_1 = np.ndarray.flatten(awtd_matrixs[index1, :, :, :])
+                awtd_flatted_2 = np.ndarray.flatten(awtd_matrixs[index2, :, :, :])
 
-            td_correlation_matrix[index1, index2] = abs(sc.pearsonr(td_flatted_1, td_flatted_2)[0])
-            awtd_correlation_matrix[index1, index2] = abs(sc.pearsonr(awtd_flatted_1, awtd_flatted_2)[0])
+                td_correlation_matrix[index1, index2] = abs(sc.pearsonr(td_flatted_1, td_flatted_2)[0])
+                awtd_correlation_matrix[index1, index2] = abs(sc.pearsonr(awtd_flatted_1, awtd_flatted_2)[0])
 
-    fig = drawmatrix_channels(td_correlation_matrix, labels, color_anchor=(0., 1.))
-    fig.savefig(os.path.join(path_group, 'TDCorrelation.png'))
+        fig = drawmatrix_channels(td_correlation_matrix, labels, color_anchor=(0., 1.))
+        fig.savefig(os.path.join(path_group, 'TDCorrelation.png'))
 
-    fig01 = drawmatrix_channels(awtd_correlation_matrix, labels, color_anchor=(0., 1.))
-    fig01.savefig(os.path.join(path_group, 'AWTDCorrelation.png'))
+        fig01 = drawmatrix_channels(awtd_correlation_matrix, labels, color_anchor=(0., 1.))
+        fig01.savefig(os.path.join(path_group, 'AWTDCorrelation.png'))
 
 '''
 import matplotlib

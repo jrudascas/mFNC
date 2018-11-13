@@ -7,8 +7,8 @@ import os
 import csv
 
 path_t1_mni = '/home/jrudascas/Desktop/DWITest/Additionals/Standards/MNI152_T1_2mm_brain.nii.gz'
-#path_atlas_nmi = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz'
-path_atlas_nmi = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/2mm/AAL2.nii'
+path_atlas_nmi = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz'
+#path_atlas_nmi = '/home/jrudascas/Desktop/DWITest/Additionals/Atlas/2mm/AAL2.nii'
 path_general = '/home/jrudascas/Desktop/Test/NewTest/'
 
 crs_r_hc = path_general + 'crs_r_hc.csv'
@@ -87,13 +87,24 @@ print('MCS vs UWS\n')
 u.toFindStatisticDifference(np.asarray(list_group_td_map[1]), np.asarray(list_group_td_map[2]), threshold=0.0005)
 
 #display = plotting.plot_anat(os.path.join(pathInto, 'meanTDMap_' + group + '.nii'), cut_coords=[0,-60,45])
-#dis.add_contours(nib.Nifti1Image((data_atlas == 31).astype(int), affine=affine_atlas), filled=False, alpha=0.7, levels=[0.5], colors='b')
+#dis.add_contours(nib.Nifti1Image((data_data_atlasatlas == 31).astype(int), affine=affine_atlas), filled=False, alpha=0.7, levels=[0.5], colors='b')
 
 #plotting.show()
 
 listRoiTo = range(121)
-#listRoiTo = [2, 8, 11, 17, 18, 33, 39, 41]
+listRoiTo = [30,31]
+import matplotlib.pyplot as plt
 
 for roiTo in listRoiTo:
-    u.plot_linear_regression((crs_r_hc_values, crs_r_mcs_values, crs_r_uws_values), (np.asarray(list_group_td_map[0])[:, roiTo], np.asarray(list_group_td_map[1])[:, roiTo],
-     np.asarray(list_group_td_map[2])[:, roiTo]), 'ROI: ' + str(roiTo))
+    g0 = np.asarray(list_group_td_map[0])[:, roiTo]
+    g1 = np.asarray(list_group_td_map[1])[:, roiTo]
+    g2 = np.asarray(list_group_td_map[2])[:, roiTo]
+
+    rects1 = plt.bar(np.arange(3), height=[g0.mean(), g1.mean(), g2.mean()], width=0.5,
+                     alpha=0.4,
+                     color='b',
+                     yerr=[g0.var(), g1.var(), g2.var()])
+
+    plt.show()
+    #u.plot_linear_regression((crs_r_hc_values, crs_r_mcs_values, crs_r_uws_values), (np.asarray(list_group_td_map[0])[:, roiTo], np.asarray(list_group_td_map[1])[:, roiTo],
+    # np.asarray(list_group_td_map[2])[:, roiTo]), 'ROI: ' + str(roiTo))
