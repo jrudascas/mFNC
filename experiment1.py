@@ -345,6 +345,7 @@ for dir in sorted(os.listdir(path_group)):
         lowerTD = np.transpose(np.copy(td_matrix))
 
         td_matrix_total = upperTD - lowerTD
+
         td_projection = np.mean(td_matrix_total, axis=0)
 
         upperAWTD = np.copy(awtd_matrix)
@@ -355,6 +356,12 @@ for dir in sorted(os.listdir(path_group)):
 
         td_map = np.zeros(data_grey_matter.shape)
         awtd_map = np.zeros(data_grey_matter.shape)
+        
+        nib.save(nib.Nifti1Image(td_matrix_total, affine=affine_grey_matter),
+                 os.path.join(os.path.join(path_group, dir), 'total_TD_Map.nii'))
+
+        nib.save(nib.Nifti1Image(awtd_matrix_total, affine=affine_grey_matter),
+                 os.path.join(os.path.join(path_group, dir), 'total_AWTD_Map.nii'))
 
         roiIndex = 0
         for slide in range(1, data_grey_matter.shape[-1] - 1, 3):
