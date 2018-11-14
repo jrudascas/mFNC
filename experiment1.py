@@ -356,11 +356,11 @@ for dir in sorted(os.listdir(path_group)):
 
         td_map = np.zeros(data_grey_matter.shape)
         awtd_map = np.zeros(data_grey_matter.shape)
-        
-        nib.save(nib.Nifti1Image(td_matrix_total, affine=affine_grey_matter),
+
+        nib.save(nib.Nifti1Image(td_matrix_total.astype(np.float32), affine=affine_grey_matter),
                  os.path.join(os.path.join(path_group, dir), 'total_TD_Map.nii'))
 
-        nib.save(nib.Nifti1Image(awtd_matrix_total, affine=affine_grey_matter),
+        nib.save(nib.Nifti1Image(awtd_matrix_total.astype(np.float32), affine=affine_grey_matter),
                  os.path.join(os.path.join(path_group, dir), 'total_AWTD_Map.nii'))
 
         roiIndex = 0
