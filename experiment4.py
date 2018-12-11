@@ -21,6 +21,7 @@ path_general = '/home/runlab/data/COMA/'
 
 data_grey_matter = nib.load(path_mask).get_data().astype(np.int32)
 data_atlas = nib.load(path_atlas_nmi).get_data()
+affine_atlas = nib.load(path_atlas_nmi).affine
 index_rois_atlas = np.unique(data_atlas)
 
 print('Nmber of Index in the Atlas: ' + str(len(index_rois_atlas)))
@@ -31,9 +32,10 @@ for group in sorted(os.listdir(path_general)):
     if os.path.isdir(path_group):
         matrix_by_group = []
         for subject in sorted(os.listdir(path_group)):
-            print(subject)
             path_subject = os.path.join(path_group, subject)
             if os.path.isdir(path_subject):
+                print(subject)
+
                 path_total_td_map = os.path.join(path_subject, path_relative_total_td_map)
                 full_path_fMRI = os.path.join(path_subject, path_relative_fMRI)
                 img_fMRI = nib.load(full_path_fMRI)
@@ -187,9 +189,6 @@ for group in sorted(os.listdir(path_general)):
                                             list_index.append(index)
                                         index += 1
                     list_roi_index.append(list_index)
-                print(np.array(list_mCC_index).shape)
-                print(np.array(list_roi_index).shape)
-
                 list_mean_td_mCC_to_rois = []
 
                 for roi_index_l in list_roi_index:
@@ -203,4 +202,6 @@ for group in sorted(os.listdir(path_general)):
         fig, ax = plt.subplots()
         plotting.plot_matrix(np.array(matrix_by_group), vmax=1.0, vmin=-1.0, figure=fig)
         fig.savefig(path_group + '/' + group + '_mCC_to_ROIs.png', dpi=600)
+        nib.save(nib.Nifti1Image(np.array(matrix_by_group).astype(np.float32), affine=affine_atlas),
+                 path_group + '/' + group + '_mCC_to_ROIs_raw.nii')
 
