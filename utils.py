@@ -44,6 +44,15 @@ def buildFeaturesVector(data):
                 cont += 1
     return features
 
+def to_build_features_vector_v2(data):
+    dimension = data.shape[1] * data.shape[2]
+    features = np.zeros((data.shape[0], dimension))
+    cont = 0
+    for i in range(data.shape[1]):
+        for j in range(data.shape[2]):
+                features[:, cont] = data[:, i, j]
+                cont += 1
+    return features
 
 def plot_linear_regression(tupla_x, tupla_y, title, save = False):
     from sklearn import linear_model
@@ -145,14 +154,14 @@ def mean(data, outlier):
     return average
 
 
-def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05, is_corrected = False):
+def to_find_statistical_differences(x, y, outlier = None, measure='manwhitneyu', threshold = 0.05, to_correct = False, print_values = True):
 
     print('Doing a multiple comparation by using ' + measure + ' test')
     pLista = []
     if x.shape[-1] != y.shape[-1]:
         raise AttributeError('Shape incorrect')
 
-    if is_corrected:
+    if to_correct:
         threshold = threshold/x.shape[-1]
 
     #if outlier is not None:
@@ -210,8 +219,9 @@ def toFindStatisticDifference(x, y, outlier = None, measure='manwhitneyu', thres
             #print(x[~np.isnan(x[:, comparator]), comparator])
             #print(y[~np.isnan(y[:, comparator]), comparator])
             print('Comparator ' + str(comparator + 1) + ' (' + str(p) + ')')
-            print("x: " + str((x[~np.isnan(x[:, comparator]), comparator])))
-            print("y: " + str((y[~np.isnan(y[:, comparator]), comparator])))
+            if print_values is True:
+                print("x: " + str((x[~np.isnan(x[:, comparator]), comparator])))
+                print("y: " + str((y[~np.isnan(y[:, comparator]), comparator])))
             #print(' - x:mean: ' + str(np.mean(x[~np.isnan(x[:, comparator]), comparator])) + ' x:std: ' + str(np.std(x[~np.isnan(x[:, comparator]), comparator])))
             #print(' - y:mean: ' + str(np.mean(y[~np.isnan(y[:, comparator]), comparator])) + ' y:std: ' + str(np.std(y[~np.isnan(y[:, comparator]), comparator])))
     return pLista

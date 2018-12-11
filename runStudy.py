@@ -56,28 +56,28 @@ np.savetxt(path_general + '/TD_hc.out', laggeds3, delimiter=' ', fmt='%s')
 #pg.fivethirtyeightPlot(laggeds1, laggeds2, group3=laggeds3, lag=lagged, save='ThreadsLagPC.png')
 
 #print("\nLaggeds MCS UWS")
-#pList1 = utils.toFindStatisticDifference(utils.mean(TD1, outlier=outlier), utils.mean(TD2, outlier=outlier),
+#pList1 = utils.to_find_statistical_differences(utils.mean(TD1, outlier=outlier), utils.mean(TD2, outlier=outlier),
 #                                         measure='manwhitneyu', outlier=outlier)
 
 #print("\nLaggeds MCS HC")
-#pList1 = utils.toFindStatisticDifference(utils.mean(TD1, outlier=outlier), utils.mean(TD3, outlier=outlier),
+#pList1 = utils.to_find_statistical_differences(utils.mean(TD1, outlier=outlier), utils.mean(TD3, outlier=outlier),
 #                                         measure='manwhitneyu', outlier=outlier)
 
 #print("\nLaggeds UWS HC")
-#pList1 = utils.toFindStatisticDifference(utils.mean(TD2, outlier=outlier), utils.mean(TD3, outlier=outlier),
+#pList1 = utils.to_find_statistical_differences(utils.mean(TD2, outlier=outlier), utils.mean(TD3, outlier=outlier),
 #                                         measure='manwhitneyu', outlier=outlier)
 
 
 print("\nTest Graph MCS UWS")
-pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),
-                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
+pList1 = utils.to_find_statistical_differences(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group2),
+                                               measure='manwhitneyu', outlier=outlier, to_correct=True)
 
 #print("\nTest Graph HC MCS")
-#pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group3),
+#pList1 = utils.to_find_statistical_differences(utils.buildFeaturesVector(group1), utils.buildFeaturesVector(group3),
 #                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
 
 #print("\nTest Graph HC UWS")
-#pList1 = utils.toFindStatisticDifference(utils.buildFeaturesVector(group2), utils.buildFeaturesVector(group3),
+#pList1 = utils.to_find_statistical_differences(utils.buildFeaturesVector(group2), utils.buildFeaturesVector(group3),
 #                                         measure='manwhitneyu', outlier=outlier, is_corrected=True)
 
 sys.exit(0)
@@ -143,16 +143,16 @@ for i in range(new5.shape[0]):
 
 """
 print("Test Conectividad Promedio\n")
-pList1 = utils.toFindStatisticDifference(new, new2, measure='manwhitneyu', outlier=np.nan)
+pList1 = utils.to_find_statistical_differences(new, new2, measure='manwhitneyu', outlier=np.nan)
 
 print('--------------------')
-pList1 = utils.toFindStatisticDifference(new, new5, measure='manwhitneyu', outlier=np.nan)
+pList1 = utils.to_find_statistical_differences(new, new5, measure='manwhitneyu', outlier=np.nan)
 
 print("Test Hiperconectividades\n")
-pList2 = utils.toFindStatisticDifference(new3, new4, measure='manwhitneyu', outlier=np.nan)
+pList2 = utils.to_find_statistical_differences(new3, new4, measure='manwhitneyu', outlier=np.nan)
 
 print ('--------------------')
-pList2 = utils.toFindStatisticDifference(new3, new6, measure='manwhitneyu', outlier=np.nan)
+pList2 = utils.to_find_statistical_differences(new3, new6, measure='manwhitneyu', outlier=np.nan)
 """
 
 print("Lista de P")

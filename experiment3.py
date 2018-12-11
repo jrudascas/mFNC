@@ -20,7 +20,7 @@ from dipy.align.reslice import reslice
 import  utils as t
 import os.path
 
-generalPath = '/media/jrudascas/HDRUDAS/alejandra/'
+generalPath = '/home/jrudascas/Desktop/IBIA/'
 
 pathMask = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain_mask.nii.gz'
 dwiPath = 'data/functional/fmri.nii.gz'

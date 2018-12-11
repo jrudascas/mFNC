@@ -106,31 +106,31 @@ td_uws = np.array(list_td_matrixs_group[2])[:,np.triu_indices(10, k=1)[0], np.tr
 pg.fivethirtyeightPlot(td_mcs, td_uws, group3=td_hc, lag=lag, save='ThreadsLagPC.png')
 
 print("Test Graph MCS UWS\n")
-pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
-                                     u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
-                                     is_corrected=True)
+pList1 = u.to_find_statistical_differences(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
+                                           u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
+                                           to_correct=True)
 
 print("Test Graph HC MCS\n")
-pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])),
-                                     u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
-                                     is_corrected=True)
+pList1 = u.to_find_statistical_differences(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])),
+                                           u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[1])),
+                                           to_correct=True)
 
 print("Test Graph HC UWS\n")
-pList1 = u.toFindStatisticDifference(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])),
-                                     u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
-                                     is_corrected=True)
+pList1 = u.to_find_statistical_differences(u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[0])),
+                                           u.buildFeaturesVector(np.array(list_connectivity_matrixs_group[2])),
+                                           to_correct=True)
 
 print("\nLaggeds HC MCS")
-pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[0]), axis=-1),
-                                     np.mean(np.array(list_td_matrixs_group[1]), axis=-1))
+pList1 = u.to_find_statistical_differences(np.mean(np.array(list_td_matrixs_group[0]), axis=-1),
+                                           np.mean(np.array(list_td_matrixs_group[1]), axis=-1))
 
 print("\nLaggeds HC UWS")
-pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[0]), axis=-1),
-                                     np.mean(np.array(list_td_matrixs_group[2]), axis=-1))
+pList1 = u.to_find_statistical_differences(np.mean(np.array(list_td_matrixs_group[0]), axis=-1),
+                                           np.mean(np.array(list_td_matrixs_group[2]), axis=-1))
 
 print("\nLaggeds MCS UWS")
-pList1 = u.toFindStatisticDifference(np.mean(np.array(list_td_matrixs_group[1]), axis=-1),
-                                     np.mean(np.array(list_td_matrixs_group[2]), axis=-1))
+pList1 = u.to_find_statistical_differences(np.mean(np.array(list_td_matrixs_group[1]), axis=-1),
+                                           np.mean(np.array(list_td_matrixs_group[2]), axis=-1))
 
 
 print(np.mean(np.array(list_td_matrixs_group[2]), axis=-1).shape)

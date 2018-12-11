@@ -74,9 +74,9 @@ for group in sorted(os.listdir(path)):
 
 #meanTDMAP = np.asarray(groupTDMap)
 
-ut.toFindStatisticDifference(np.asarray(groupTDMap[0]), np.asarray(groupTDMap[1]), threshold=0.05)
-ut.toFindStatisticDifference(np.asarray(groupTDMap[0]), np.asarray(groupTDMap[2]), threshold=0.05)
-ut.toFindStatisticDifference(np.asarray(groupTDMap[1]), np.asarray(groupTDMap[2]), threshold=0.05)
+ut.to_find_statistical_differences(np.asarray(groupTDMap[0]), np.asarray(groupTDMap[1]), threshold=0.05)
+ut.to_find_statistical_differences(np.asarray(groupTDMap[0]), np.asarray(groupTDMap[2]), threshold=0.05)
+ut.to_find_statistical_differences(np.asarray(groupTDMap[1]), np.asarray(groupTDMap[2]), threshold=0.05)
 
 regr = linear_model.LinearRegression()
 

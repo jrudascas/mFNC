@@ -313,7 +313,7 @@ class Core:
                                                                                                    tri_up=tri_up)
             return connectivity_matrix, td_matrix, awtd_matrix, tr
 
-    def run_2_groups(self, time_series_g1, time_series_g2, TR, f_lb=0.005, f_ub=0.05, f_order=2):
+    def run_2_groups(self, time_series_g1, time_series_g2, TR, f_lb=0.05, f_ub=0.1, f_order=2):
 
         for index in range(time_series_g1.shape[1] - 1):
             time_series_g1[:, index] = self.butter_bandpass_filter(time_series_g1[:, index], f_lb, f_ub, TR,

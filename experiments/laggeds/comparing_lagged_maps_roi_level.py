@@ -80,11 +80,11 @@ for group in sorted(os.listdir(path_general)):
         list_group_td_map.append(TDMap)
 
 print('HC vs MCS\n')
-u.toFindStatisticDifference(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[1]), threshold=0.0005)
+u.to_find_statistical_differences(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[1]), threshold=0.0005)
 print('HC vs UWS\n')
-u.toFindStatisticDifference(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[2]), threshold=0.0005)
+u.to_find_statistical_differences(np.asarray(list_group_td_map[0]), np.asarray(list_group_td_map[2]), threshold=0.0005)
 print('MCS vs UWS\n')
-u.toFindStatisticDifference(np.asarray(list_group_td_map[1]), np.asarray(list_group_td_map[2]), threshold=0.0005)
+u.to_find_statistical_differences(np.asarray(list_group_td_map[1]), np.asarray(list_group_td_map[2]), threshold=0.0005)
 
 #display = plotting.plot_anat(os.path.join(pathInto, 'meanTDMap_' + group + '.nii'), cut_coords=[0,-60,45])
 #dis.add_contours(nib.Nifti1Image((data_data_atlasatlas == 31).astype(int), affine=affine_atlas), filled=False, alpha=0.7, levels=[0.5], colors='b')
