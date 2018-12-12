@@ -9,15 +9,19 @@ from scipy import stats
 from nilearn import plotting
 import sys
 
-#path_mask = '/home/runlab/data/Atlas/WM_mask_2mm.nii.gz'
+
+#path_atlas_nmi = '/home/jrudascas/Downloads/aal_for_SPM8/aal_for_SPM8/ROI_MNI_V4.nii'
+#path_mask = '/home/jrudascas/Desktop/DWITest/Additionals/Standards/WM_mask_2mm.nii.gz'
+#path_roi = '/home/jrudascas/Desktop/Test/FinalROIs/mCC.nii'
+#path_general = '/home/jrudascas/Desktop/Test/NewTest/'
 
 path_atlas_nmi = '/home/runlab/data/Atlas/ROI_MNI_V4.nii'
-path_relative_total_td_map = 'total_TD_Map.nii'
-path_relative_fMRI = 'data/functional/fmriGLM.nii.gz'
-
 path_mask = '/home/runlab/data/Atlas/WM_mask_2mm.nii.gz'
 path_roi = '/home/runlab/data/Atlas/mCC.nii'
 path_general = '/home/runlab/data/COMA/'
+
+path_relative_total_td_map = 'total_TD_Map.nii'
+path_relative_fMRI = 'data/functional/fmriGLM.nii.gz'
 
 data_grey_matter = nib.load(path_mask).get_data().astype(np.int32)
 data_atlas = nib.load(path_atlas_nmi).get_data()
@@ -26,6 +30,12 @@ index_rois_atlas = np.unique(data_atlas)
 
 print('Nmber of Index in the Atlas: ' + str(len(index_rois_atlas)))
 data_mCC = nib.load(path_roi).get_data()
+
+test_mCC = np.zeros(data_grey_matter.shape)
+
+
+
+td_map = np.zeros(data_grey_matter.shape)
 
 for group in sorted(os.listdir(path_general)):
     path_group = os.path.join(path_general, group)
@@ -113,6 +123,10 @@ for group in sorted(os.listdir(path_general)):
                                         list_mCC_index.append(index)
                                     index += 1
 
+                #view = plotting.view_img_on_surf(nib.Nifti1Image(td_map, affine=affine_atlas),
+                #                                 surf_mesh='fsaverage',
+                #                                 threshold=0.2, vmax=3)
+                #view.open_in_browser()
 
                 list_roi_index = []
                 for roi_index in index_rois_atlas:
@@ -187,17 +201,56 @@ for group in sorted(os.listdir(path_general)):
                                     if (np.mean(np.mean(indexfMRI, axis=0)) != 0):
                                         if aux[row, col, slide] != 0:
                                             list_index.append(index)
+                                            #test_mCC[row, col, slide] = 5
+
+                                            '''
+                                            td_map[row - 1, col - 1, slide - 1] = data_total_td_map[1, index]
+                                            td_map[row - 1, col, slide - 1] = data_total_td_map[1, index]
+                                            td_map[row - 1, col + 1, slide - 1] = data_total_td_map[1, index]
+                                            td_map[row, col - 1, slide - 1] = data_total_td_map[1, index]
+                                            td_map[row, col, slide - 1] = data_total_td_map[1, index]
+                                            td_map[row, col + 1, slide - 1] = data_total_td_map[1, index]
+                                            td_map[row + 1, col - 1, slide - 1] = data_total_td_map[1, index]
+                                            td_map[row + 1, col, slide - 1] = data_total_td_map[1, index]
+                                            td_map[row + 1, col + 1, slide - 1] = data_total_td_map[1, index]
+                                            td_map[row - 1, col - 1, slide] = data_total_td_map[1, index]
+                                            td_map[row - 1, col, slide] = data_total_td_map[1, index]
+                                            td_map[row - 1, col + 1, slide] = data_total_td_map[1, index]
+                                            td_map[row, col - 1, slide] = data_total_td_map[1, index]
+                                            td_map[row, col, slide] = data_total_td_map[1, index]
+                                            td_map[row, col + 1, slide] = data_total_td_map[1, index]
+                                            td_map[row + 1, col - 1, slide] = data_total_td_map[1, index]
+                                            td_map[row + 1, col, slide] = data_total_td_map[1, index]
+                                            td_map[row + 1, col + 1, slide] = data_total_td_map[1, index]
+                                            td_map[row - 1, col - 1, slide + 1] = data_total_td_map[1, index]
+                                            td_map[row - 1, col, slide + 1] = data_total_td_map[1, index]
+                                            td_map[row - 1, col + 1, slide + 1] = data_total_td_map[1, index]
+                                            td_map[row, col - 1, slide + 1] = data_total_td_map[1, index]
+                                            td_map[row, col, slide + 1] = data_total_td_map[1, index]
+                                            td_map[row, col + 1, slide + 1] = data_total_td_map[1, index]
+                                            td_map[row + 1, col - 1, slide + 1] = data_total_td_map[1, index]
+                                            td_map[row + 1, col, slide + 1] = data_total_td_map[1, index]
+                                            td_map[row + 1, col + 1, slide + 1] = data_total_td_map[1, index]
+                                            '''
+
                                         index += 1
+
                     list_roi_index.append(list_index)
+
+                #view = plotting.view_img_on_surf(nib.Nifti1Image(td_map, affine=affine_atlas),
+                #                                 surf_mesh='fsaverage',
+                #                                 threshold=0.2, vmax=6)
+                #view.open_in_browser()
+
                 list_mean_td_mCC_to_rois = []
 
                 for roi_index_l in list_roi_index:
                     values_list = []
                     for mCC_index in list_mCC_index:
                         for roi_index_new in roi_index_l:
-                            values_list.append(data_total_td_map[mCC_index, roi_index_new])
+                            values_list.append(data_total_td_map[roi_index_new, mCC_index])
                     list_mean_td_mCC_to_rois.append(np.mean(values_list))
-
+                print(list_mean_td_mCC_to_rois)
                 matrix_by_group.append(list_mean_td_mCC_to_rois)
         fig, ax = plt.subplots()
         plotting.plot_matrix(np.array(matrix_by_group), vmax=1.0, vmin=-1.0, figure=fig)

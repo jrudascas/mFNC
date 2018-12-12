@@ -354,7 +354,7 @@ for dir in sorted(os.listdir(path_group)):
         awtd_matrix_total = upperAWTD - lowerAWTD
         awtd_projection = np.mean(awtd_matrix_total, axis=0)
 
-        td_map = np.zeros(data_grey_matter.shape)
+
         awtd_map = np.zeros(data_grey_matter.shape)
 
         nib.save(nib.Nifti1Image(td_matrix_total.astype(np.float32), affine=affine_grey_matter),
