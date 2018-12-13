@@ -15,7 +15,7 @@ import sys
 #path_roi = '/home/jrudascas/Desktop/Test/FinalROIs/mCC.nii'
 #path_general = '/home/jrudascas/Desktop/Test/NewTest/'
 
-path_atlas_nmi = '/home/runlab/data/Atlas/ROI_MNI_V4.nii'
+path_atlas_nmi = '/home/runlab/data/Atlas/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz'
 path_mask = '/home/runlab/data/Atlas/WM_mask_2mm.nii.gz'
 path_roi = '/home/runlab/data/Atlas/mCC.nii'
 path_general = '/home/runlab/data/COMA/'
@@ -234,8 +234,8 @@ for group in sorted(os.listdir(path_general)):
                                             '''
 
                                         index += 1
-
-                    list_roi_index.append(list_index)
+                    if len(list_index) > 0:
+                        list_roi_index.append(list_index)
 
                 #view = plotting.view_img_on_surf(nib.Nifti1Image(td_map, affine=affine_atlas),
                 #                                 surf_mesh='fsaverage',
